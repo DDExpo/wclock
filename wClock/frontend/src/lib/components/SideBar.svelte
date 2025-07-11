@@ -11,13 +11,12 @@
     const color = await GetWindowsPcColors()
     if (color) {userWindowsPcColor.set(color)};
     if (["#eee", "#242323d6"].includes($userWindowsPcColor)) { userWindowsPcColor.update(t => t = isLightTheme ? "#eee": "#242323d6")};
-    document.documentElement.style.setProperty('--user-color', $userWindowsPcColor);
+    document.documentElement.style.setProperty('--user-pc-color', $userWindowsPcColor);
   }
 
   async function checkWindowSizeEnough() {
     isSidebarOpen = true
     const size = await CheckWindowSize()
-    console.log(appWindowSizeEnough, isSidebarOpen)
     if (size) {appWindowSizeEnough = true} else {appWindowSizeEnough = false}
   }
 
@@ -25,49 +24,56 @@
 
 <main style="display: flex">
   <div class="sidebar" class:open={isSidebarOpen && appWindowSizeEnough} class:light={$isLightTheme}
-    onmouseenter={checkWindowSizeEnough} onmouseleave={() => (isSidebarOpen = false)}
-    role="region">
-    <ul>
-      <li>
-        <a href="/focus">
-          <button class="icon-btn" class:light={$isLightTheme}>
-            <span class="dot"></span>
-            <img src="icons/sidebar/time-quarter-past.svg" alt="Focus menu"/>
-            <span class="item-text">Focus</span>
-          </button>
-        </a>
-      </li>
-      <li>
-        <a href="/stopwatch">
-          <button class="icon-btn" class:light={$isLightTheme}>
-            <span class="dot"></span>
-            <img src="icons/sidebar/time-fast.svg" alt="Stopwatch menu"/>
-            <span class="item-text">Stopwatch</span>
-          </button>
-        </a>  
-      </li>
-      <li>
-        <a href="/timer">
-          <button class="icon-btn" class:light={$isLightTheme}>
-            <span class="dot"></span>
-            <img src="icons/sidebar/hourglass-end.svg" alt="Timers menu"/>
-            <span class="item-text">Timer</span>
-          </button>
-        </a>
-      </li>
-      <li>
-        <a href="/alarm">
-          <button class="icon-btn" class:light={$isLightTheme}>
-            <span class="dot"></span>
-            <img src="icons/sidebar/alarm-exclamation.svg" alt="Alarm menu"/>
-            <span class="item-text">Alarm</span>
-          </button>
-        </a>
-      </li>
-    </ul>
-    <button class="icon-btn-toggle-theme" class:light={$isLightTheme} onclick={toggleTheme}>
+  onmouseenter={checkWindowSizeEnough} onmouseleave={() => (isSidebarOpen = false)}
+  role="region">
+  <ul>
+    <li>
+      <a href="/focus">
+        <button class="icon-btn" class:light={$isLightTheme}>
+          <span class="dot"></span>
+          <img src="icons/sidebar/time-quarter-past.svg" alt="Focus menu"/>
+          <span class="item-text">Focus</span>
+        </button>
+      </a>
+    </li>
+    <li>
+      <a href="/stopwatch">
+        <button class="icon-btn" class:light={$isLightTheme}>
+          <span class="dot"></span>
+          <img src="icons/sidebar/time-fast.svg" alt="Stopwatch menu"/>
+          <span class="item-text">Stopwatch</span>
+        </button>
+      </a>  
+    </li>
+    <li>
+      <a href="/timer">
+        <button class="icon-btn" class:light={$isLightTheme}>
+          <span class="dot"></span>
+          <img src="icons/sidebar/hourglass-end.svg" alt="Timers menu"/>
+          <span class="item-text">Timer</span>
+        </button>
+      </a>
+    </li>
+    <li>
+      <a href="/alarm">
+        <button class="icon-btn" class:light={$isLightTheme}>
+          <span class="dot"></span>
+          <img src="icons/sidebar/alarm-exclamation.svg" alt="Alarm menu"/>
+          <span class="item-text">Alarm</span>
+        </button>
+      </a>
+    </li>
+  </ul>
+  <div class="util-buttons" class:light={$isLightTheme} >
+    <button class="icon-btn-toggle-theme" onclick={toggleTheme}>
       <img src="/icons/moon.svg" alt="toogle-dark-light-mode">
     </button>
+    <a href="/settings">
+      <button class="icon-btn-settings" class:light={$isLightTheme}>
+        <img src="icons/sidebar/settings.svg" alt="Settings menu"/>
+      </button>
+    </a>
+  </div>
   </div>
 </main>
 
@@ -91,14 +97,19 @@
   all: unset;
 }
 .sidebar.open {
-  width: 175px;
+  width: 170px;
 }
 
 .sidebar span.item-text{
   display: none;
+  font-family: dark-theme-font;
 }
 .sidebar.open span.item-text{
   display: flex;
+}
+
+.sidebar.sidebar.light span.item-text{
+  font-family: serif;
 }
 
 .sidebar ul {
@@ -121,10 +132,10 @@
   cursor: pointer;
 }
 .icon-btn:hover {
-  background: #363636;
+  background: #595857;
 }
 .icon-btn.light:hover {
-  background: #e0965e;
+  background: #E8EEFF;
 }
 
 .icon-btn .dot {
@@ -136,11 +147,11 @@
   height: 17px;
   border-radius: 15%;
   opacity: 0;
-  background: var(--user-color);
+  background: var(--user-pc-color);
   transition: opacity 0.3s ease, transform 0.4s ease;
 }
 .icon-btn.light .dot {
-  background: var(--user-color);
+  background: var(--user-pc-color);
 }
 .icon-btn:hover .dot {
   opacity: 1;
@@ -158,31 +169,31 @@
   color: #3B2F2F;
 }
 
-.icon-btn-toggle-theme {
-  position: fixed;
-  left: 13px;
-  bottom: 7px;
-  z-index: 100;
-  background: transparent;
-  border: none;
+.util-buttons {
+  position: absolute;
+  left: 16px;
+  bottom: 32px;
 }
 
-.icon-btn-toggle-theme img {
-  width: 20px;
+.util-buttons button {
+  all: unset
+}
+
+.util-buttons img {
+  width: 12px;
   filter: invert(90%);
   cursor: pointer;
   transition: width 0.2s ease;
 }
-.icon-btn-toggle-theme img:hover {
-  width: 23px;
-  
+.util-buttons img:hover {
+  width: 20px;
 }
 
-.icon-btn-toggle-theme.light img {
+.util-buttons.light img {
   filter: invert(10%) opacity(85%);
 }
-.icon-btn-toggle-theme.light img:hover {
-  width: 23px;
+.util-buttons.light img:hover {
+  width: 20px;
 }
 
 </style>

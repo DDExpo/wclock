@@ -1,4 +1,6 @@
 <script lang="ts">
+  import '../app.css';
+  
   import SideBar from "$lib/components/SideBar.svelte";
   
   import { onMount } from "svelte";
@@ -12,7 +14,7 @@
   onMount(async() => {
     const color = await GetWindowsPcColors()
     if (color) {userWindowsPcColor.set(color)};
-    document.documentElement.style.setProperty('--user-color', $userWindowsPcColor);
+    document.documentElement.style.setProperty('--user-pc-color', $userWindowsPcColor);
   })
 
 </script>
@@ -28,8 +30,8 @@
 <style>
 
 .main-layout  {
-  position: fixed;
   display: flex;
+  overflow: hidden;
   height: 100%;
   width: 100%;
   top: 0px;

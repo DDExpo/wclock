@@ -32,8 +32,8 @@ func main() {
 		Title:     "WClock",
 		Width:     1024,
 		Height:    768,
-		MinWidth:  312,
-		MinHeight: 312,
+		MinWidth:  356,
+		MinHeight: 356,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

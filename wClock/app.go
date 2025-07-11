@@ -39,5 +39,5 @@ func (a *App) GetWindowsPcColors() string {
 
 func (a *App) CheckWindowSize() bool {
 	width, _ := runtime_2.WindowGetSize(a.ctx)
-	return width > 512
+	return width > 681
 }
