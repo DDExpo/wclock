@@ -4,3 +4,7 @@
 export function CheckWindowSize():Promise<boolean>;
 
 export function GetWindowsPcColors():Promise<string>;
+
+export function MakeMiniWindowSize(arg1:number,arg2:number,arg3:boolean):Promise<void>;
+
+export function SetWindowAlwaysOnTop(arg1:boolean):Promise<void>;

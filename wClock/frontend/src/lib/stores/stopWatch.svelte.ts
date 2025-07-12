@@ -1,9 +1,13 @@
 import { writable } from "svelte/store";
 
 export const markers = writable<string[]>([]);
+export const watchState = $state({
+  isRunning: false,
+  isCompact: false,
+});
 
 const createStopwatch = () => {
-  const { subscribe, set, update } = writable({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms: 0 });
+  const { subscribe, set, update } = writable({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms1: 0, ms: 0});
 
   let idInterval: number;
   
@@ -17,6 +21,7 @@ const createStopwatch = () => {
 
       update(t => {
         let ms = Math.floor(t.ms + delta);
+        let ms1 = ms % 100 
         let s = t.s;
         let m = t.m;
         let h = t.h;
@@ -48,16 +53,19 @@ const createStopwatch = () => {
           h1 += 1
           h %= 10
         }
-        return {h, h1, m, m1, s, s1, ms}});
+        return {h, h1, m, m1, s, s1, ms1, ms}});
       }, 100);
   };
 
   function stop() {
     clearInterval(idInterval);
   }
+  function cleanDial() {
+    set({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms1: 0, ms: 0 });
+  }
   function reset() {
     stop();
-    set({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms: 0 });
+    set({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms1: 0, ms: 0 });
     clearInterval(idInterval);
     markers.set([])
   }
@@ -67,6 +75,7 @@ const createStopwatch = () => {
     start,
     stop,
     reset,
+    cleanDial,
   };
 };
 

@@ -9,3 +9,11 @@ export function CheckWindowSize() {
 export function GetWindowsPcColors() {
   return window['go']['main']['App']['GetWindowsPcColors']();
 }
+
+export function MakeMiniWindowSize(arg1, arg2, arg3) {
+  return window['go']['main']['App']['MakeMiniWindowSize'](arg1, arg2, arg3);
+}
+
+export function SetWindowAlwaysOnTop(arg1) {
+  return window['go']['main']['App']['SetWindowAlwaysOnTop'](arg1);
+}

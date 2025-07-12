@@ -29,11 +29,12 @@ func main() {
 	app := NewApp()
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:     "WClock",
-		Width:     1024,
-		Height:    768,
-		MinWidth:  356,
-		MinHeight: 356,
+		Title:            "WClock",
+		Width:            512,
+		Height:           512,
+		MinWidth:         356,
+		MinHeight:        356,
+		BackgroundColour: &options.RGBA{R: 255, G: 217, B: 217, A: 255},
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

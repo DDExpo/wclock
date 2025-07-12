@@ -37,6 +37,20 @@ func (a *App) GetWindowsPcColors() string {
 	return color
 }
 
+func (a *App) SetWindowAlwaysOnTop(onTop bool) {
+	runtime_2.WindowSetAlwaysOnTop(a.ctx, onTop)
+}
+
+func (a *App) MakeMiniWindowSize(width int, height int, compact bool) {
+	runtime_2.WindowSetMinSize(a.ctx, width, height)
+	runtime_2.WindowSetSize(a.ctx, width, height)
+	if compact {
+		runtime_2.WindowSetMaxSize(a.ctx, width, height)
+	} else {
+		runtime_2.WindowSetMaxSize(a.ctx, 0, 0)
+	}
+}
+
 func (a *App) CheckWindowSize() bool {
 	width, _ := runtime_2.WindowGetSize(a.ctx)
 	return width > 681
