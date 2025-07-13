@@ -1,5 +1,5 @@
 export const appTheme = $state({
-  isLight: false,
+  light: false,
   windowsColor: "#eee",  
 }
 )
