@@ -18,6 +18,7 @@
   justify-self: end;
   background: none;
   border: none;
+  user-select: none;
 }
 .btn-top-right img {
   width: clamp(var(--start, 12px), var(--middle, 2.5vw), var(--end, 26px));

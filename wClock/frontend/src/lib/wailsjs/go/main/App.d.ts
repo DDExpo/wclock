@@ -3,6 +3,8 @@
 
 export function CheckWindowSize():Promise<boolean>;
 
+export function CloseWindow():Promise<void>;
+
 export function GetWindowsPcColors():Promise<string>;
 
 export function MakeMiniWindowSize(arg1:number,arg2:number,arg3:boolean):Promise<void>;

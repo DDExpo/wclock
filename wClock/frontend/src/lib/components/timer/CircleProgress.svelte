@@ -1,13 +1,16 @@
-<script>
-    import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+<script lang="ts">
+  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte"
+  import type { PropsCircleProgress } from "$lib/types/StoreComponentsTypes";
+  import { onDestroy } from "svelte";
 
-  let { progress=1 } = $props();
-  
-  const radius = 50;
-  const stroke = 10;
+  let { progress=0, cardTime }: PropsCircleProgress = $props();
+
+  const radius = 60;
+  const stroke = 12;
   const circumference = 2 * Math.PI * radius;
-  const offset = $derived(circumference * (1 - progress));
-  
+
+  let offset = $derived(circumference * (1 - (progress)));
+
   document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
 
 </script>
@@ -19,11 +22,11 @@
   class="circle-progress"
 >
   <circle
-    class="bg"
+    class={["bg", {light: appTheme.light }]}
     cx={radius + stroke / 2}
     cy={radius + stroke / 2}
     r={radius}
-    stroke-width={stroke-1}
+    stroke-width={stroke}
   />
   <circle
     class={["fg", {light: appTheme.light }]}
@@ -43,9 +46,7 @@
     textLength="80"
     lengthAdjust="spacingAndGlyphs"
     class={["progress-label", {light: appTheme.light }]}
-  >
-  12:12:12
-  </text>
+  >{$cardTime[0]}{$cardTime[1]}:{$cardTime[2]}{$cardTime[3]}:{$cardTime[4]}{$cardTime[5]}</text>
 
 </svg>
 
@@ -53,14 +54,18 @@
 
 .circle-progress {
   position: absolute;
-  z-index: 10;
+  z-index: 2;
   width: clamp(180px, 20vw, 200px);
   height: clamp(140px, 20vw, 200px);
 }
 
 .bg {
-  fill: rgba(238, 238, 238, 0.3);
-  stroke: #eee;
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.112);
+}
+
+.bg.light {
+  stroke: #23232319;
 }
 
 .fg {
@@ -69,14 +74,13 @@
   stroke-linecap: round;
 }
 .fg.light {
-  stroke:#4AD4FF;
+  stroke: var(--user-pc-color, #8de4fe);
   stroke-opacity: 100%;
 }
 
 .progress-label {
   fill: #eee;
   font-size: clamp(25px, 4vw, 28px);
-  text-shadow: -6px 8px 4px rgba(0, 0, 0, 0.5);
   font-family: dark-theme-font;
   word-break: break-all;
 }
@@ -84,7 +88,6 @@
 .progress-label.light {
   fill: #3B2F2F;
   font-family: serif;
-  text-shadow: -3px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 </style>

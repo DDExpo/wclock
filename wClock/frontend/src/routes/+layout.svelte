@@ -4,11 +4,10 @@
   import '../app.css';
   
   import SideBar from "$lib/components/SideBar.svelte";
+  import TopBar from "$lib/components/TopBar.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { GetWindowsPcColors } from "$lib/wailsjs/go/main/App";
   import { watchState } from "$lib/stores/stopWatch.svelte";
-  import { cardState } from "$lib/stores/timerWatch.svelte";
-
+  import { GetWindowsPcColors } from "$lib/wailsjs/go/main/App";
 
 	let { children } = $props();
 
@@ -22,8 +21,9 @@
 
 <main>
   <div class="main-layout">
-    {#if !(watchState.compact || cardState.compact)}
-      <SideBar />
+    <TopBar />
+    {#if !(watchState.compact)}
+    <SideBar />
     {/if}
     <div class={["background-img", { light: appTheme.light }]}></div>
   </div>
@@ -43,14 +43,14 @@
   height: 100%;
   width: 100%;
   z-index: -1;
-  background-image: url('images/background/background.svg');
+  background-image: url('images/backgroundImg/background.svg');
   background-size: cover;
   opacity: 0.99;
   background-position: center;
 }
 
 .background-img.light {
-  background-image: url('images/background/background-light.svg');
+  background-image: url('images/backgroundImg/background-light.svg');
   opacity: 0.8;
 }
 

@@ -5,7 +5,7 @@
 
 </script>
 
-<button class={["circle-button", {running: isRunning, light: appTheme.light }]} onclick={ onClick }>
+<button class={["circle-button", { "running": isRunning, "light": appTheme.light }]} onclick={ onClick }>
   <img src="{icon}" alt="{alt}"/>
 </button>
 
@@ -24,6 +24,7 @@
     justify-content: center;
     transition: background 0.2s;
     box-shadow: -4px 6px 8px rgba(23, 23, 23, 0.5);
+    user-select: none;
   }
   .circle-button:hover {
     background: #6b6b6b;

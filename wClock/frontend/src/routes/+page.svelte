@@ -1,12 +1,8 @@
 <script lang="ts">
 </script>
 
-<div class="focus-page">home</div>
+<div></div>
 
 <style>
-
-.focus-page {
-  display: flex;
-}
 
 </style>

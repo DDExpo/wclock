@@ -1,67 +1,65 @@
 <script lang="ts">
+  import type { Timer, PropsCard } from "$lib/types/StoreComponentsTypes";
+
+  import AddForm from "./AddForm.svelte";
   import CircleButton from "../CircleButton.svelte";
   import CircleProgress from './CircleProgress.svelte';
   import TopRightButton from "../TopRightButton.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { cards, type Timer } from "$lib/stores/timerWatch.svelte";
+  import { deleteCard } from "$lib/stores/timerWatch.svelte";
+  import type { CardType } from "$lib/types/StoreComponentsTypes";
   
-  let value = $state(0.1);
+  let { card, ind }: PropsCard = $props()
+  let showCardForm: boolean = $state(false)
 
-  function startStopWatch(running: boolean, timer: Timer) {
-    if (!running) {
-      running = true;
-      timer.start();
+  function hideShowCardForm() {
+    showCardForm = !showCardForm
+  }
+
+  function startStopWatch(card: CardType) {
+    if (!card.running) {
+      card.running = true;
+      card.timer.start();
     } else {
-      running = false; 
-      timer.stop();
+      card.running = false; 
+      card.timer.stop();
     };
   };
 
+  function resetTimer(card: CardType) {
+    card.running = false
+    card.timer.reset()
+  }
+
 </script>
 
-<div class="card-grid">
-  {#each cards as card (card.id)}
-  <div class={["card", { light: appTheme.light }]}>
-    <div class="card-header">
-      <div class="card-name">{card.name}</div>
-      <div class="top-buttons">
-        {#if !card.compact}
-          <TopRightButton onClick={() => {}} icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
+<div class={["card", { light: appTheme.light }]}>
+  <div class="card-header">
+    <div class="card-name">{card.name}</div>
+    <div class="top-buttons">
+      <TopRightButton onClick={ hideShowCardForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
+      <div draggable="true" role="form" ondragstart={(e) => { e.preventDefault(); e.stopPropagation();}}>
+        {#if showCardForm }
+        <AddForm closeForm={ hideShowCardForm } formName="Save" cardName={card.name} cardDial={card.initialTime} change={true} cardInd={ind}/>
         {/if}
-        <TopRightButton onClick={() => {}} icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" --end=16px/>
-      </div>
+      </div>  
+      <TopRightButton onClick={() => {}} icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" --end=16px/>
+      <TopRightButton onClick={() => { deleteCard(card.id) }} icon="icons/topbar/cross.svg" alt="delete" --end=16px/>
     </div>
-    <div class="circle-progress-bar">
-      <CircleProgress progress={value} />
-    </div>
-    <div class="bottom-buttons">
-      <CircleButton
-        onClick={ () => startStopWatch(card.running, card.timer) }
-        icon={card.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
-        alt={card.running ? "pause" : "start"} />
-      <CircleButton onClick={ card.timer.stop } icon="icons/buttons/reset.svg" alt="reset" />
-      </div>
-    </div>
-    {/each}
   </div>
-<input type="range" min="0" max="1" step="0.01" bind:value />
+  <div class="circle-progress-bar">
+    <CircleProgress progress={card.timeLeft} cardTime={card.time}/>
+  </div>
+  <div class="bottom-buttons">
+    <CircleButton
+      onClick={ () => startStopWatch(card) }
+      icon={card.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
+      alt={card.running ? "pause" : "start"} />
+    <CircleButton onClick={ () => { resetTimer(card) }} icon="icons/buttons/reset.svg" alt="reset" />
+  </div>
+</div>
 
 <style>
-
-.card-grid {
-  display: flex;
-  height: fit-content;
-  width: fit-content;
-  flex-wrap: wrap;
-  gap: 1.5vh 1.5vw;
-  padding-left: clamp(100px, 25vw, 140px);
-  padding-top: 40px;
-  padding-bottom: 40px;
-  padding-right: 25px;
-  box-sizing: border-box;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
 
 .card {
   display: flex;
@@ -122,7 +120,7 @@
   flex-wrap: wrap;
   flex-shrink: 1;
   max-height: 70px;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 </style>

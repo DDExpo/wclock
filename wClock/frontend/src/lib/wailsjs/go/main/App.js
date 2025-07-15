@@ -6,6 +6,10 @@ export function CheckWindowSize() {
   return window['go']['main']['App']['CheckWindowSize']();
 }
 
+export function CloseWindow() {
+  return window['go']['main']['App']['CloseWindow']();
+}
+
 export function GetWindowsPcColors() {
   return window['go']['main']['App']['GetWindowsPcColors']();
 }

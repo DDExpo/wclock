@@ -113,7 +113,7 @@
 }
 .stopwatch-content.compact {
   margin-left: 0px;
-  margin-top: 40px;
+  margin-top: 80px;
 
 }
 .stopwatch-content.compact .stopwatch-dial {
@@ -168,7 +168,7 @@
 }
 
 .stop-markers.compact {
-  margin-top: 40px;
+  margin-top: 30vh;
 }
 
 .stop-markers.light {

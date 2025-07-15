@@ -51,6 +51,10 @@ func (a *App) MakeMiniWindowSize(width int, height int, compact bool) {
 	}
 }
 
+func (a *App) CloseWindow() {
+	runtime_2.Quit(a.ctx)
+}
+
 func (a *App) CheckWindowSize() bool {
 	width, _ := runtime_2.WindowGetSize(a.ctx)
 	return width > 681

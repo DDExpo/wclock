@@ -1,98 +1,97 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
+import type { Writable } from "svelte/store"
+import type { CardType, dialTime } from "$lib/types/StoreComponentsTypes";
+import { Card } from "./ClassCard.svelte";
 
-export type Timer = {
-    start: () => void;
-    stop: () => void;
-    reset: () => void;
-  };
+export const cards = writable<CardType[]>([]);
 
-type Card = {
-  id: string;
-  compact: boolean;
-  running: boolean;
-  name: string;
-  time: number;
-  timeLeft: number;
-  timer: Timer;
-};
+export const createTimer = (t: Writable<dialTime>, initialT: dialTime) => {
 
-export const cards = $state<Card[]>([]);
-
-const createTimer = () => {
-  const { subscribe, set, update } = writable({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms1: 0, ms: 0});
-  
+  const { subscribe, set, update } = t;
   let idInterval: number;
-  
+  let ms: number = 0
+
   function start() {
     
     let prev = performance.now();
+    ms = getMs()
+
     idInterval = setInterval(() => {
       const now = performance.now();
       const delta = now - prev;
-      prev = now
-      
-      update(t => {
-        let ms = Math.floor(t.ms + delta);
-        let ms1 = ms % 100 
-        let s = t.s;
-        let m = t.m;
-        let h = t.h;
-        let s1 = t.s1;
-        let m1 = t.m1;
-        let h1 = t.h1
-        
-        if (ms >= 1000) {
-          s += 1;
-          ms %= 1000;
-        };
-        if (s >= 10) {
-          s1 += 1
-          s %= 10
-        };
-        if (s1 >= 6) {
-          m += 1;
-          s1 %= 6;
-        };
-        if (m >= 10) {
-          m1 += 1
-          m %= 10
-        }
-        if (m1 >= 6) {
-          h += 1;
-          m1 %= 6;
-        };
-        if (h >= 10) {
-          h1 += 1
-          h %= 10
-        }
-        return {h, h1, m, m1, s, s1, ms1, ms}});
-      }, 100);
-    };
-    
-    function stop() {
-      clearInterval(idInterval);
-    }
-    
-    function reset() {
-      stop();
-      set({ h: 0, h1: 0, m: 0, m1: 0, s: 0, s1: 0, ms1: 0, ms: 0 });
-    }
-    
-    return {
-      start,
-      stop,
-      reset,
-    };
-  };
+      prev = now;
 
-export function createCard() {
-  cards.push({
-    id: crypto.randomUUID(),
-    compact: false,
-    running: false,
-    name: "",
-    time: 0,
-    timeLeft: 0,
-    timer: createTimer(),
-  })
+      ms = Math.max(0, ms - delta);
+      const total = Math.floor(ms / 1000);
+
+      if (ms <= 0) {
+        stop();
+      }
+
+      const newS = total % 10;
+      const newS1 = Math.floor((total % 60) / 10);
+      const newM = Math.floor((total / 60) % 10);
+      const newM1 = Math.floor((total / 60) / 10) % 6;
+      const newH = Math.floor(total / 3600) % 10;
+      const newH1 = Math.floor(total / 36000);
+
+      update(() => [newH1, newH, newM1, newM, newS1, newS]);
+
+      if (ms <= 0) {
+        clearInterval(idInterval);
+      }}, 100);
+  };
+    
+  function getMs(): number {
+    const [h1, h, m1, m, s1, s] = get(t);
+    return (
+      (((h1 * 10 + h) * 60 + (m1 * 10 + m)) * 60 + (s1 * 10 + s)) * 1000
+    );
+  }
+
+  function stop() {
+    clearInterval(idInterval);
+  };
+  
+  function reset() {
+    stop();
+    set(initialT);
+  };
+  
+  return {
+    subscribe,
+    getMs,
+    start,
+    stop,
+    reset,
+  };
+};
+
+export function createCard(name: string, t: dialTime) {
+  cards.update(c => [...c, new Card(name, t)]);
+}
+
+export function updateCard(ind: number, name: string, dial: dialTime) {
+  cards.update(c => {
+    c[ind].update(name, dial)
+    return c
+  });
+};
+
+export  function deleteCard(id: string) {
+  cards.update(c => c.filter(card => card.id !== id));
+};
+
+export function validateDial(cardDial: number[]): boolean {
+
+  let sum = 0
+  for (let i = 0; i < cardDial.length; i++) {
+    const digit = cardDial[i];
+    sum += digit
+    if (digit == null || digit < 0) return false;
+    if ((i === 2 || i === 4) && digit > 5) return false;
+    if (!(i === 2 || i === 4) && digit > 9) return false;
+  }
+  if (sum == 0) return false
+  return true
 };

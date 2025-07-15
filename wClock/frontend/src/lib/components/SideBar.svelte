@@ -12,7 +12,6 @@
     if (color) {appTheme.windowsColor = color};
     if (["#eee", "#242323d6"].includes(appTheme.windowsColor)) { appTheme.windowsColor = appTheme.light ? "#eee": "#242323d6"};
     document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
-    console.log(appTheme.light, isSidebarOpen, appWindowSizeEnough);
   }
 
   async function checkWindowSizeEnough() {
@@ -40,9 +39,10 @@
   onmouseenter={ checkWindowSizeEnough } onmouseleave={() => (isSidebarOpen = false)}
   role="region">
   <ul>
+    <p style="display: block; height: 10px"></p>
     {#snippet sidebarButton(link: string, img: string, alt: string, spanText: string)}
     <a href="{link}">
-      <button class="icon-btn">
+      <button class="icon-btn" tabindex="-1">
         <span class="dot"></span>
         <img src="{img}" alt="{alt}"/>
         <span class="item-text">{spanText}</span>
@@ -82,7 +82,8 @@
   padding-top: 20px;
   overflow: hidden;
   transition: width 0.3s ease;
-  z-index: 100;
+  z-index: 1;
+  user-select: none;
 }
 .sidebar ul {
   list-style: none;
