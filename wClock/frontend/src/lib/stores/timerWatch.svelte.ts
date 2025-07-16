@@ -5,49 +5,42 @@ import { Card } from "./ClassCard.svelte";
 
 export const cards = writable<CardType[]>([]);
 
-export const createTimer = (t: Writable<dialTime>, initialT: dialTime) => {
+export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft: Writable<number>) => {
 
   const { subscribe, set, update } = t;
   let idInterval: number;
-  let ms: number = 0
-
+  let totals: number = 0
+  let step: number = 1 / getSumDial()
+  
   function start() {
-    
-    let prev = performance.now();
-    ms = getMs()
+    totals = getSumDial()
 
     idInterval = setInterval(() => {
-      const now = performance.now();
-      const delta = now - prev;
-      prev = now;
+      
+      if (totals <= 0) {
+        stop()
+        return
+      };
+      totals--
+      
+      const s = totals % 10
+      const s1 = Math.floor((totals % 60) / 10);
+      const m = Math.floor((totals / 60) % 10);
+      const m1 = Math.floor((totals / 60) / 10) % 6;
+      const h = Math.floor(totals / 3600) % 10;
+      const h1 = Math.floor(totals / 36000);
+      
+      update(() => [h1, h, m1, m, s1, s])
+      timeLeft.update((tleft => tleft += step))
+      console.log(step)
 
-      ms = Math.max(0, ms - delta);
-      const total = Math.floor(ms / 1000);
-
-      if (ms <= 0) {
-        stop();
-      }
-
-      const newS = total % 10;
-      const newS1 = Math.floor((total % 60) / 10);
-      const newM = Math.floor((total / 60) % 10);
-      const newM1 = Math.floor((total / 60) / 10) % 6;
-      const newH = Math.floor(total / 3600) % 10;
-      const newH1 = Math.floor(total / 36000);
-
-      update(() => [newH1, newH, newM1, newM, newS1, newS]);
-
-      if (ms <= 0) {
-        clearInterval(idInterval);
-      }}, 100);
+    }, 1000);
   };
-    
-  function getMs(): number {
-    const [h1, h, m1, m, s1, s] = get(t);
-    return (
-      (((h1 * 10 + h) * 60 + (m1 * 10 + m)) * 60 + (s1 * 10 + s)) * 1000
-    );
-  }
+
+  function getSumDial(): number {
+    const dial = get(t);
+    return ((dial[0] * 10 + dial[1]) * 60 + (dial[2] * 10 + dial[3])) * 60 + (dial[4] * 10 + dial[5]);
+  };
 
   function stop() {
     clearInterval(idInterval);
@@ -56,11 +49,11 @@ export const createTimer = (t: Writable<dialTime>, initialT: dialTime) => {
   function reset() {
     stop();
     set(initialT);
+    step = 1 / getSumDial();
+    timeLeft.set(0);
   };
   
   return {
-    subscribe,
-    getMs,
     start,
     stop,
     reset,
@@ -73,7 +66,7 @@ export function createCard(name: string, t: dialTime) {
 
 export function updateCard(ind: number, name: string, dial: dialTime) {
   cards.update(c => {
-    c[ind].update(name, dial)
+    c[ind].update(name, dial, true)
     return c
   });
 };

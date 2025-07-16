@@ -1,21 +1,22 @@
 <script lang="ts">
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte"
   import type { PropsCircleProgress } from "$lib/types/StoreComponentsTypes";
-  import { onDestroy } from "svelte";
 
-  let { progress=0, cardTime }: PropsCircleProgress = $props();
+  let { progress, cardTime }: PropsCircleProgress = $props();
 
   const radius = 60;
   const stroke = 12;
   const circumference = 2 * Math.PI * radius;
 
-  let offset = $derived(circumference * (1 - (progress)));
-
-  document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
+  let offset = $derived(circumference * (1 - ($progress!)));
 
 </script>
 
 <svg
+  role="progressbar"
+  aria-valuenow={$progress}
+  aria-valuemin="0"
+  aria-valuemax="100"
   width={radius * 2 + stroke}
   height={radius * 2 + stroke}
   viewBox={`0 0 ${radius * 2 + stroke} ${radius * 2 + stroke}`}

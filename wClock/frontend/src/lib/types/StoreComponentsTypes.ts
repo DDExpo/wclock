@@ -1,4 +1,4 @@
-import type { Unsubscriber, Writable } from "svelte/store"
+import type { Writable } from "svelte/store"
 
 export interface PropsForm {
   closeForm: () => void
@@ -10,7 +10,7 @@ export interface PropsForm {
 }
 
 export interface PropsCircleProgress {
-  progress?: number
+  progress?: Writable<number>
   cardTime: Writable<dialTime>;
 }
 
@@ -20,8 +20,6 @@ export interface PropsCard {
 }
 
 export type Timer = {
-  subscribe: (run: (val: dialTime) => void, invalidate?: () => void) => Unsubscriber;
-  getMs: () => number;
   start: () => void;
   stop: () => void;
   reset: () => void;
@@ -32,11 +30,12 @@ export type dialTime = [number, number, number, number, number, number]
 export type CardType = {
   id: string;
   running: boolean;
+  isChanged: boolean;
   name: string;
   time: Writable<dialTime>;
   timer: Timer;
-  timeLeft: number;
+  timeLeft: Writable<number>;
   initialTime: dialTime;
-  update: (naem: string, newDial: dialTime) => void;
+  update: (name: string, newDial: dialTime, changed: boolean) => void;
 };
 

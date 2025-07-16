@@ -15,5 +15,5 @@ html, body {
 }
 
 :root {
-    --user-pc-color: #FFFFFF;
+    --user-pc-color: v-bind('appTheme.windowsColor');
 }

@@ -14,6 +14,7 @@
 
   function hideShowCardForm() {
     showCardForm = !showCardForm
+    card.running = false
   }
 
   function startStopWatch(card: CardType) {
@@ -54,7 +55,8 @@
     <CircleButton
       onClick={ () => startStopWatch(card) }
       icon={card.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
-      alt={card.running ? "pause" : "start"} />
+      alt={card.running ? "pause" : "start"}
+      isRunning={card.running} />
     <CircleButton onClick={ () => { resetTimer(card) }} icon="icons/buttons/reset.svg" alt="reset" />
   </div>
 </div>

@@ -7,9 +7,6 @@
   import { stopWatch, markers, watchState} from "$lib/stores/stopWatch.svelte";
   import { MakeMiniWindowSize, SetWindowAlwaysOnTop } from "$lib/wailsjs/go/main/App";
 
-
-  document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
-
   function makeMiniWindow() {
     if (!watchState.compact) {
       watchState.compact = true;

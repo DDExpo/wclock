@@ -1,15 +1,16 @@
-import { writable, type Writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
 import type { dialTime, Timer } from '$lib/types/StoreComponentsTypes';
-import { createTimer } from './timerWatch.svelte';
+import { createWatch } from './timerWatch.svelte';
 
 export class Card {
   id = crypto.randomUUID();
   running = $state(false);
+  isChanged = false;
   name: string;
   time: Writable<dialTime>;
   timer: Timer;
-  timeLeft: number;
+  timeLeft: Writable<number>;
   initialTime: dialTime;
 
   update(name: string, newDial: dialTime) {
@@ -17,13 +18,15 @@ export class Card {
     this.time.set(newDial);
     this.timer.reset();
     this.initialTime = newDial;
+    this.isChanged = true;
+
   }
   
   constructor(name: string, t: dialTime) {
     this.name = name;
     this.time = writable(t);
     this.initialTime = t;
-    this.timer = createTimer(this.time, this.initialTime);
-    this.timeLeft = 100;
+    this.timeLeft = writable(0)
+    this.timer = createWatch(this.initialTime, this.time, this.timeLeft);
   };
 };

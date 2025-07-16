@@ -11,6 +11,7 @@
 
 	let { children } = $props();
 
+  
   onMount(async() => {
     const color = await GetWindowsPcColors()
     if (color) {appTheme.windowsColor = color};
