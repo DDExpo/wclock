@@ -4,9 +4,10 @@
   import Card from "$lib/components/timer/Card.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
+    import { watchState } from "$lib/stores/utils.svelte";
 
   let showAddForm: boolean = $state(false);
-  let draggedIndex = $state(-1);
+  let draggedIndex: number = $state(-1);
 
   function hideShowForm() {
     showAddForm = !showAddForm
@@ -45,7 +46,9 @@
   {#if showAddForm}
     <AddForm closeForm={ hideShowForm } formName="Add" />
   {/if}
+  {#if !watchState.compact}
   <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
+  {/if}
 </div>
 
 

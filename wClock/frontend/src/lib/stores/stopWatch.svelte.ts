@@ -1,9 +1,8 @@
 import { writable } from "svelte/store";
 
 export const markers = writable<string[]>([]);
-export const watchState = $state({
+export const stopWatchState = $state({
   running: false,
-  compact: false,
 });
 
 const createStopwatch = () => {
@@ -20,39 +19,22 @@ const createStopwatch = () => {
       prev = now
 
       update(t => {
-        let ms = Math.floor(t.ms + delta);
-        let ms1 = ms % 100 
-        let s = t.s;
-        let m = t.m;
-        let h = t.h;
-        let s1 = t.s1;
-        let m1 = t.m1;
-        let h1 = t.h1
+        const ms = Math.floor(t.ms + delta);
 
-        if (ms >= 1000) {
-          s += 1;
-          ms %= 1000;
-        };
-        if (s >= 10) {
-          s1 += 1
-          s %= 10
-        };
-        if (s1 >= 6) {
-          m += 1;
-          s1 %= 6;
-        };
-        if (m >= 10) {
-          m1 += 1
-          m %= 10
-        }
-        if (m1 >= 6) {
-          h += 1;
-          m1 %= 6;
-        };
-        if (h >= 10) {
-          h1 += 1
-          h %= 10
-        }
+        const totalSeconds = Math.floor(ms / 1000);
+        const ms1 = ms % 100;
+
+        const s = totalSeconds % 10;
+        const s1 = Math.floor((totalSeconds % 60) / 10);
+
+        const totalMinutes = Math.floor(totalSeconds / 60);
+        const m = totalMinutes % 10;
+        const m1 = Math.floor((totalMinutes % 60) / 10);
+
+        const totalHours = Math.floor(totalMinutes / 60);
+        const h = totalHours % 10;
+        const h1 = Math.floor(totalHours / 10);
+
         return {h, h1, m, m1, s, s1, ms1, ms}});
       }, 100);
   };

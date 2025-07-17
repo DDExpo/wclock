@@ -7,27 +7,30 @@
   import TopRightButton from "../TopRightButton.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { deleteCard } from "$lib/stores/timerWatch.svelte";
-  import type { CardType } from "$lib/types/StoreComponentsTypes";
+  import { makeMiniWindow } from "$lib/stores/utils.svelte";
   
   let { card, ind }: PropsCard = $props()
   let showCardForm: boolean = $state(false)
+  let cardStateCompact: boolean = $state(false)
+
+  function makeWindowCompact() {
+    cardStateCompact = !cardStateCompact
+    makeMiniWindow(cardStateCompact)
+    console.log(cardStateCompact)
+  }
 
   function hideShowCardForm() {
     showCardForm = !showCardForm
-    card.running = false
+    resetTimer()
   }
 
-  function startStopWatch(card: CardType) {
-    if (!card.running) {
-      card.running = true;
-      card.timer.start();
-    } else {
-      card.running = false; 
-      card.timer.stop();
-    };
+  function startStopWatch() {
+    if (!card.running) {card.timer.start();
+    } else {card.timer.stop();};
+    card.running = !card.running;
   };
 
-  function resetTimer(card: CardType) {
+  function resetTimer() {
     card.running = false
     card.timer.reset()
   }
@@ -38,14 +41,16 @@
   <div class="card-header">
     <div class="card-name">{card.name}</div>
     <div class="top-buttons">
-      <TopRightButton onClick={ hideShowCardForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
-      <div draggable="true" role="form" ondragstart={(e) => { e.preventDefault(); e.stopPropagation();}}>
-        {#if showCardForm }
-        <AddForm closeForm={ hideShowCardForm } formName="Save" cardName={card.name} cardDial={card.initialTime} change={true} cardInd={ind}/>
-        {/if}
-      </div>  
-      <TopRightButton onClick={() => {}} icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" --end=16px/>
-      <TopRightButton onClick={() => { deleteCard(card.id) }} icon="icons/topbar/cross.svg" alt="delete" --end=16px/>
+      <TopRightButton onClick={ makeWindowCompact } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={cardStateCompact} --end=16px/>
+      {#if !cardStateCompact}
+        <TopRightButton onClick={ hideShowCardForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
+        <div draggable="true" role="form" ondragstart={(e) => { e.preventDefault(); e.stopPropagation();}}>
+          {#if showCardForm }
+          <AddForm closeForm={ hideShowCardForm } formName="Save" cardName={card.name} cardDial={card.initialTime} change={true} cardInd={ind}/>
+          {/if}
+        </div>  
+        <TopRightButton onClick={() => { deleteCard(card.id) }} icon="icons/topbar/cross.svg" alt="delete" --end=16px/>
+      {/if}
     </div>
   </div>
   <div class="circle-progress-bar">
@@ -53,11 +58,11 @@
   </div>
   <div class="bottom-buttons">
     <CircleButton
-      onClick={ () => startStopWatch(card) }
+      onClick={ startStopWatch }
       icon={card.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
       alt={card.running ? "pause" : "start"}
       isRunning={card.running} />
-    <CircleButton onClick={ () => { resetTimer(card) }} icon="icons/buttons/reset.svg" alt="reset" />
+    <CircleButton onClick={ resetTimer } icon="icons/buttons/reset.svg" alt="reset" />
   </div>
 </div>
 

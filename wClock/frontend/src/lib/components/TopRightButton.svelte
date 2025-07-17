@@ -16,6 +16,7 @@
   display: block;
   left: var(--left, 0px);
   justify-self: end;
+  margin-left: 1px;
   background: none;
   border: none;
   user-select: none;

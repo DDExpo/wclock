@@ -3,33 +3,21 @@
   import CircleButton from "$lib/components/CircleButton.svelte";
   import TopRightButton from "$lib/components/TopRightButton.svelte";
   
-  import { appTheme, isAlwaysOnTop } from "$lib/stores/sideBarAndTheme.svelte";
-  import { stopWatch, markers, watchState} from "$lib/stores/stopWatch.svelte";
-  import { MakeMiniWindowSize, SetWindowAlwaysOnTop } from "$lib/wailsjs/go/main/App";
+  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { stopWatch, markers, stopWatchState } from "$lib/stores/stopWatch.svelte";
+  import { makeMiniWindow } from "$lib/stores/utils.svelte";
 
-  function makeMiniWindow() {
-    if (!watchState.compact) {
-      watchState.compact = true;
-      MakeMiniWindowSize(200, 180, watchState.compact)
-      SetWindowAlwaysOnTop(true);
-      isAlwaysOnTop.onTop = true;
-      
-    } else {
-      watchState.compact = false;
-      MakeMiniWindowSize(356, 356, watchState.compact)
-      SetWindowAlwaysOnTop(false);
-      isAlwaysOnTop.onTop = false;
-    };
-  };
+  let stopWatchCompact = $state(false)
 
-  function startStopWatch() {
-    if (!watchState.running) {
-      watchState.running = true;
-      stopWatch.start();
-    } else {
-      watchState.running = false; 
-      stopWatch.stop();
-    };
+  function makeWindowCompact() {
+    stopWatchCompact = !stopWatchCompact
+    makeMiniWindow(stopWatchCompact)
+  }
+
+  function startStopWatch() { 
+    if (!stopWatchState.running) {stopWatch.start();
+    } else {stopWatch.stop();};
+    stopWatchState.running = !stopWatchState.running
   };
 
   function makeSnapshot() {
@@ -44,10 +32,10 @@
   };
 
   function resetStopWatch() {
-    if (watchState.compact) {
+    if (stopWatchCompact) {
       stopWatch.cleanDial();
     } else {
-      watchState.running = false
+      stopWatchState.running = false
       stopWatch.reset();
     };
   }
@@ -55,23 +43,23 @@
 </script>
 
 <div class="stopwatch-page">
-  <div class={["stopwatch-content", { compact: watchState.compact }]}>
+  <div class={["stopwatch-content", { compact: stopWatchCompact }]}>
     <div class={["stopwatch-dial", { light: appTheme.light }]}>
-      <TopRightButton onClick={ makeMiniWindow } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={watchState.compact} --left="26px"/>
+      <TopRightButton onClick={ makeWindowCompact } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={stopWatchCompact} --left="26px"/>
       {$stopWatch.h1}{$stopWatch.h}:{$stopWatch.m1}{$stopWatch.m}:{$stopWatch.s1}{$stopWatch.s}<span class="small-dots">:</span><span class="time-part small">{$stopWatch.ms1}</span>
       <div class="stopwatch-buttons">
         <CircleButton 
           onClick={ startStopWatch }
-          icon={watchState.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
-          alt={watchState.running ? "pause" : "start"}
-          isRunning={watchState.running} />
-          {#if !watchState.compact}
+          icon={stopWatchState.running ? "icons/buttons/pause.svg" : "icons/buttons/play.svg"}
+          alt={stopWatchState.running ? "pause" : "start"}
+          isRunning={stopWatchState.running} />
+          {#if !stopWatchCompact}
             <CircleButton onClick={ makeSnapshot } icon="icons/buttons/map-pin.svg" alt="snapshot"/>
           {/if}
         <CircleButton onClick={ resetStopWatch } icon="icons/buttons/reset.svg" alt="reset"/>
       </div>
     </div>
-    <div class={["stop-markers", { light: appTheme.light, compact: watchState.compact }]}>
+    <div class={["stop-markers", { light: appTheme.light, compact: stopWatchCompact }]}>
       <div class="titles">
         <span>Laps</span>
         <span>Time</span>

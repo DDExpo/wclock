@@ -32,7 +32,6 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
       
       update(() => [h1, h, m1, m, s1, s])
       timeLeft.update((tleft => tleft += step))
-      console.log(step)
 
     }, 1000);
   };

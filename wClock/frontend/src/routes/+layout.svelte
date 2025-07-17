@@ -6,7 +6,7 @@
   import SideBar from "$lib/components/SideBar.svelte";
   import TopBar from "$lib/components/TopBar.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { watchState } from "$lib/stores/stopWatch.svelte";
+  import { watchState } from "$lib/stores/utils.svelte";
   import { GetWindowsPcColors } from "$lib/wailsjs/go/main/App";
 
 	let { children } = $props();
