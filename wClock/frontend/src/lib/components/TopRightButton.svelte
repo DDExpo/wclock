@@ -33,9 +33,7 @@
 .btn-top-right.light img {
   filter: invert(10%) opacity(30%);
 }
-.btn-top-right.compact {
-  left: 10px;
-}
+
 .btn-top-right.compact img {
   transform: rotate(180deg);
 }

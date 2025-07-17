@@ -17,8 +17,6 @@
   aria-valuenow={$progress}
   aria-valuemin="0"
   aria-valuemax="100"
-  width={radius * 2 + stroke}
-  height={radius * 2 + stroke}
   viewBox={`0 0 ${radius * 2 + stroke} ${radius * 2 + stroke}`}
   class="circle-progress"
 >
@@ -56,8 +54,8 @@
 .circle-progress {
   position: absolute;
   z-index: 2;
-  width: clamp(180px, 20vw, 200px);
-  height: clamp(140px, 20vw, 200px);
+  width: 100%;
+  height: 100%;
 }
 
 .bg {

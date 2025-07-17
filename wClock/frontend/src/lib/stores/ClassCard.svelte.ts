@@ -7,7 +7,7 @@ export class Card {
   id = crypto.randomUUID();
   running = $state(false);
   isChanged = false;
-  name: string;
+  name = $state('');
   time: Writable<dialTime>;
   timer: Timer;
   timeLeft: Writable<number>;

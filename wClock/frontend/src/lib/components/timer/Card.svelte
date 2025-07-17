@@ -37,7 +37,7 @@
 
 </script>
 
-<div class={["card", { light: appTheme.light }]}>
+<div class={["card", { light: appTheme.light, "compact": cardStateCompact}]}>
   <div class="card-header">
     <div class="card-name">{card.name}</div>
     <div class="top-buttons">
@@ -84,6 +84,51 @@
   position: relative;
 }
 
+.card.compact {
+  position: absolute;
+  background: #373737;
+  width: 200px;
+  height: 180px;
+  z-index: 10;
+  top: 0px;
+  left: 0px;
+  border-radius: 0;
+  padding: 10px;
+}
+
+.card.compact.light {
+  background: #FFA44A;
+  border-radius: 0;
+}
+
+.card.compact .card-header {
+  margin-top: 25px;
+}
+
+.card.compact .card-name {
+  margin-left: 5px;
+  z-index: 11;
+  font-size: 12px;
+}
+
+.card.compact .top-buttons {
+  z-index: 10;
+  margin-right: -5px;
+}
+
+.card.compact .circle-progress-bar {
+  top: -30px;
+  height: 135px;
+}
+
+.card.compact .bottom-buttons {
+  position: absolute;
+  z-index: 11;
+  top: 130px;
+  left: 6px;
+  gap: 127px;
+}
+
 .card.light {
   background: #FFA44A;
   border-radius: 1rem;
@@ -116,7 +161,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  height: clamp(120px, 25vw, 200px);
+  height: clamp(140px, 25vw, 220px);
   flex-shrink: 0;
 }
 

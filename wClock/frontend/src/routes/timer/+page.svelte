@@ -33,7 +33,7 @@
 
 </script>
 
-<div class={["timer-page", { light: appTheme.light }]}>
+<div class={["timer-page", { light: appTheme.light, "compact": watchState.compact}]}>
   <div class="card-grid">
     {#each $cards as card, index}
       <div class="draggable" draggable="true" ondragstart={(e) => handleDragStart(e, index)}
@@ -61,6 +61,10 @@
   overflow: hidden;
   overflow-y: auto;
   scrollbar-width: none;
+}
+
+.timer-page.compact {
+  overflow: hidden;
 }
 
 .timer-page.light .add-btn img {
