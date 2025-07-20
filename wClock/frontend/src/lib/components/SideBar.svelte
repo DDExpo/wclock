@@ -1,6 +1,6 @@
 <script lang="ts">
   import { isAlwaysOnTop, appTheme } from '$lib/stores/sideBarAndTheme.svelte'
-  import { CheckWindowSize, GetWindowsPcColors, SetWindowAlwaysOnTop } from '$lib/wailsjs/go/main/App';
+  import { CheckWindowSize, SetWindowAlwaysOnTop, GiveNewSettings } from '$lib/wailsjs/go/main/App';
 
 
   let isSidebarOpen: boolean = $state(false);
@@ -8,9 +8,8 @@
 
   async function toggleTheme() {
     appTheme.light = !appTheme.light;
-    const color = await GetWindowsPcColors()
-    if (color) {appTheme.windowsColor = color};
     if (["#eee", "#242323d6"].includes(appTheme.windowsColor)) { appTheme.windowsColor = appTheme.light ? "#eee": "#242323d6"};
+    GiveNewSettings(appTheme.light);
     document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
   }
 
@@ -29,8 +28,6 @@
       isAlwaysOnTop.onTop = false;
     };
   };
-
-  function pass(){}
 
 </script>
 
@@ -57,8 +54,6 @@
   </ul>
 
   <div class={["util-buttons",{light: appTheme.light}]} >
-    <a href="/settings"><button class="icon-btn-util"><img src="icons/sidebar/settings.svg" alt="Settings menu"/></button></a>
-    <button class="icon-btn-util" onclick={ pass }><img src="/icons/sidebar/dot.svg" alt="dot"></button>
     <button class="icon-btn-util" onclick={ toggleTheme }><img src="/icons/sidebar/moon.svg" alt="Theme"></button>
     <button class="icon-btn-util" onclick={ setAlwaysOnTop }>
       {#if !isAlwaysOnTop.onTop}
@@ -168,7 +163,7 @@
   position: absolute;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 4px;
   padding: 1px;
   left: 16px;

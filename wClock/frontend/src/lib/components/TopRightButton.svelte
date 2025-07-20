@@ -42,4 +42,8 @@
   transform: rotate(180deg);
 }
 
+.btn-top-right.light.compact img:hover {
+  transform: scale(1.5);
+}
+
 </style>

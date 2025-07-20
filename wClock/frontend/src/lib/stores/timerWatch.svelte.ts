@@ -1,7 +1,10 @@
 import { get, writable } from "svelte/store";
+
 import type { Writable } from "svelte/store"
 import type { CardType, dialTime } from "$lib/types/StoreComponentsTypes";
+
 import { Card } from "./ClassCard.svelte";
+import { DeleteCard } from "$lib/wailsjs/go/main/App";
 
 export const cards = writable<CardType[]>([]);
 
@@ -59,19 +62,20 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
   };
 };
 
-export function createCard(name: string, t: dialTime) {
-  cards.update(c => [...c, new Card(name, t)]);
+export function createCard( name: string, initialT: dialTime, t: dialTime, id: string=crypto.randomUUID(), timeLeft: number=0) {
+  cards.update(c => [...c, new Card(id, name, initialT, t, timeLeft)]);
 }
 
-export function updateCard(ind: number, name: string, dial: dialTime) {
+export function updateCard(ind: number, name: string, initialT: dialTime, dial: dialTime) {
   cards.update(c => {
-    c[ind].update(name, dial, true)
+    c[ind].update(name, initialT, dial)
     return c
   });
 };
 
 export  function deleteCard(id: string) {
   cards.update(c => c.filter(card => card.id !== id));
+  DeleteCard(id)
 };
 
 export function validateDial(cardDial: number[]): boolean {

@@ -10,14 +10,38 @@ export function CloseWindow() {
   return window['go']['main']['App']['CloseWindow']();
 }
 
+export function DeleteCard(arg1) {
+  return window['go']['main']['App']['DeleteCard'](arg1);
+}
+
+export function GetCards() {
+  return window['go']['main']['App']['GetCards']();
+}
+
+export function GetSettings() {
+  return window['go']['main']['App']['GetSettings']();
+}
+
 export function GetWindowsPcColors() {
   return window['go']['main']['App']['GetWindowsPcColors']();
+}
+
+export function GiveNewSettings(arg1) {
+  return window['go']['main']['App']['GiveNewSettings'](arg1);
 }
 
 export function MakeMiniWindowSize(arg1, arg2, arg3) {
   return window['go']['main']['App']['MakeMiniWindowSize'](arg1, arg2, arg3);
 }
 
+export function SaveCard(arg1) {
+  return window['go']['main']['App']['SaveCard'](arg1);
+}
+
 export function SetWindowAlwaysOnTop(arg1) {
   return window['go']['main']['App']['SetWindowAlwaysOnTop'](arg1);
+}
+
+export function Shutdown(arg1) {
+  return window['go']['main']['App']['Shutdown'](arg1);
 }

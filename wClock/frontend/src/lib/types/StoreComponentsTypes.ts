@@ -30,12 +30,11 @@ export type dialTime = [number, number, number, number, number, number]
 export type CardType = {
   id: string;
   running: boolean;
-  isChanged: boolean;
   name: string;
   time: Writable<dialTime>;
   timer: Timer;
   timeLeft: Writable<number>;
   initialTime: dialTime;
-  update: (name: string, newDial: dialTime, changed: boolean) => void;
+  update: (name: string, initialT: dialTime, newDial: dialTime) => void;
 };
 

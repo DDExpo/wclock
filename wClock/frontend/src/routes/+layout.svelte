@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   
   import '../app.css';
   
@@ -7,15 +7,27 @@
   import TopBar from "$lib/components/TopBar.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { watchState } from "$lib/stores/utils.svelte";
-  import { GetWindowsPcColors } from "$lib/wailsjs/go/main/App";
+  import { GetWindowsPcColors, GetSettings, GetCards } from "$lib/wailsjs/go/main/App";
+    import { cards, createCard } from "$lib/stores/timerWatch.svelte";
+    import type { dialTime } from "$lib/types/StoreComponentsTypes";
 
 	let { children } = $props();
 
   
   onMount(async() => {
+    const savedT = await GetSettings()
+    appTheme.light = savedT
     const color = await GetWindowsPcColors()
     if (color) {appTheme.windowsColor = color};
-    document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
+    document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor)
+    
+    const cardsGo = await GetCards()
+
+    for (const card of cardsGo) {
+      const initialDial  = $state(card.InitialDial) as dialTime
+      const dial = card.Dial as dialTime
+      createCard(card.Name, initialDial, dial, card.ID, card.TimeLeft)
+    }
   })
 
 </script>

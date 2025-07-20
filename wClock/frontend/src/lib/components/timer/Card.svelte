@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Timer, PropsCard } from "$lib/types/StoreComponentsTypes";
+  import type { PropsCard } from "$lib/types/StoreComponentsTypes";
 
   import AddForm from "./AddForm.svelte";
   import CircleButton from "../CircleButton.svelte";
@@ -16,7 +16,6 @@
   function makeWindowCompact() {
     cardStateCompact = !cardStateCompact
     makeMiniWindow(cardStateCompact)
-    console.log(cardStateCompact)
   }
 
   function hideShowCardForm() {
@@ -77,7 +76,7 @@
   box-sizing: border-box;
   padding: 1rem;
   width: clamp(180px, 30vw, 260px);
-  height: clamp(240px, 30vh, 60vh, 360px);
+  height: clamp(250px, 45vw, 380px);
   font-family: dark-theme-font;
   gap: 1rem;
   border-radius: 3px;
@@ -97,7 +96,7 @@
 }
 
 .card.compact.light {
-  background: #FFA44A;
+  background: #ecc3c3;
   border-radius: 0;
 }
 
@@ -109,6 +108,10 @@
   margin-left: 5px;
   z-index: 11;
   font-size: 12px;
+  max-width: 55px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card.compact .top-buttons {
@@ -118,19 +121,19 @@
 
 .card.compact .circle-progress-bar {
   top: -30px;
-  height: 135px;
+  height: 130px;
 }
 
 .card.compact .bottom-buttons {
   position: absolute;
   z-index: 11;
-  top: 130px;
+  top: 150px;
   left: 6px;
-  gap: 127px;
+  gap: 130px;
 }
 
 .card.light {
-  background: #FFA44A;
+  background: #DAAFAF;
   border-radius: 1rem;
   box-shadow: -4px 8px 8px rgba(97, 97, 97, 0.2);
   font-family: serif;
@@ -149,6 +152,9 @@
   font-weight: bold;
   color: #ffffff;
   word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .top-buttons {
@@ -166,13 +172,11 @@
 }
 
 .bottom-buttons {
+  height: 100%;
   display: flex;
   justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  flex-shrink: 1;
-  max-height: 70px;
-  margin-top: 0.5rem;
+  gap: 2.5vw;
+  margin-top: -10px;
 }
 
 </style>

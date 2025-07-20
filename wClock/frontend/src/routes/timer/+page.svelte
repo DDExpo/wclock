@@ -1,10 +1,10 @@
 <script lang="ts">
   import AddForm from "$lib/components/timer/AddForm.svelte";
-
   import Card from "$lib/components/timer/Card.svelte";
+
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
-    import { watchState } from "$lib/stores/utils.svelte";
+  import { watchState } from "$lib/stores/utils.svelte";
 
   let showAddForm: boolean = $state(false);
   let draggedIndex: number = $state(-1);
@@ -50,7 +50,6 @@
   <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
   {/if}
 </div>
-
 
 <style>
 

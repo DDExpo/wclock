@@ -1,9 +1,14 @@
 <script>
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { CloseWindow } from "$lib/wailsjs/go/main/App";
+
+  import { getCards, watchState } from "$lib/stores/utils.svelte";
+  import { CloseWindow, SaveCard } from "$lib/wailsjs/go/main/App";
   import { WindowMinimise, WindowToggleMaximise, } from "$lib/wailsjs/runtime/runtime";
 
-  const close = () => CloseWindow();
+  function close() {
+    SaveCard(getCards())
+    CloseWindow()
+  };
   const minimize = () => WindowMinimise();
   const toggleMax = () => WindowToggleMaximise();
 </script>
@@ -12,7 +17,9 @@
   <div class="title">WClock</div>
   <div class="controls">
     <button onclick={ minimize }><img src="icons/topbar/minimize.svg" alt="minimize"/></button>
-    <button onclick={ toggleMax }><img src="icons/topbar/maximize.svg" alt="maximize"/></button>
+    {#if !watchState.compact}
+      <button onclick={ toggleMax }><img src="icons/topbar/maximize.svg" alt="maximize"/></button>
+    {/if}
     <button onclick={ close }><img src="icons/topbar/cross.svg" alt="close"/></button>
   </div>
 </header>

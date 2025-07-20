@@ -4,29 +4,27 @@ import type { dialTime, Timer } from '$lib/types/StoreComponentsTypes';
 import { createWatch } from './timerWatch.svelte';
 
 export class Card {
-  id = crypto.randomUUID();
+  id: string;
   running = $state(false);
-  isChanged = false;
   name = $state('');
   time: Writable<dialTime>;
   timer: Timer;
   timeLeft: Writable<number>;
   initialTime: dialTime;
 
-  update(name: string, newDial: dialTime) {
+  update(name: string, initialT: dialTime, newDial: dialTime) {
     this.name = name;
     this.time.set(newDial);
+    this.initialTime = initialT;
     this.timer.reset();
-    this.initialTime = newDial;
-    this.isChanged = true;
-
   }
   
-  constructor(name: string, t: dialTime) {
+  constructor(id: string, name: string, initialT: dialTime, t: dialTime, timeleft: number) {
+    this.id = id
     this.name = name;
+    this.initialTime = initialT;
     this.time = writable(t);
-    this.initialTime = t;
-    this.timeLeft = writable(0)
+    this.timeLeft = writable(timeleft)
     this.timer = createWatch(this.initialTime, this.time, this.timeLeft);
   };
 };

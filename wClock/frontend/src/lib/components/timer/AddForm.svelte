@@ -5,8 +5,9 @@
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { createCard, updateCard, validateDial } from "$lib/stores/timerWatch.svelte";
+
   
-  let { closeForm, formName, cardName="", cardDial=[0,0,0,0,0,0], cardInd=-1, change=false }: PropsForm = $props()
+  let { closeForm, formName, cardName="", cardDial=[0,0,0,0,0,0], cardInd=-1, change }: PropsForm = $props()
                                                                       
   let modal: HTMLElement;
   let timerName: string = $state(cardName)
@@ -66,9 +67,10 @@
     isDialValid = valid
     if (timerName && valid) {
       if (change) {
-        updateCard(cardInd, timerName, timeDigits)
+
+        updateCard(cardInd, timerName, timeDigits, timeDigits)
       } else {
-        createCard(String(timerName), timeDigits)
+        createCard(String(timerName),timeDigits, timeDigits)
       }
       closeForm()
     } else {
