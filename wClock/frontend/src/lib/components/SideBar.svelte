@@ -95,7 +95,7 @@
 }
 .sidebar span.item-text{
   opacity: 0%;
-  transition: opacity 0.3s ease 0.3s;
+  transition: opacity 0.3s ease 0.1s;
 }
 .sidebar.open span.item-text{
   opacity: 100%;
@@ -134,6 +134,7 @@
   background: transparent;
   color: #eee;
   cursor: pointer;
+  transition: transform 0.1s ease;
 }
 .icon-btn .dot {
   position: absolute;
@@ -153,6 +154,11 @@
 .icon-btn:hover .dot {
   opacity: 1;
   transform: translateY(-50%) scale(1);
+}
+.icon-btn:active {
+  transform: scale(0.92);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
 }
 .icon-btn img{
   width: 23px;

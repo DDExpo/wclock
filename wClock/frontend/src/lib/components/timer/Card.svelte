@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PropsCard } from "$lib/types/StoreComponentsTypes";
 
-  import AddForm from "./AddForm.svelte";
+  import AddForm from "../AddForm.svelte";
   import CircleButton from "../CircleButton.svelte";
   import CircleProgress from './CircleProgress.svelte';
   import TopRightButton from "../TopRightButton.svelte";
@@ -9,7 +9,7 @@
   import { deleteCard } from "$lib/stores/timerWatch.svelte";
   import { makeMiniWindow } from "$lib/stores/utils.svelte";
   
-  let { card, ind }: PropsCard = $props()
+  let { card, cardInd }: PropsCard = $props()
   let showCardForm: boolean = $state(false)
   let cardStateCompact: boolean = $state(false)
 
@@ -45,10 +45,10 @@
         <TopRightButton onClick={ hideShowCardForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
         <div draggable="true" role="form" ondragstart={(e) => { e.preventDefault(); e.stopPropagation();}}>
           {#if showCardForm }
-          <AddForm closeForm={ hideShowCardForm } formName="Save" cardName={card.name} cardDial={card.initialTime} change={true} cardInd={ind}/>
+          <AddForm closeForm={ hideShowCardForm } formName="Save Timer" Text={card.name} Dial={card.initialTime} change={true} ind={cardInd}/>
           {/if}
         </div>  
-        <TopRightButton onClick={() => { deleteCard(card.id) }} icon="icons/topbar/cross.svg" alt="delete" --end=16px/>
+        <TopRightButton onClick={() => { deleteCard(card.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=16px/>
       {/if}
     </div>
   </div>

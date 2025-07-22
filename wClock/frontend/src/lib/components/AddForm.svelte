@@ -1,20 +1,21 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   
-  import type { PropsForm } from "$lib/types/StoreComponentsTypes";
+  import type { dialTime, PropsForm } from "$lib/types/StoreComponentsTypes";
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { createCard, updateCard, validateDial } from "$lib/stores/timerWatch.svelte";
+    import { createAlarm, updateAlarm } from "$lib/stores/alarms.svelte";
 
   
-  let { closeForm, formName, cardName="", cardDial=[0,0,0,0,0,0], cardInd=-1, change }: PropsForm = $props()
+  let { closeForm, formName, Text="", Dial=[0,0,0,0,0,0], ind=-1, change, digitsLen=6, alarm=false }: PropsForm = $props()
                                                                       
   let modal: HTMLElement;
-  let timerName: string = $state(cardName)
+  let name: string = $state(Text)
   let isTimerInvalid: boolean = $state(false);
   let isDialValid: boolean = $state(false)
 
-  let timeDigits: [number, number, number, number, number, number] = $state(cardDial);
+  let digits: dialTime = $state(Dial);
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Tab') {
@@ -48,29 +49,44 @@
   });
 
 
-  function increament(val: number, maxNum: number): number {
-    if (val < maxNum) {
+  function increament(digit: number, maxNum: number): number {
+    if (digit < maxNum) {
       return  1
     }
     return -maxNum
   };
   
-  function deincreament(val: number): number {
+  function deincreament(val: number, maxNum: number): number {
     if (val > 0) {
       return  1
     }
-    return 0
+    return -maxNum
   };
 
   function submit() {
-    let valid = validateDial(timeDigits)
+    let valid = validateDial(digits)
     isDialValid = valid
-    if (timerName && valid) {
-      if (change) {
+    if (name && valid) {
+      if (alarm) {
+        let num = parseInt(digits.slice(0, 4).join(''))
 
-        updateCard(cardInd, timerName, timeDigits, timeDigits)
+        if (num > 2359) {
+          digits[0] = 0
+          digits[1] = 0
+          digits[2] = 0
+          digits[3] = 0
+        }
+        if (change) {
+          updateAlarm(ind, name, [digits[0], digits[1], digits[2], digits[3]])
+        } else {
+          createAlarm(name, [digits[0], digits[1], digits[2], digits[3]])
+        }
       } else {
-        createCard(String(timerName),timeDigits, timeDigits)
+        if (change) {
+          updateCard(ind, name, digits, digits)
+        } else {
+          createCard(String(name),digits, digits)
+        }
       }
       closeForm()
     } else {
@@ -82,28 +98,28 @@
 
 <div class="add-form" bind:this={modal} draggable="false">
   <div class={["modal", { "light": appTheme.light }]}>
-    <h2>{formName} Timer</h2>
-    <input class={["input-name", { invalid: isTimerInvalid }]} placeholder="Name" bind:value={timerName} />
+    <h2>{formName}</h2>
+    <input class={["input-name", { invalid: isTimerInvalid }]} placeholder="Text" bind:value={name} />
     <div class={["dial", { "light": appTheme.light, "invalid": isTimerInvalid  && !isDialValid }]}>
-      <div class="two-digit">
-        {#each timeDigits as digit, i (i)}
-        <div class="digit-arrows">
-          <button class="arrow" onclick={() => timeDigits[i] += increament(digit, (i === 2 || i === 4) ? 5 : 9)} tabindex=-1>
-            <img src="icons/formsButtons/caret-up.svg" alt="Up" />
-          </button>
-          <input class="input-num" type="number" bind:value={timeDigits[i]} min="0" max={(i === 2 || i === 4) ? 5 : 9} placeholder="0"/>
-          <button class="arrow" onclick={() => timeDigits[i] -= deincreament(digit)} tabindex=-1>
-            <img src="icons/formsButtons/caret-down.svg" alt="Down" />
+      <div class="digit">
+        {#each Array.from({ length: digitsLen }) as _, i (i)}
+          <div class="digit-arrows">
+            <button class="arrow" onclick={() => digits[i] += increament(digits[i], (i === 2 || i === 4) ? 5 : 9)} tabindex=-1>
+              <img src="icons/formsButtons/caret-up.svg" alt="Up" />
+            </button>
+            <input class="input-num" type="number" bind:value={digits[i]} min="0" max={(i === 2 || i === 4) ? 5 : 9} placeholder="0"/>
+            <button class="arrow" onclick={() => digits[i] -= deincreament(digits[i], (i === 2 || i === 4) ? 5 : 9)} tabindex=-1>
+              <img src="icons/formsButtons/caret-down.svg" alt="Down" />
             </button>
           </div>
-          {#if i % 2 === 1 && i < timeDigits.length-1}
-          <span class="colon">:</span>
+          {#if i % 2 === 1 && i < digitsLen-1}
+            <span class="colon">:</span>
           {/if}
-          {/each}
+        {/each}
         </div>
       </div>
       <div class="action-buttons"> 
-        <button class="btn-bottom" onclick={ submit }>{formName}</button>
+        <button class="btn-bottom" onclick={ submit }>{ !change ? "add": "save"}</button>
         <button class="btn-bottom" onclick={ closeForm }>Cancel</button>
       </div>
     </div>
@@ -122,7 +138,7 @@
     justify-content: center;
     align-items: center;
     padding-left: 30px;
-    z-index: 3;
+    z-index: 15;
   }
   
   .modal {
@@ -200,7 +216,7 @@
     filter: invert(10%) opacity(85%);
   }
 
-  .dial.light .two-digit {
+  .dial.light .digit {
     width: clamp(50px, 10vw, 140px);
   }
 
@@ -212,7 +228,7 @@
     background: rgba(255, 0, 0, 0.237);
   }
 
-  .two-digit {
+  .digit {
     display: flex;
     flex-direction: row;
     justify-content: center;

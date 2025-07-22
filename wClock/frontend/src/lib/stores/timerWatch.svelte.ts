@@ -3,25 +3,32 @@ import { get, writable } from "svelte/store";
 import type { Writable } from "svelte/store"
 import type { CardType, dialTime } from "$lib/types/StoreComponentsTypes";
 
-import { Card } from "./ClassCard.svelte";
-import { DeleteCard } from "$lib/wailsjs/go/main/App";
+import { Card } from "$lib/stores/class/ClassCard.svelte";
+import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
 
 export const cards = writable<CardType[]>([]);
 
-export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft: Writable<number>) => {
+export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft: Writable<number>, timerName: string) => {
 
   const { subscribe, set, update } = t;
   let idInterval: number;
   let totals: number = 0
-  let step: number = 1 / getSumDial()
+  let step: number = 1 / (((initialT[0] * 10 + initialT[1]) * 60 + (initialT[2] * 10 + initialT[3])) * 60 + (initialT[4] * 10 + initialT[5]));
+  let name: string = timerName
   
   function start() {
-    totals = getSumDial()
+    const dial = get(t)
+    totals = (((dial[0] * 10 + dial[1]) * 60 + (dial[2] * 10 + dial[3])) * 60 + (dial[4] * 10 + dial[5]));
 
     idInterval = setInterval(() => {
       
+      
       if (totals <= 0) {
         stop()
+        TimerFinished(name)
+        setTimeout(() => {
+          soundNotify();
+        }, 150); 
         return
       };
       totals--
@@ -39,10 +46,10 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
     }, 1000);
   };
 
-  function getSumDial(): number {
-    const dial = get(t);
-    return ((dial[0] * 10 + dial[1]) * 60 + (dial[2] * 10 + dial[3])) * 60 + (dial[4] * 10 + dial[5]);
-  };
+  function soundNotify() {
+    const audio = new Audio('/sounds/so-proud-notification.mp3');
+    audio.play().catch((e) => console.error("Audio playback failed:", e));
+  }
 
   function stop() {
     clearInterval(idInterval);
@@ -51,7 +58,7 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
   function reset() {
     stop();
     set(initialT);
-    step = 1 / getSumDial();
+    step = 1 / (((initialT[0] * 10 + initialT[1]) * 60 + (initialT[2] * 10 + initialT[3])) * 60 + (initialT[4] * 10 + initialT[5]));
     timeLeft.set(0);
   };
   
@@ -69,13 +76,12 @@ export function createCard( name: string, initialT: dialTime, t: dialTime, id: s
 export function updateCard(ind: number, name: string, initialT: dialTime, dial: dialTime) {
   cards.update(c => {
     c[ind].update(name, initialT, dial)
-    return c
-  });
+    return c});
 };
 
 export  function deleteCard(id: string) {
   cards.update(c => c.filter(card => card.id !== id));
-  DeleteCard(id)
+  DbDelete(id, "cards")
 };
 
 export function validateDial(cardDial: number[]): boolean {

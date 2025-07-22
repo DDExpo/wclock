@@ -1,12 +1,13 @@
 <script>
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { getAlarms, getCards, watchState } from "$lib/stores/utils.svelte";
 
-  import { getCards, watchState } from "$lib/stores/utils.svelte";
-  import { CloseWindow, SaveCard } from "$lib/wailsjs/go/main/App";
+  import { CloseWindow, SaveAlarm, SaveCard } from "$lib/wailsjs/go/main/App";
   import { WindowMinimise, WindowToggleMaximise, } from "$lib/wailsjs/runtime/runtime";
 
   function close() {
     SaveCard(getCards())
+    SaveAlarm(getAlarms())
     CloseWindow()
   };
   const minimize = () => WindowMinimise();

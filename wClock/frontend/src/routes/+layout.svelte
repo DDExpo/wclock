@@ -1,19 +1,24 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
-  
   import '../app.css';
+  
+  import { onMount } from "svelte";
+  
+  import type { dialTime, weekDaysBool } from "$lib/types/StoreComponentsTypes";
   
   import SideBar from "$lib/components/SideBar.svelte";
   import TopBar from "$lib/components/TopBar.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { watchState } from "$lib/stores/utils.svelte";
-  import { GetWindowsPcColors, GetSettings, GetCards } from "$lib/wailsjs/go/main/App";
-    import { cards, createCard } from "$lib/stores/timerWatch.svelte";
-    import type { dialTime } from "$lib/types/StoreComponentsTypes";
+  import { debounce, getAlarms, getCards, watchState } from "$lib/stores/utils.svelte";
+  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm } from "$lib/wailsjs/go/main/App";
+  import { cards } from "$lib/stores/timerWatch.svelte";
+  import { alarms } from "$lib/stores/alarms.svelte";
+  import { Card } from "$lib/stores/class/ClassCard.svelte";
+  import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
 
-	let { children } = $props();
+	let { children } = $props();    
+  const debounceCards = debounce(() => SaveCard(getCards()))
+  const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))  
 
-  
   onMount(async() => {
     const savedT = await GetSettings()
     appTheme.light = savedT
@@ -21,15 +26,22 @@
     if (color) {appTheme.windowsColor = color};
     document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor)
     
-    const cardsGo = await GetCards()
+    const cardsGo = await GetCards();
+    cards.set(cardsGo.map(card =>
+    new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft)));
+    
+    const alarmsGo = await GetAlarms();
+    alarms.set(alarmsGo.map(alarm =>
+    new Alarm(alarm.ID, alarm.Text, alarm.Dial as [number, number, number, number], alarm.Enable, alarm.WeekDays as weekDaysBool)));
+  });
 
-    for (const card of cardsGo) {
-      const initialDial  = $state(card.InitialDial) as dialTime
-      const dial = card.Dial as dialTime
-      createCard(card.Name, initialDial, dial, card.ID, card.TimeLeft)
-    }
-  })
+  cards.subscribe(() => {
+    debounceCards()
+  });
 
+  alarms.subscribe(() => {
+    debounceAlarms()
+  });
 </script>
 
 <main>

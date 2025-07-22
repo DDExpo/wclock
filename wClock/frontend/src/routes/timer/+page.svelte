@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AddForm from "$lib/components/timer/AddForm.svelte";
+  import AddForm from "$lib/components/AddForm.svelte";
   import Card from "$lib/components/timer/Card.svelte";
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
@@ -39,12 +39,12 @@
       <div class="draggable" draggable="true" ondragstart={(e) => handleDragStart(e, index)}
            ondragover={(e) => e.preventDefault()} ondrop={(e) => handleDrop(e, index)} role="listitem"
            aria-grabbed={draggedIndex === index} aria-dropeffect="move">
-        <Card card={card} ind={index}/>
+        <Card card={card} cardInd={index}/>
       </div>
     {/each}
   </div>
   {#if showAddForm}
-    <AddForm closeForm={ hideShowForm } formName="Add" />
+    <AddForm closeForm={ hideShowForm } formName="Add Timer" />
   {/if}
   {#if !watchState.compact}
   <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>

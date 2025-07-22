@@ -10,8 +10,12 @@ export function CloseWindow() {
   return window['go']['main']['App']['CloseWindow']();
 }
 
-export function DeleteCard(arg1) {
-  return window['go']['main']['App']['DeleteCard'](arg1);
+export function DbDelete(arg1, arg2) {
+  return window['go']['main']['App']['DbDelete'](arg1, arg2);
+}
+
+export function GetAlarms() {
+  return window['go']['main']['App']['GetAlarms']();
 }
 
 export function GetCards() {
@@ -34,6 +38,10 @@ export function MakeMiniWindowSize(arg1, arg2, arg3) {
   return window['go']['main']['App']['MakeMiniWindowSize'](arg1, arg2, arg3);
 }
 
+export function SaveAlarm(arg1) {
+  return window['go']['main']['App']['SaveAlarm'](arg1);
+}
+
 export function SaveCard(arg1) {
   return window['go']['main']['App']['SaveCard'](arg1);
 }
@@ -44,4 +52,8 @@ export function SetWindowAlwaysOnTop(arg1) {
 
 export function Shutdown(arg1) {
   return window['go']['main']['App']['Shutdown'](arg1);
+}
+
+export function TimerFinished(arg1) {
+  return window['go']['main']['App']['TimerFinished'](arg1);
 }

@@ -4,59 +4,45 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 
+	"github.com/gen2brain/beeep"
 	"golang.org/x/sys/windows/registry"
 )
 
 var userSettings UserSettings
 
-func GetAppPath() (string, error) {
+func InitEnv() error {
 
 	var appPath string
 
-	appPath, err := os.Getwd()
+	appPath, err := os.Executable()
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	appBytes, err := os.ReadFile(filepath.Join(appPath, "build", "bin", "binn", "env"))
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = json.Unmarshal(appBytes, &appPath)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		return appPath, err
-	}
-
-	appPath, err = os.Executable()
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	appPath, err = filepath.EvalSymlinks(appPath)
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	appPath = filepath.Dir(appPath)
-	appPathJson, err := json.Marshal(appPath)
+	appBinn := filepath.Join(appPath, "binn")
+	dbPath := filepath.Join(appBinn, "sqlite3.db")
+	settingsPath := filepath.Join(appBinn, "settings.json")
+	iconPath := filepath.Join(appBinn, "appIcon.png")
+
+	content := fmt.Sprintf(
+		"APP_PATH=%s\nAPP_BINN=%s\nAPP_DB=%s\nAPP_SETTINGS=%s\nAPP_ICON=%s", appPath, appBinn, dbPath, settingsPath, iconPath)
+
+	err = os.WriteFile(filepath.Join(appPath, ".env"), []byte(content), os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.WriteFile(filepath.Join(appPath, "/binn/env"), appPathJson, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return appPath, err
+
+	return err
 }
 
-func ReadSettings(binPath string) (UserSettings, error) {
+func ReadSettings(settingsPath string) (UserSettings, error) {
 
-	settingsPath := path.Join(binPath, "settings.json")
 	file, err := os.Open(settingsPath)
 	if err != nil {
 		return userSettings, nil
@@ -95,4 +81,9 @@ func GetWindowsPcColors() (string, error) {
 
 	hexColor := fmt.Sprintf("#%02X%02X%02X", r, g, b)
 	return hexColor, nil
+}
+
+func Notify(title, body string) error {
+	beeep.AppName = "WClock"
+	return beeep.Notify(title, body, os.Getenv("APP_ICON"))
 }

@@ -1,0 +1,244 @@
+<script lang="ts">
+
+  import AddForm from "../AddForm.svelte";
+  import TopRightButton from "../TopRightButton.svelte";
+
+  import type { dialTime, PropsAlarm } from "$lib/types/StoreComponentsTypes";
+  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { deleteAlarm, partiaUpdateAlarm } from "$lib/stores/alarms.svelte";
+  
+  let { alarm, alarmInd }: PropsAlarm = $props()
+  let showAlarmForm: boolean = $state(false)
+
+
+  function hideShowAlarmForm() {
+    showAlarmForm = !showAlarmForm
+  }
+
+  function triggerSubscribe(i: number) {
+    alarm.weekDays[i] = !alarm.weekDays[i]
+    partiaUpdateAlarm(alarmInd, undefined, alarm.weekDays)
+  }
+
+</script>
+
+
+<div class={["alarm", { light: appTheme.light, disabled: alarm.enable}]}>
+  <div class="alarm-header">
+    <div class="top-buttons">
+      <label class="switch">
+        <input type="checkbox" checked={alarm.enable} onchange={(e) => partiaUpdateAlarm(alarmInd, !alarm.enable)} />
+        <span class="slider"></span>
+      </label>
+      <TopRightButton onClick={ hideShowAlarmForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
+      {#if showAlarmForm }
+        <AddForm closeForm={ hideShowAlarmForm } formName="Save Alarm" ind={alarmInd} Text={alarm.text} Dial={alarm.dial.concat([0, 0]) as dialTime} change={true} digitsLen={4} alarm={true}/>
+      {/if}
+      <TopRightButton onClick={() => { deleteAlarm(alarm.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=16px/>
+    </div>
+  </div>
+
+  <div class="alarm-dial">
+    <div class="dial-digits">{alarm.dial[0]}{alarm.dial[1]}:{alarm.dial[2]}{alarm.dial[3]}</div>
+  </div>
+
+  <div class="alarm-time-left">
+    <img src="icons/bell.svg" alt="bell" class="bell-icon" />
+    <span>{alarm.timeToAlarm}</span>
+  </div>
+  <div class="alarm-text">{alarm.text}</div>
+  <div class="weekdays-buttons">
+  {#each ['Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] as day, i}
+    <button class="weekday-btn" class:active={alarm.weekDays[i]} onclick={() => triggerSubscribe(i)}>
+      {day}
+    </button>
+  {/each}
+  </div>
+</div>
+
+<style>
+.alarm {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  background: #373737;
+  padding: 1rem;
+  padding-left: 0rem;
+  width: clamp(230px, 45vw, 400px);
+  font-family: dark-theme-font;
+  box-shadow: -4px 8px 8px rgba(23, 23, 23, 0.5);
+  position: relative;
+}
+
+.alarm.light {
+  background: #DAAFAF;
+  box-shadow: -4px 8px 8px rgba(97, 97, 97, 0.2);
+  font-family: serif;
+  border-radius: 15px;
+}
+
+.alarm.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(0.7);
+}
+
+.alarm.disabled .switch{
+  opacity: 1;
+  pointer-events: all;
+}
+
+
+.alarm-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+  margin-right: -10px;
+}
+
+.top-buttons {
+  display: flex;
+  position: relative;
+  z-index: 10;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height:18px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #a9a9a996;
+  transition: 0.3s;
+  border-radius: 18px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px; width: 14px;
+  left: 2px; bottom: 2px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1f1f1f;
+}
+
+input:checked + .slider:before {
+  transform: translateX(12px);
+}
+
+.alarm-dial {
+  display: flex;
+  justify-content: start;
+  margin-left: 1rem;
+  text-shadow: -6px 8px 5px rgba(0, 0, 0, 0.3);
+  align-items: center;
+}
+
+.alarm.light .alarm-dial {
+  text-shadow: -6px 8px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dial-digits {
+  font-size: clamp(4rem, 6vw, 6rem);
+  font-weight: bold;
+  color: white;
+}
+
+.alarm-time-left {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: start;
+  align-items: center;
+  margin-left: 1rem;
+  margin-bottom: 5px;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  filter: opacity(50%);
+  color: white;
+}
+
+.bell-icon {
+  width: clamp(0.7rem, 2vw, 1.2rem);
+  margin-right: 0.3vw;
+  filter: invert(100%) opacity(50%);
+}
+
+.alarm-text {
+  color: white;
+  width: 100%;
+  height: 50px;
+  padding-left: 1rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  text-shadow: -6px 8px 5px rgba(0, 0, 0, 0.3);
+}
+
+.weekdays-buttons {
+  display: flex;
+  justify-content: start;
+  margin-left: 1rem;
+  justify-content: space-between;
+}
+
+.weekday-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(1.7rem, 3vw, 2.5rem);
+  height: clamp(1.7rem, 3vw, 2.5rem);
+  border-radius: 50%;
+  background: #666;
+  color: white;
+  border: none;
+  font-family: dark-theme-font;
+  font-size: clamp(0.7rem, 1vw, 1rem);
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: clamp(0px, 1vw, -20px);
+  box-shadow: -6px 8px 5px rgba(0, 0, 0, 0.1);
+}
+.weekday-btn:hover {
+  background: #afb9f2a8;
+}
+
+.weekday-btn.active {
+  background: #327a45;
+}
+
+.weekday-btn.active:hover {
+  background: #afb9f2a8;
+}
+
+.alarm.light .weekday-btn {
+  background: #8c7676;
+  color: rgb(255, 255, 255);
+  font-family: serif;
+  box-shadow: -4px 5px 6px rgba(72, 72, 72, 0.25);
+}
+
+.alarm.light .weekday-btn.active {
+  background: #327a45;
+}
+
+.alarm.light .weekday-btn:hover {
+  background: rgba(198, 213, 239, 0.656);
+}
+</style>

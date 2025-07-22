@@ -3,10 +3,12 @@ import type { Writable } from "svelte/store"
 export interface PropsForm {
   closeForm: () => void
   formName: string;
-  cardName?: string;
-  cardDial?: dialTime; 
-  cardInd?: number;
+  Text?: string;
+  Dial?: dialTime; 
+  ind?: number;
+  digitsLen?: number;
   change?: boolean;
+  alarm?: boolean;
 }
 
 export interface PropsCircleProgress {
@@ -14,9 +16,14 @@ export interface PropsCircleProgress {
   cardTime: Writable<dialTime>;
 }
 
+export interface PropsAlarm {
+  alarm: AlarmType
+  alarmInd: number
+}
+
 export interface PropsCard {
   card: CardType
-  ind: number
+  cardInd: number
 }
 
 export type Timer = {
@@ -26,6 +33,19 @@ export type Timer = {
 };
 
 export type dialTime = [number, number, number, number, number, number]
+
+export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
+
+export type AlarmType = {
+  id: string;
+  text: string;
+  timeToAlarm: number;
+  dial: [number, number, number, number];
+  enable: boolean;
+  weekDays: weekDaysBool;
+  update: (text: string, dial: [number, number, number, number], timeToAlarm: number) => void;
+  partiaUpdate: (enable?: boolean, weekDays?: weekDaysBool) => void
+};
 
 export type CardType = {
   id: string;

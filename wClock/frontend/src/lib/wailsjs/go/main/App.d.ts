@@ -7,7 +7,9 @@ export function CheckWindowSize():Promise<boolean>;
 
 export function CloseWindow():Promise<void>;
 
-export function DeleteCard(arg1:string):Promise<void>;
+export function DbDelete(arg1:string,arg2:string):Promise<void>;
+
+export function GetAlarms():Promise<Array<gofunc.Alarm>>;
 
 export function GetCards():Promise<Array<gofunc.Card>>;
 
@@ -19,8 +21,12 @@ export function GiveNewSettings(arg1:boolean):Promise<void>;
 
 export function MakeMiniWindowSize(arg1:number,arg2:number,arg3:boolean):Promise<void>;
 
+export function SaveAlarm(arg1:Array<gofunc.Alarm>):Promise<void>;
+
 export function SaveCard(arg1:Array<gofunc.Card>):Promise<void>;
 
 export function SetWindowAlwaysOnTop(arg1:boolean):Promise<void>;
 
 export function Shutdown(arg1:context.Context):Promise<void>;
+
+export function TimerFinished(arg1:string):Promise<void>;

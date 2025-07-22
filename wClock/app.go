@@ -10,6 +10,7 @@ import (
 	db "wClock/db"
 	gofunc "wClock/go_func"
 
+	"github.com/joho/godotenv"
 	runtime_2 "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -29,14 +30,24 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-
-	appPath, err := gofunc.GetAppPath()
-
+	exePath, err := os.Executable()
 	if err != nil {
+		panic(err)
+	}
+	envPath := filepath.Join(filepath.Dir(exePath), ".env")
+	if err := godotenv.Load(envPath); err != nil {
 		fmt.Println(err)
+		err = gofunc.InitEnv()
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = godotenv.Load(envPath)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
-	binPath := filepath.Join(appPath, "binn")
+	binPath := os.Getenv("APP_BINN")
 	_, err = os.Stat(binPath)
 	if err != nil {
 		fmt.Println(err)
@@ -45,7 +56,7 @@ func (a *App) startup(ctx context.Context) {
 			fmt.Println(err)
 		}
 	}
-	dbPath := filepath.Join(binPath, "sqlite3.db")
+	dbPath := os.Getenv("APP_DB")
 	_, err = os.Stat(dbPath)
 	DB := db.GetDB(dbPath)
 
@@ -60,15 +71,15 @@ func (a *App) startup(ctx context.Context) {
 	}
 	defer DB.Close()
 
-	userSettings, err = gofunc.ReadSettings(binPath)
+	userSettings, err = gofunc.ReadSettings(os.Getenv("APP_SETTINGS"))
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (a *App) GetCards() []gofunc.Card {
-	appPath, _ := gofunc.GetAppPath()
-	DB := db.GetDB(filepath.Join(appPath, "binn", "sqlite3.db"))
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
 	cards, err := db.GetAllCards(DB)
 	if err != nil {
@@ -77,21 +88,42 @@ func (a *App) GetCards() []gofunc.Card {
 	return cards
 }
 
-func (a *App) DeleteCard(id string) {
-	appPath, _ := gofunc.GetAppPath()
-	DB := db.GetDB(filepath.Join(appPath, "binn", "sqlite3.db"))
+func (a *App) SaveCard(cards []gofunc.Card) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
-	err := db.DeleteCards(DB, id)
+	err := db.SaveCards(DB, cards)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func (a *App) SaveCard(cards []gofunc.Card) {
-	appPath, _ := gofunc.GetAppPath()
-	DB := db.GetDB(filepath.Join(appPath, "binn", "sqlite3.db"))
+func (a *App) GetAlarms() []gofunc.Alarm {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
-	err := db.SaveCards(DB, cards)
+	alarms, err := db.GetAllAlarms(DB)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return alarms
+}
+
+func (a *App) DbDelete(id string, table string) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
+	defer DB.Close()
+	err := db.DbDelete(DB, id, table)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (a *App) SaveAlarm(alarms []gofunc.Alarm) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
+	defer DB.Close()
+	err := db.SaveAlarms(DB, alarms)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -108,12 +140,7 @@ func (a *App) Shutdown(ctx context.Context) {
 		fmt.Println(err)
 	}
 
-	appPath, err := gofunc.GetAppPath()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = os.WriteFile(filepath.Join(appPath, "binn", "settings.json"), u, os.ModePerm)
+	err = os.WriteFile(os.Getenv("APP_SETTINGS"), u, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -147,6 +174,13 @@ func (a *App) MakeMiniWindowSize(width int, height int, compact bool) {
 		runtime_2.WindowSetMaxSize(a.ctx, width, height)
 	} else {
 		runtime_2.WindowSetMaxSize(a.ctx, 0, 0)
+	}
+}
+
+func (a *App) TimerFinished(name string) {
+	err := gofunc.Notify("Timer: "+name, "Finished!")
+	if err != nil {
+		fmt.Println("Notification failed:", err)
 	}
 }
 

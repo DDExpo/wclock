@@ -12,5 +12,10 @@ type Card struct {
 	InitialDial [6]int
 }
 
-type Alrams struct {
+type Alarm struct {
+	ID       string
+	Enable   bool
+	Text     string
+	Dial     [4]int
+	WeekDays [7]bool
 }

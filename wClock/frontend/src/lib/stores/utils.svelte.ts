@@ -2,6 +2,7 @@
 import { isAlwaysOnTop } from "$lib/stores/sideBarAndTheme.svelte";
 import { MakeMiniWindowSize, SetWindowAlwaysOnTop } from "$lib/wailsjs/go/main/App";
 import { gofunc } from "$lib/wailsjs/go/models";
+import { alarms } from "./alarms.svelte";
 import { cards } from "./timerWatch.svelte";
 import { get } from 'svelte/store';
 
@@ -27,10 +28,30 @@ export function getCards(): gofunc.Card[] {
       ID: c.id,
       Name: c.name,
       Dial: [...dial],
-      TimeLeft: get(c.timeLeft),
+      TimeLeft: Number(get(c.timeLeft).toFixed(3)),
       InitialDial: [...c.initialTime] as number[],
     })
   }
-
   return cardsGo
 }
+
+export function getAlarms(): gofunc.Alarm[] {
+  var curAlarms = get(alarms)
+  return curAlarms.map((a) => ({
+    ID: a.id,
+    Enable: a.enable,
+    Text: a.text,
+    Dial: a.dial as number[],
+    WeekDays: a.weekDays as boolean[],
+  }));
+}
+
+export function debounce(callback: CallableFunction, delay: number=2000) {
+  let timeoutId: number
+
+  return (...args: any[]) => {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => {
+      callback(...args)}, delay)
+    };
+};

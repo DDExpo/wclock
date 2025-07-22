@@ -19,7 +19,7 @@ func GetDB(dbPath string) *sqlx.DB {
 
 func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 
-	var items []gofunc.Card
+	items := []gofunc.Card{}
 
 	rows, err := DB.Query("SELECT * FROM cards")
 
@@ -51,32 +51,124 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 	return items, err
 }
 
-func DeleteCards(DB *sqlx.DB, id string) error {
-	_, err := DB.Exec(`DELETE FROM cards WHERE id = ?`, id)
+func DbDelete(DB *sqlx.DB, id string, table string) error {
+	_, err := DB.Exec(("DELETE FROM " + table + " WHERE id = ?"), id)
 	return err
 }
 
 func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
+	tx, err := DB.Beginx()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Preparex(`
+		INSERT INTO cards (id, name, dial, timeleft, initialdial)
+		VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			name = excluded.name,
+			dial = excluded.dial,
+			timeleft = excluded.timeleft,
+			initialdial = excluded.initialdial
+	`)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer stmt.Close()
+
 	for _, c := range cards {
 		dialJSON, err := json.Marshal(c.Dial)
 		if err != nil {
-			fmt.Println(err)
+			tx.Rollback()
+			return fmt.Errorf("marshal dial: %w", err)
 		}
 		initialDialJSON, err := json.Marshal(c.InitialDial)
 		if err != nil {
-			fmt.Println(err)
+			tx.Rollback()
+			return fmt.Errorf("marshal initialDial: %w", err)
 		}
-		DB.MustExec(`
-			INSERT INTO cards (id, name, dial, timeleft, initialdial)
-			VALUES (?, ?, ?, ?, ?)
-			ON CONFLICT(id) DO UPDATE SET
-				name = excluded.name,
-				dial = excluded.dial,
-				timeleft = excluded.timeleft,
-				initialdial = excluded.initialdial
-		`, c.ID, c.Name, dialJSON, c.TimeLeft, initialDialJSON)
+		_, err = stmt.Exec(c.ID, c.Name, dialJSON, c.TimeLeft, initialDialJSON)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
-	return nil
+	return tx.Commit()
+}
+
+func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
+
+	items := []gofunc.Alarm{}
+
+	rows, err := DB.Query("SELECT * FROM alarms")
+
+	if err != nil {
+		return items, fmt.Errorf("error when getting all Alarms: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var alarm gofunc.Alarm
+		var dialRaw string
+		var weekDaysRaw string
+
+		err = rows.Scan(&alarm.ID, &alarm.Text, &alarm.Enable, &dialRaw, &weekDaysRaw)
+		errj := json.Unmarshal([]byte(dialRaw), &alarm.Dial)
+		if errj != nil {
+			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", err)
+		}
+		errjd := json.Unmarshal([]byte(weekDaysRaw), &alarm.WeekDays)
+		if errjd != nil {
+			return items, fmt.Errorf("error when unmarshall column alarms WeekDays: %v", errjd)
+		}
+		items = append(items, alarm)
+	}
+	err = rows.Err()
+	if err != nil {
+		return items, fmt.Errorf("error when getting all Alarms: %v", err)
+	}
+	return items, err
+}
+
+func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
+
+	tx, err := DB.Beginx()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Preparex(`
+		INSERT INTO alarms (id, text, dial, enable, weekdays)
+		VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			text = excluded.text,
+			dial = excluded.dial,
+			enable = excluded.enable,
+			weekdays = excluded.weekdays
+	`)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	defer stmt.Close()
+
+	for _, a := range alarms {
+		dialJSON, err := json.Marshal(a.Dial)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("marshal dial: %w", err)
+		}
+		weekDaysJSON, err := json.Marshal(a.WeekDays)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("marshal weekdays: %w", err)
+		}
+		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Enable, weekDaysJSON)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
 func RunFirstTimeShemas(db *sqlx.DB) error {
@@ -87,20 +179,21 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		timeleft REAL,
 		initialdial BLOB
 	);`
-	// schemaAlarms := `CREATE TABLE IF NOT EXISTS alarms (
-	// 	id INTEGER PRIMARY KEY,
-	// 	name TEXT,
-	// 	time TEXT,
-	// 	timeLeft INT
-	// );`
+	schemaAlarms := `CREATE TABLE IF NOT EXISTS alarms (
+		id TEXT PRIMARY KEY,
+		text TEXT,
+		enable BOOLEAN,
+		dial BLOB,
+		weekdays BLOB
+	);`
 	_, err := db.Exec(schemaCards)
 	if err != nil {
 		return fmt.Errorf("error on executing shemaCards: %v", err)
 	}
-	// _, err = db.Exec(schemaAlarms)
-	// if err != nil {
-	// 	return fmt.Errorf("error on executing shemaCards: %v", err)
-	// }
+	_, err = db.Exec(schemaAlarms)
+	if err != nil {
+		return fmt.Errorf("error on executing shemaAlarms: %v", err)
+	}
 
 	return nil
 }
