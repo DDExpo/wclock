@@ -19,6 +19,7 @@ export interface PropsCircleProgress {
 export interface PropsAlarm {
   alarm: AlarmType
   alarmInd: number
+  timeTo: Writable<string>
 }
 
 export interface PropsCard {
@@ -27,9 +28,8 @@ export interface PropsCard {
 }
 
 export type Timer = {
-  start: () => void;
+  start: (curDay: number, nextDay: number) => void;
   stop: () => void;
-  reset: () => void;
 };
 
 export type dialTime = [number, number, number, number, number, number]
@@ -39,11 +39,12 @@ export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean
 export type AlarmType = {
   id: string;
   text: string;
-  timeToAlarm: number;
+  timerToAlarm: Timer;
+  timeToAlarm: Writable<string>;
   dial: [number, number, number, number];
   enable: boolean;
   weekDays: weekDaysBool;
-  update: (text: string, dial: [number, number, number, number], timeToAlarm: number) => void;
+  update: (text: string, dial: [number, number, number, number]) => void;
   partiaUpdate: (enable?: boolean, weekDays?: weekDaysBool) => void
 };
 

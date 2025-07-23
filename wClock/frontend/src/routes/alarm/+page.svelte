@@ -15,7 +15,7 @@
 <div class={["alarm-page", { light: appTheme.light }]}>
   <div class="alarm-grid">
     {#each $alarms as alr, ind}
-      <Alarm alarm={alr} alarmInd={ind}/>
+      <Alarm alarm={alr} alarmInd={ind} timeTo={alr.timeToAlarm}/>
     {/each}
     {#if showAddForm}
       <AddForm closeForm={ hideShowForm } formName="Add Alarm" digitsLen={4} alarm={true} />

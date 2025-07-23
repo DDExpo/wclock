@@ -25,10 +25,8 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
       
       if (totals <= 0) {
         stop()
-        TimerFinished(name)
-        setTimeout(() => {
-          soundNotify();
-        }, 150); 
+        TimerFinished("Timer", name)
+        setTimeout(soundNotify, 150); 
         return
       };
       totals--
@@ -47,7 +45,7 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
   };
 
   function soundNotify() {
-    const audio = new Audio('/sounds/so-proud-notification.mp3');
+    const audio = new Audio('/sounds/basic-alarm-ringtone.mp3');
     audio.play().catch((e) => console.error("Audio playback failed:", e));
   }
 

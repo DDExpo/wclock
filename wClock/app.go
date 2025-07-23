@@ -109,21 +109,21 @@ func (a *App) GetAlarms() []gofunc.Alarm {
 	return alarms
 }
 
-func (a *App) DbDelete(id string, table string) {
-
-	DB := db.GetDB(os.Getenv("APP_DB"))
-	defer DB.Close()
-	err := db.DbDelete(DB, id, table)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
 func (a *App) SaveAlarm(alarms []gofunc.Alarm) {
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
 	err := db.SaveAlarms(DB, alarms)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (a *App) DbDelete(id string, table string) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
+	defer DB.Close()
+	err := db.DbDelete(DB, id, table)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -177,8 +177,8 @@ func (a *App) MakeMiniWindowSize(width int, height int, compact bool) {
 	}
 }
 
-func (a *App) TimerFinished(name string) {
-	err := gofunc.Notify("Timer: "+name, "Finished!")
+func (a *App) TimerFinished(typeNotify string, name string) {
+	err := gofunc.Notify(typeNotify+":"+name, "Finished!")
 	if err != nil {
 		fmt.Println("Notification failed:", err)
 	}

@@ -29,4 +29,4 @@ export function SetWindowAlwaysOnTop(arg1:boolean):Promise<void>;
 
 export function Shutdown(arg1:context.Context):Promise<void>;
 
-export function TimerFinished(arg1:string):Promise<void>;
+export function TimerFinished(arg1:string,arg2:string):Promise<void>;

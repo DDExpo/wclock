@@ -54,6 +54,6 @@ export function Shutdown(arg1) {
   return window['go']['main']['App']['Shutdown'](arg1);
 }
 
-export function TimerFinished(arg1) {
-  return window['go']['main']['App']['TimerFinished'](arg1);
+export function TimerFinished(arg1, arg2) {
+  return window['go']['main']['App']['TimerFinished'](arg1, arg2);
 }

@@ -13,11 +13,11 @@
     showAddForm = !showAddForm
   }
 
-  function handleDragStart(event: DragEvent, index: number) {
-    draggedIndex = index;
+  function handleDragStart(index: number) {
+    draggedIndex = index; 
   }
 
-  function handleDrop(event: DragEvent, targetIndex: number) {
+  function handleDrop(targetIndex: number) {
     if (draggedIndex === -1 || draggedIndex === targetIndex) return;
     
     cards.update(c => {
@@ -36,8 +36,8 @@
 <div class={["timer-page", { light: appTheme.light, "compact": watchState.compact}]}>
   <div class="card-grid">
     {#each $cards as card, index}
-      <div class="draggable" draggable="true" ondragstart={(e) => handleDragStart(e, index)}
-           ondragover={(e) => e.preventDefault()} ondrop={(e) => handleDrop(e, index)} role="listitem"
+      <div class="draggable" draggable="true" ondragstart={(e) => handleDragStart(index)}
+           ondragover={(e) => e.preventDefault()} ondrop={(e) => handleDrop(index)} role="listitem"
            aria-grabbed={draggedIndex === index} aria-dropeffect="move">
         <Card card={card} cardInd={index}/>
       </div>
@@ -83,6 +83,10 @@
   box-sizing: border-box;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.draggable {
+  cursor: grab;
 }
 
 .add-btn {

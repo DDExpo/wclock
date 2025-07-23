@@ -1,11 +1,14 @@
-import type { weekDaysBool } from "$lib/types/StoreComponentsTypes";
+import type { Timer, weekDaysBool } from "$lib/types/StoreComponentsTypes";
+import { writable, type Writable } from "svelte/store";
+import { createWatchAlarm } from "../alarms.svelte";
 
 export class Alarm {
   id: string;
-  timeToAlarm: number
-  text: string = $state("");
-  dial: [number, number, number, number] = $state([0, 0, 0, 0]);
-  enable = $state(false);
+  timerToAlarm: Timer
+  timeToAlarm: Writable<string> = writable(`${0} hours ${0} minutes`)
+  text = $state<string>("");
+  dial = $state<[number, number, number, number]>([0, 0, 0, 0]);
+  enable = $state<boolean>(false);
   weekDays = $state<weekDaysBool>([false, false, false, false, false, false, false]);
 
   partiaUpdate(enable?: boolean, weekDays?: weekDaysBool) {
@@ -21,8 +24,8 @@ export class Alarm {
 
   update(text: string, dial: [number, number, number, number]) {
     this.text = text;
-    this.dial = dial
-    this.timeToAlarm = 0
+    this.dial = dial;
+    this.timerToAlarm = createWatchAlarm(this.dial, this.text, this.timeToAlarm)
   }
   
   constructor(id: string, text: string, dial: [number, number, number, number], enable: boolean, weekDays: weekDaysBool) {
@@ -31,6 +34,6 @@ export class Alarm {
     this.dial = dial
     this.enable = enable
     this.weekDays = weekDays
-    this.timeToAlarm = 0
+    this.timerToAlarm = createWatchAlarm(this.dial, this.text, this.timeToAlarm)
   };
 };

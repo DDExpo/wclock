@@ -7,18 +7,38 @@
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { deleteAlarm, partiaUpdateAlarm } from "$lib/stores/alarms.svelte";
   
-  let { alarm, alarmInd }: PropsAlarm = $props()
-  let showAlarmForm: boolean = $state(false)
+  let { alarm, alarmInd, timeTo }: PropsAlarm = $props();
+  let showAlarmForm: boolean = $state(false);
 
 
   function hideShowAlarmForm() {
-    showAlarmForm = !showAlarmForm
+    alarm.timerToAlarm.stop()
+    showAlarmForm = !showAlarmForm;
+  }
+
+  function enableAlarm() {
+    partiaUpdateAlarm(alarmInd, !alarm.enable)
+    if (!alarm.enable) {alarm.timerToAlarm.stop()}
   }
 
   function triggerSubscribe(i: number) {
-    alarm.weekDays[i] = !alarm.weekDays[i]
-    partiaUpdateAlarm(alarmInd, undefined, alarm.weekDays)
-  }
+
+    alarm.weekDays[i] = !alarm.weekDays[i];
+    const curDayOfWeek = new Date().getDay();
+    let nextDay = undefined
+
+    for (let i=curDayOfWeek; i < 7+curDayOfWeek; i++) {
+      const ind = i%7
+      if (alarm.weekDays[ind]) {nextDay = ind; break;}
+    }
+
+    if (nextDay !== undefined) {
+      alarm.timerToAlarm.start(curDayOfWeek, nextDay)
+    } else {
+      alarm.timerToAlarm.stop()
+    }
+    partiaUpdateAlarm(alarmInd, undefined, alarm.weekDays);
+  };
 
 </script>
 
@@ -27,7 +47,7 @@
   <div class="alarm-header">
     <div class="top-buttons">
       <label class="switch">
-        <input type="checkbox" checked={alarm.enable} onchange={(e) => partiaUpdateAlarm(alarmInd, !alarm.enable)} />
+        <input type="checkbox" checked={alarm.enable} onchange={enableAlarm} />
         <span class="slider"></span>
       </label>
       <TopRightButton onClick={ hideShowAlarmForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
@@ -44,11 +64,11 @@
 
   <div class="alarm-time-left">
     <img src="icons/bell.svg" alt="bell" class="bell-icon" />
-    <span>{alarm.timeToAlarm}</span>
+    <span>{$timeTo}</span>
   </div>
   <div class="alarm-text">{alarm.text}</div>
   <div class="weekdays-buttons">
-  {#each ['Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] as day, i}
+  {#each ['Su', 'Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as day, i}
     <button class="weekday-btn" class:active={alarm.weekDays[i]} onclick={() => triggerSubscribe(i)}>
       {day}
     </button>

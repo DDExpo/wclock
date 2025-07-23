@@ -5,8 +5,7 @@
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { createCard, updateCard, validateDial } from "$lib/stores/timerWatch.svelte";
-    import { createAlarm, updateAlarm } from "$lib/stores/alarms.svelte";
-
+  import { createAlarm, updateAlarm } from "$lib/stores/alarms.svelte";
   
   let { closeForm, formName, Text="", Dial=[0,0,0,0,0,0], ind=-1, change, digitsLen=6, alarm=false }: PropsForm = $props()
                                                                       
