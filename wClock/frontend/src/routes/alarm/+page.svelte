@@ -1,27 +1,37 @@
 <script lang="ts">
+  import {dndzone} from "svelte-dnd-action";
+
   import AddForm from "$lib/components/AddForm.svelte";
-  import Alarm from "$lib/components/alarm/alarm.svelte";
+  import Alarm from "$lib/components/alarm/Alarm.svelte";
+
   import { alarms } from "$lib/stores/alarms.svelte";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { notDraggable } from "$lib/stores/timerWatch.svelte";
   
   let showAddForm: boolean = $state(false);
 
   function hideShowForm() {
-    showAddForm = !showAddForm
+    showAddForm = !showAddForm;
+  };
+  function handleDndConsider(e: CustomEvent) {
+    alarms.set(e.detail.items);
+  };
+  function handleDndFinalize(e: CustomEvent) {
+    alarms.set(e.detail.items);
   }
 
 </script>
 
 <div class={["alarm-page", { light: appTheme.light }]}>
-  <div class="alarm-grid">
-    {#each $alarms as alr, ind}
-      <Alarm alarm={alr} alarmInd={ind} timeTo={alr.timeToAlarm}/>
+  <div class="alarm-grid" use:dndzone={{ items: $alarms, dropTargetStyle:{"outline": 'none'}, dragDisabled:notDraggable.dragg}} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+    {#each $alarms as alr, index (alr.id)}
+      <Alarm alarm={alr} alarmInd={index} timeTo={alr.timeToAlarm} />
     {/each}
-    {#if showAddForm}
-      <AddForm closeForm={ hideShowForm } formName="Add Alarm" digitsLen={4} alarm={true} />
-    {/if}
-    <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
   </div>
+  {#if showAddForm}
+    <AddForm closeForm={ hideShowForm } formName="Add Alarm" digitsLen={4} alarm={true} />
+  {/if}
+  <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
 </div>
 
 <style>
@@ -45,8 +55,8 @@
   height: fit-content;
   width: fit-content;
   flex-wrap: wrap;
-  gap: 1.5vh 1.5vw;
-  padding-left: clamp(75px, 22vw, 140px);
+  gap: 2vh 1.5vw;
+  padding-left: clamp(75px, 20vw, 140px);
   padding-top: 40px;
   padding-bottom: 40px;
   padding-right: 25px;

@@ -1,6 +1,6 @@
 import { derived, writable, type Writable } from 'svelte/store';
 
-import type { dialTime, Timer } from '$lib/types/StoreComponentsTypes';
+import type { dialTime, TimerCard } from '$lib/types/StoreComponentsTypes';
 import { createWatch } from '../timerWatch.svelte';
 
 export class Card {
@@ -8,13 +8,13 @@ export class Card {
   running = $state(false);
   name = $state('');
   time: Writable<dialTime>;
-  timer: Timer;
+  timer: TimerCard;
   timeLeft: Writable<number>;
   initialTime: dialTime;
 
   update(name: string, initialT: dialTime, newDial: dialTime) {
     this.name = name;
-    this.time = writable(newDial);
+    this.time.set(newDial);
     this.initialTime = initialT;
     this.timer = createWatch(this.initialTime, this.time, this.timeLeft, this.name);
   }

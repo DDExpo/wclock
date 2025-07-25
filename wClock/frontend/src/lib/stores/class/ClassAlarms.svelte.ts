@@ -6,8 +6,9 @@ export class Alarm {
   id: string;
   timerToAlarm: Timer
   timeToAlarm: Writable<string> = writable(`${0} hours ${0} minutes`)
+  dialNumber: [number, number, number, number];
   text = $state<string>("");
-  dial = $state<[number, number, number, number]>([0, 0, 0, 0]);
+  dial = $state<string>("");
   enable = $state<boolean>(false);
   weekDays = $state<weekDaysBool>([false, false, false, false, false, false, false]);
 
@@ -24,16 +25,18 @@ export class Alarm {
 
   update(text: string, dial: [number, number, number, number]) {
     this.text = text;
-    this.dial = dial;
-    this.timerToAlarm = createWatchAlarm(this.dial, this.text, this.timeToAlarm)
+    this.dial = `${dial[0]}${dial[1]}:${dial[2]}${dial[3]}`;
+    this.dialNumber = dial
+    this.timerToAlarm = createWatchAlarm(this.dialNumber, this.text, this.timeToAlarm)
   }
   
   constructor(id: string, text: string, dial: [number, number, number, number], enable: boolean, weekDays: weekDaysBool) {
     this.id = id
     this.text = text
-    this.dial = dial
+    this.dial = `${dial[0]}${dial[1]}:${dial[2]}${dial[3]}`
+    this.dialNumber = dial
     this.enable = enable
     this.weekDays = weekDays
-    this.timerToAlarm = createWatchAlarm(this.dial, this.text, this.timeToAlarm)
+    this.timerToAlarm = createWatchAlarm(this.dialNumber, this.text, this.timeToAlarm)
   };
 };

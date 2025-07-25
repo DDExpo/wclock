@@ -145,7 +145,7 @@
   height: 17px;
   border-radius: 15%;
   opacity: 0;
-  background: var(--user-pc-color);
+  background: var(--user-pc-color, rgb(255, 180, 94));
   transition: opacity 0.3s ease, transform 0.4s ease;
 }
 .icon-btn:hover {

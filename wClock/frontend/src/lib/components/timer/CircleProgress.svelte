@@ -68,7 +68,7 @@
 
 .fg {
   fill: none;
-  stroke: var(--user-pc-color, #B83737);
+  stroke: var(--user-pc-color, rgb(255, 180, 94));
   stroke-linecap: round;
 }
 .fg.light {

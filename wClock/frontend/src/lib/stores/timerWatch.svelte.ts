@@ -7,6 +7,7 @@ import { Card } from "$lib/stores/class/ClassCard.svelte";
 import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
 
 export const cards = writable<CardType[]>([]);
+export const notDraggable = $state({ dragg: false})
 
 export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft: Writable<number>, timerName: string) => {
 
@@ -45,7 +46,7 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
   };
 
   function soundNotify() {
-    const audio = new Audio('/sounds/basic-alarm-ringtone.mp3');
+    const audio = new Audio('/sounds/so-proud-notification.mp3');
     audio.play().catch((e) => console.error("Audio playback failed:", e));
   }
 
@@ -77,8 +78,11 @@ export function updateCard(ind: number, name: string, initialT: dialTime, dial: 
     return c});
 };
 
-export  function deleteCard(id: string) {
-  cards.update(c => c.filter(card => card.id !== id));
+export  function deleteCard(ind: number, id: string) {
+  cards.update(c => {
+    c[ind].timer.reset();
+    return c.filter(card => card.id !== id);
+  });
   DbDelete(id, "cards")
 };
 

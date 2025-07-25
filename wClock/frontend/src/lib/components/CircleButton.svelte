@@ -28,7 +28,7 @@
   }
   .circle-button:hover {
     background: #6b6b6b;
-    border: 2px inset var(--user-pc-color);
+    border: 2px inset var(--user-pc-color, rgb(255, 180, 94));
   }
   .circle-button.running {
     background-color: #6b6b6b;

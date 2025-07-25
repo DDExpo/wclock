@@ -3,17 +3,18 @@
   import AddForm from "../AddForm.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
-  import type { dialTime, PropsAlarm } from "$lib/types/StoreComponentsTypes";
+  import type { dialTime, PropsAlarm, weekDaysBool } from "$lib/types/StoreComponentsTypes";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { deleteAlarm, partiaUpdateAlarm } from "$lib/stores/alarms.svelte";
+  import { notDraggable } from "$lib/stores/timerWatch.svelte";
   
   let { alarm, alarmInd, timeTo }: PropsAlarm = $props();
   let showAlarmForm: boolean = $state(false);
 
-
   function hideShowAlarmForm() {
     alarm.timerToAlarm.stop()
     showAlarmForm = !showAlarmForm;
+    notDraggable.dragg = showAlarmForm
   }
 
   function enableAlarm() {
@@ -43,7 +44,7 @@
 </script>
 
 
-<div class={["alarm", { light: appTheme.light, disabled: alarm.enable}]}>
+<div class={["alarm", { light: appTheme.light, disabled: alarm.enable}]} draggable="false">
   <div class="alarm-header">
     <div class="top-buttons">
       <label class="switch">
@@ -52,14 +53,14 @@
       </label>
       <TopRightButton onClick={ hideShowAlarmForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
       {#if showAlarmForm }
-        <AddForm closeForm={ hideShowAlarmForm } formName="Save Alarm" ind={alarmInd} Text={alarm.text} Dial={alarm.dial.concat([0, 0]) as dialTime} change={true} digitsLen={4} alarm={true}/>
+        <AddForm closeForm={ hideShowAlarmForm } formName="Save Alarm" ind={alarmInd} Text={alarm.text} Dial={alarm.dialNumber.concat([0, 0]) as dialTime} change={true} digitsLen={4} alarm={true}/>
       {/if}
-      <TopRightButton onClick={() => { deleteAlarm(alarm.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=16px/>
+      <TopRightButton onClick={() => { deleteAlarm(alarmInd, alarm.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=16px/>
     </div>
   </div>
 
   <div class="alarm-dial">
-    <div class="dial-digits">{alarm.dial[0]}{alarm.dial[1]}:{alarm.dial[2]}{alarm.dial[3]}</div>
+    <div class="dial-digits">{alarm.dial}</div>
   </div>
 
   <div class="alarm-time-left">
@@ -68,11 +69,13 @@
   </div>
   <div class="alarm-text">{alarm.text}</div>
   <div class="weekdays-buttons">
-  {#each ['Su', 'Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as day, i}
-    <button class="weekday-btn" class:active={alarm.weekDays[i]} onclick={() => triggerSubscribe(i)}>
-      {day}
-    </button>
-  {/each}
+    {#each ['Su', 'Mn', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as day, ind}
+      {#if alarm.weekDays !== undefined}
+      <button class={["weekday-btn", { active: alarm.weekDays[ind] }]} onclick={() => triggerSubscribe(ind)}>
+        {day}
+      </button>
+      {/if}
+    {/each}
   </div>
 </div>
 
@@ -80,13 +83,16 @@
 .alarm {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;;
+  height: clamp(190px, 25vw, 280px);
+  width: clamp(230px, 45vw, 400px);
   justify-content: start;
   background: #373737;
   padding: 1rem;
   padding-left: 0rem;
-  width: clamp(230px, 45vw, 400px);
   font-family: dark-theme-font;
   box-shadow: -4px 8px 8px rgba(23, 23, 23, 0.5);
+  border-radius: 3px;
   position: relative;
 }
 
@@ -105,7 +111,7 @@
 
 .alarm.disabled .switch{
   opacity: 1;
-  pointer-events: all;
+  pointer-events: visible;
 }
 
 
@@ -118,15 +124,13 @@
 
 .top-buttons {
   display: flex;
-  position: relative;
-  z-index: 10;
 }
 
 .switch {
   position: relative;
-  display: inline-block;
   width: 30px;
   height:18px;
+  pointer-events: all;
 }
 
 .switch input {
@@ -140,7 +144,7 @@
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: #a9a9a996;
-  transition: 0.3s;
+  transition: background-color 0.3s ease;
   border-radius: 18px;
 }
 
@@ -150,15 +154,17 @@
   height: 14px; width: 14px;
   left: 2px; bottom: 2px;
   background-color: white;
-  transition: 0.3s;
   border-radius: 50%;
+  transition: transform 0.3s ease;
 }
 
 input:checked + .slider {
+  transition: background-color 0.3s ease;
   background-color: #1f1f1f;
 }
 
 input:checked + .slider:before {
+  transition: transform 0.3s ease;
   transform: translateX(12px);
 }
 
@@ -200,11 +206,10 @@ input:checked + .slider:before {
 }
 
 .alarm-text {
+  display: flex;
   color: white;
   width: 100%;
-  height: 50px;
   padding-left: 1rem;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: clamp(1.5rem, 3vw, 2rem);
@@ -213,23 +218,27 @@ input:checked + .slider:before {
 
 .weekdays-buttons {
   display: flex;
-  justify-content: start;
-  margin-left: 1rem;
+  justify-content: center;
+  width: 75%;
+  align-items: center;
   justify-content: space-between;
+  margin-left: 10px;
+  margin-top: 20px;
+  gap: 3px;
 }
 
 .weekday-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(1.7rem, 3vw, 2.5rem);
-  height: clamp(1.7rem, 3vw, 2.5rem);
+  width: clamp(1.5rem, 4vw, 2.3rem);
+  height: clamp(1.5rem, 4vw, 2.3rem);
   border-radius: 50%;
   background: #666;
   color: white;
   border: none;
   font-family: dark-theme-font;
-  font-size: clamp(0.7rem, 1vw, 1rem);
+  font-size: clamp(0.7rem, 2vw, 1.3rem);
   cursor: pointer;
   transition: background 0.2s;
   margin-top: clamp(0px, 1vw, -20px);

@@ -44,6 +44,8 @@
   });
 </script>
 
+<div class="right-space"></div>
+<div class="bottom-space"></div>
 <main>
   <div class="main-layout">
     <TopBar />
@@ -53,6 +55,7 @@
     <div class={["background-img", { light: appTheme.light }]}></div>
   </div>
 </main>
+
 {@render children()}
 
 <style>
@@ -61,6 +64,28 @@
   overflow: hidden;
   height: 100%;
   width: 100%;
+}
+
+.right-space {
+  display: flex;
+  position: absolute;
+  background-color: transparent;
+  border: transparent;
+  right: 0px;
+  z-index: 100;
+  height: 100vh;
+  width: 8px;
+}
+
+.bottom-space {
+  display: flex;
+  position: absolute;
+  background-color: transparent;
+  border: transparent;
+  bottom: 0px;
+  z-index: 100;
+  height: 8px;
+  width: 100vw;
 }
 
 .background-img {

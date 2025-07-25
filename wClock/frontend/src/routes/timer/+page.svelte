@@ -1,47 +1,32 @@
 <script lang="ts">
+  import {dndzone} from "svelte-dnd-action";
+
   import AddForm from "$lib/components/AddForm.svelte";
   import Card from "$lib/components/timer/Card.svelte";
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { cards } from "$lib/stores/timerWatch.svelte";
+  import { cards, notDraggable } from "$lib/stores/timerWatch.svelte";
   import { watchState } from "$lib/stores/utils.svelte";
 
   let showAddForm: boolean = $state(false);
-  let draggedIndex: number = $state(-1);
 
   function hideShowForm() {
     showAddForm = !showAddForm
   }
-
-  function handleDragStart(index: number) {
-    draggedIndex = index; 
-  }
-
-  function handleDrop(targetIndex: number) {
-    if (draggedIndex === -1 || draggedIndex === targetIndex) return;
-    
-    cards.update(c => {
-      const reordered = [...c];
-      const [moved] = reordered.splice(draggedIndex, 1);
-      reordered.splice(targetIndex, 0, moved);
-      return reordered;
-    });
-
-    draggedIndex = -1;
-
-  }
+  function handleDndConsider(e: CustomEvent) {
+    cards.set(e.detail.items);
+  };
+  function handleDndFinalize(e: CustomEvent) {
+    cards.set(e.detail.items);
+  };
 
 </script>
 
 <div class={["timer-page", { light: appTheme.light, "compact": watchState.compact}]}>
-  <div class="card-grid">
-    {#each $cards as card, index}
-      <div class="draggable" draggable="true" ondragstart={(e) => handleDragStart(index)}
-           ondragover={(e) => e.preventDefault()} ondrop={(e) => handleDrop(index)} role="listitem"
-           aria-grabbed={draggedIndex === index} aria-dropeffect="move">
-        <Card card={card} cardInd={index}/>
-      </div>
-    {/each}
+  <div class="card-grid" use:dndzone={{ items: $cards, dropTargetStyle:{"outline": 'none'}, dragDisabled:watchState.compact||notDraggable.dragg}}  onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+      {#each $cards as card, index (card.id)}
+          <Card card={card} cardInd={index}/>
+      {/each}
   </div>
   {#if showAddForm}
     <AddForm closeForm={ hideShowForm } formName="Add Timer" />
@@ -75,7 +60,7 @@
   height: fit-content;
   width: fit-content;
   flex-wrap: wrap;
-  gap: 1.5vh 1.5vw;
+  gap: 2vh 1.5vw;
   padding-left: clamp(100px, 25vw, 140px);
   padding-top: 40px;
   padding-bottom: 40px;
@@ -85,10 +70,6 @@
   justify-content: flex-start;
 }
 
-.draggable {
-  cursor: grab;
-}
-
 .add-btn {
   position: absolute;
   background: none;
@@ -96,6 +77,7 @@
   bottom: 12px;
   right: 3px;
 }
+
 .add-btn img {
   width: 20px;
   filter:  invert(90%) opacity(90%);

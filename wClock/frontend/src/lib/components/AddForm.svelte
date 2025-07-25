@@ -17,7 +17,9 @@
   let digits: dialTime = $state(Dial);
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Tab') {
+    if (e.key === 'Escape') {
+      closeForm()
+    } else if (e.key === 'Tab') {
       const focusables = modal.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
@@ -138,6 +140,9 @@
     align-items: center;
     padding-left: 30px;
     z-index: 15;
+    user-select: auto;
+    -webkit-user-drag: none;
+    pointer-events: auto;
   }
   
   .modal {

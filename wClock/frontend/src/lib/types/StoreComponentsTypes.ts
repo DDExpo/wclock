@@ -32,6 +32,12 @@ export type Timer = {
   stop: () => void;
 };
 
+export type TimerCard = {
+  start: () => void;
+  stop: () => void;
+  reset: () => void;
+};
+
 export type dialTime = [number, number, number, number, number, number]
 
 export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
@@ -41,7 +47,8 @@ export type AlarmType = {
   text: string;
   timerToAlarm: Timer;
   timeToAlarm: Writable<string>;
-  dial: [number, number, number, number];
+  dial: string;
+  dialNumber: [number, number, number, number];
   enable: boolean;
   weekDays: weekDaysBool;
   update: (text: string, dial: [number, number, number, number]) => void;
@@ -53,7 +60,7 @@ export type CardType = {
   running: boolean;
   name: string;
   time: Writable<dialTime>;
-  timer: Timer;
+  timer: TimerCard;
   timeLeft: Writable<number>;
   initialTime: dialTime;
   update: (name: string, initialT: dialTime, newDial: dialTime) => void;

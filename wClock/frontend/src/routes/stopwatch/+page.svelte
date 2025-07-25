@@ -45,7 +45,7 @@
 <div class="stopwatch-page">
   <div class={["stopwatch-content", { compact: stopWatchCompact }]}>
     <div class={["stopwatch-dial", { light: appTheme.light }]}>
-      <TopRightButton onClick={ makeWindowCompact } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={stopWatchCompact} --left="26px"/>
+      <TopRightButton onClick={ makeWindowCompact } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={stopWatchCompact} --left="15px"/>
       {$stopWatch.h1}{$stopWatch.h}:{$stopWatch.m1}{$stopWatch.m}:{$stopWatch.s1}{$stopWatch.s}<span class="small-dots">:</span><span class="time-part small">{$stopWatch.ms1}</span>
       <div class="stopwatch-buttons">
         <CircleButton 

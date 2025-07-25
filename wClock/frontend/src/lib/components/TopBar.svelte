@@ -1,17 +1,30 @@
-<script>
+<script lang="ts">
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { getAlarms, getCards, watchState } from "$lib/stores/utils.svelte";
 
   import { CloseWindow, SaveAlarm, SaveCard } from "$lib/wailsjs/go/main/App";
-  import { WindowMinimise, WindowToggleMaximise, } from "$lib/wailsjs/runtime/runtime";
+  import { WindowFullscreen, WindowMinimise, WindowUnfullscreen } from "$lib/wailsjs/runtime/runtime";
+
+  let isFullScreen = $state(false)
 
   function close() {
     SaveCard(getCards())
     SaveAlarm(getAlarms())
     CloseWindow()
   };
+
+  function fullScreen() {
+    if (!isFullScreen) {
+      isFullScreen = !isFullScreen
+      WindowFullscreen()
+      return
+    }
+    isFullScreen = !isFullScreen
+    WindowUnfullscreen()
+  }
+
   const minimize = () => WindowMinimise();
-  const toggleMax = () => WindowToggleMaximise();
+
 </script>
 
 <header class={["topbar", { light: appTheme.light }]} >
@@ -19,7 +32,7 @@
   <div class="controls">
     <button onclick={ minimize }><img src="icons/topbar/minimize.svg" alt="minimize"/></button>
     {#if !watchState.compact}
-      <button onclick={ toggleMax }><img src="icons/topbar/maximize.svg" alt="maximize"/></button>
+      <button onclick={ fullScreen }><img src="icons/topbar/maximize.svg" alt="maximize"/></button>
     {/if}
     <button onclick={ close }><img src="icons/topbar/cross.svg" alt="close"/></button>
   </div>
@@ -30,7 +43,8 @@
     display: flex;
     position: absolute;
     width: 100vw;
-    z-index: 20;
+    z-index: 30;
+    height: 30px;
     justify-content: space-between;
     align-items: center;
     background: transparent;

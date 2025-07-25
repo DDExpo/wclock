@@ -13,7 +13,6 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
 
   function start(curDay: number, nextDay: number) {
 
-    console.log(nextDay, curDay)
     if (nextDay == oldNextDay && idInterval !== undefined) {return};
     clearInterval(idInterval);
 
@@ -58,7 +57,7 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
   };
 
   function soundNotify() {
-    const audio = new Audio('/sounds/so-proud-notification.mp3');
+    const audio = new Audio('/sounds/basic-alarm-ringtone.mp3');
     audio.play().catch((e) => console.error("Audio playback failed:", e));
   }
 
@@ -91,7 +90,10 @@ export function partiaUpdateAlarm(ind: number, enable?: boolean, weekDays?: week
   });
 };
 
-export function deleteAlarm(id: string) {
-  alarms.update(a => a.filter(alarm => alarm.id !== id));
+export function deleteAlarm(ind: number, id: string) {
+  alarms.update(a => {
+    a[ind].timerToAlarm.stop()
+      return a.filter(alarm => alarm.id !== id);
+  });
   DbDelete(id, "alarms")
 };
