@@ -28,14 +28,17 @@ export interface PropsCard {
 }
 
 export type Timer = {
-  start: (curDay: number, nextDay: number) => void;
+  start: () => void;
   stop: () => void;
+  updateTimeToAlarm: (change: boolean) => void;
+  updateWatchAlarm: (newDial: [number, number, number, number], textAlarm: string) => void;
 };
 
 export type TimerCard = {
   start: () => void;
   stop: () => void;
   reset: () => void;
+  updateWatchCard: (initialT: dialTime, timerName: string) => void;
 };
 
 export type dialTime = [number, number, number, number, number, number]
@@ -49,10 +52,9 @@ export type AlarmType = {
   timeToAlarm: Writable<string>;
   dial: string;
   dialNumber: [number, number, number, number];
-  enable: boolean;
+  disabled: boolean;
   weekDays: weekDaysBool;
   update: (text: string, dial: [number, number, number, number]) => void;
-  partiaUpdate: (enable?: boolean, weekDays?: weekDaysBool) => void
 };
 
 export type CardType = {

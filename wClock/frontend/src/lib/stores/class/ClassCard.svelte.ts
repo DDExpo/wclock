@@ -16,7 +16,7 @@ export class Card {
     this.name = name;
     this.time.set(newDial);
     this.initialTime = initialT;
-    this.timer = createWatch(this.initialTime, this.time, this.timeLeft, this.name);
+    this.timer.updateWatchCard(this.initialTime, this.name);
   }
   
   constructor(id: string, name: string, initialT: dialTime, t: dialTime, timeleft: number) {

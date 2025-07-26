@@ -41,14 +41,14 @@ export function getAlarms(): gofunc.Alarm[] {
   var curAlarms = get(alarms)
   return curAlarms.map((a) => ({
     ID: a.id,
-    Enable: a.enable,
+    Disabled: a.disabled,
     Text: a.text,
     Dial: a.dialNumber as number[],
     WeekDays: a.weekDays as boolean[],
   }));
 }
 
-export function debounce(callback: CallableFunction, delay: number=2000) {
+export function debounce(callback: CallableFunction, delay: number=3000) {
   let timeoutId: number
 
   return (...args: any[]) => {

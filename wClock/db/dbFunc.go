@@ -112,7 +112,7 @@ func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
 		var dialRaw string
 		var weekDaysRaw string
 
-		err = rows.Scan(&alarm.ID, &alarm.Text, &alarm.Enable, &dialRaw, &weekDaysRaw)
+		err = rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw)
 		errj := json.Unmarshal([]byte(dialRaw), &alarm.Dial)
 		if errj != nil {
 			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", err)
@@ -137,12 +137,12 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 		return err
 	}
 	stmt, err := tx.Preparex(`
-		INSERT INTO alarms (id, text, dial, enable, weekdays)
+		INSERT INTO alarms (id, text, dial, disabled, weekdays)
 		VALUES (?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			text = excluded.text,
 			dial = excluded.dial,
-			enable = excluded.enable,
+			disabled = excluded.disabled,
 			weekdays = excluded.weekdays
 	`)
 	if err != nil {
@@ -162,7 +162,7 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 			tx.Rollback()
 			return fmt.Errorf("marshal weekdays: %w", err)
 		}
-		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Enable, weekDaysJSON)
+		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Disabled, weekDaysJSON)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -182,7 +182,7 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 	schemaAlarms := `CREATE TABLE IF NOT EXISTS alarms (
 		id TEXT PRIMARY KEY,
 		text TEXT,
-		enable BOOLEAN,
+		disabled BOOLEAN,
 		dial BLOB,
 		weekdays BLOB
 	);`

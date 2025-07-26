@@ -9,34 +9,23 @@ export class Alarm {
   dialNumber: [number, number, number, number];
   text = $state<string>("");
   dial = $state<string>("");
-  enable = $state<boolean>(false);
+  disabled = $state<boolean>(false);
   weekDays = $state<weekDaysBool>([false, false, false, false, false, false, false]);
-
-  partiaUpdate(enable?: boolean, weekDays?: weekDaysBool) {
-    if (enable !== undefined && this.enable !== enable) {
-      this.enable = enable;
-    }
-
-    if (weekDays !== undefined &&
-        JSON.stringify(this.weekDays) !== JSON.stringify(weekDays)) {
-      this.weekDays = weekDays;
-    }
-  }
 
   update(text: string, dial: [number, number, number, number]) {
     this.text = text;
     this.dial = `${dial[0]}${dial[1]}:${dial[2]}${dial[3]}`;
     this.dialNumber = dial
-    this.timerToAlarm = createWatchAlarm(this.dialNumber, this.text, this.timeToAlarm)
+    this.timerToAlarm.updateWatchAlarm(this.dialNumber, this.text)
   }
   
-  constructor(id: string, text: string, dial: [number, number, number, number], enable: boolean, weekDays: weekDaysBool) {
+  constructor(id: string, text: string, dial: [number, number, number, number], disabled: boolean, weekDays: weekDaysBool) {
     this.id = id
     this.text = text
     this.dial = `${dial[0]}${dial[1]}:${dial[2]}${dial[3]}`
     this.dialNumber = dial
-    this.enable = enable
+    this.disabled = disabled
     this.weekDays = weekDays
-    this.timerToAlarm = createWatchAlarm(this.dialNumber, this.text, this.timeToAlarm)
+    this.timerToAlarm = createWatchAlarm(this.dialNumber, this.text, this.timeToAlarm, this.weekDays)
   };
 };

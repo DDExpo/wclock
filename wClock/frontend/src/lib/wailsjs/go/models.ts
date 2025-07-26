@@ -2,7 +2,7 @@ export namespace gofunc {
 	
 	export class Alarm {
 	    ID: string;
-	    Enable: boolean;
+	    Disabled: boolean;
 	    Text: string;
 	    Dial: number[];
 	    WeekDays: boolean[];
@@ -14,7 +14,7 @@ export namespace gofunc {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.ID = source["ID"];
-	        this.Enable = source["Enable"];
+	        this.Disabled = source["Disabled"];
 	        this.Text = source["Text"];
 	        this.Dial = source["Dial"];
 	        this.WeekDays = source["WeekDays"];

@@ -14,7 +14,7 @@ type Card struct {
 
 type Alarm struct {
 	ID       string
-	Enable   bool
+	Disabled bool
 	Text     string
 	Dial     [4]int
 	WeekDays [7]bool

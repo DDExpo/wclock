@@ -65,9 +65,8 @@
   };
 
   function submit() {
-    let valid = validateDial(digits)
-    isDialValid = valid
-    if (name && valid) {
+    isDialValid = validateDial(digits)
+    if (name && isDialValid) {
       if (alarm) {
         let num = parseInt(digits.slice(0, 4).join(''))
 

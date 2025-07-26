@@ -14,10 +14,10 @@
 
 
   function handleDndConsider(e: CustomEvent) {
-      focusComponents.comps = e.detail.items;
+      focusComponents.set(e.detail.items)
   }
   function handleDndFinalize(e: CustomEvent) {
-      focusComponents.comps = e.detail.items;
+      focusComponents.set(e.detail.items)
     }
 
   function onMouseDown(e: MouseEvent) {
@@ -75,9 +75,9 @@
 <div class="pa">
   <div class={["focus-page", {"light": appTheme.light}]}>
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div class="grid-container" use:dndzone={{items: focusComponents.comps, dragDisabled:drag, dropTargetStyle:{"outline": 'none' }}} 
+    <div class="grid-container" use:dndzone={{items: $focusComponents, dragDisabled:drag, dropTargetStyle:{"outline": 'none' }}} 
            onconsider={ handleDndConsider } onfinalize={ handleDndFinalize }>
-          {#each focusComponents.comps as c, i (c.id)}
+          {#each $focusComponents as c, i (c.id)}
             <div class={["grid-item", { "grid-a": i === 0, "grid-b": i === 1, "grid-c":i === 2}]}>
               <c.componenet />
             </div>
@@ -95,22 +95,19 @@
   display: flex;
   width: 100%;
   height: 100%;
-  min-height: fit-content;
-  max-width: fit-content;
 }
 
 .focus-page {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
   overflow: auto;
-  scrollbar-width: 12px;
+  scrollbar-width: thick;
   scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
 }
 
 .focus-page.light .grid-container {
   border-radius: 15px;
-  background-color: rgba(209, 209, 209, 0.463);
+  background-color: rgba(209, 209, 209, 1);
+  box-shadow: 0px 0px 40px rgba(97, 97, 97, 0.5);
 }
 
 .focus-page.light .splitter,
@@ -120,16 +117,16 @@
 
 .grid-container {
   display: grid;
-  width: 100vw;
-  height: 100vh;
+  width: 90%;
+  height: 90%;
+  box-shadow: 0px 0px 40px rgba(156, 156, 156, 0.2);
   background-color: rgba(118, 118, 118, 0.383);
   grid-template-columns: 1fr 5px 1fr;
   grid-template-rows: auto auto;
   gap: 5px;
-  margin-left: 80px;
   margin-top: 40px;
-  margin-bottom: 40px;
-  margin-right: 15px;
+  margin-left: clamp(80px, 10vw, 150px);
+  margin-right: clamp(15px, 10vw, 60px);
 }
 
 .grid-item {

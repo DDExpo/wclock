@@ -31,17 +31,21 @@
     new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft)));
     
     const alarmsGo = await GetAlarms();
-    alarms.set(alarmsGo.map(alarm =>
-    new Alarm(alarm.ID, alarm.Text, alarm.Dial as [number, number, number, number], alarm.Enable, alarm.WeekDays as weekDaysBool)));
-  });
+    alarms.set(alarmsGo.map(alarmData => {
+      const alarm = new Alarm(alarmData.ID, alarmData.Text, alarmData.Dial as [number, number, number, number], alarmData.Disabled, alarmData.WeekDays as weekDaysBool);
+      if (!alarm.disabled) {alarm.timerToAlarm.start()};
+      return alarm;
+    }));
 
-  cards.subscribe(() => {
-    debounceCards()
-  });
+      cards.subscribe(() => {
+        debounceCards()
+      });
 
   alarms.subscribe(() => {
     debounceAlarms()
   });
+})
+
 </script>
 
 <div class="right-space"></div>
