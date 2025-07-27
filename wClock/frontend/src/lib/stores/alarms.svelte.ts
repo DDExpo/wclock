@@ -36,17 +36,17 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
     if (diffMs < 0 && change) {
       diffMs = -diffMs
     }
-    console.log(diffMs)
+
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-    if (diffHours === 0 && diffMinutes === 0 && diffMs < 10000) {
+    if (diffHours === 0 && diffMinutes === 0 && diffMs < 5000) {
       timeToAlarmSetter.set(`${0} hours ${0} minutes`);
       stop();
       TimerFinished("Alarm", alarmText);
       setTimeout(soundNotify, 150);
       getNextDay();
-      setTimeout(start, 12000); 
+      setTimeout(start, 7000); 
       return;
     }
 

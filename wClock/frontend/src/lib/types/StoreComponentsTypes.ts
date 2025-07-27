@@ -45,6 +45,12 @@ export type dialTime = [number, number, number, number, number, number]
 
 export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
 
+export type TaskType = {
+  id: string;
+  text: string;
+  checked: boolean;
+};
+
 export type AlarmType = {
   id: string;
   text: string;

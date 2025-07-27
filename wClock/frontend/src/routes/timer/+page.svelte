@@ -23,17 +23,17 @@
 </script>
 
 <div class={["timer-page", { light: appTheme.light, "compact": watchState.compact}]}>
-  <div class="card-grid" use:dndzone={{ items: $cards, dropTargetStyle:{"outline": 'none'}, dragDisabled:watchState.compact||notDraggable.dragg}}  onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+    <div class="card-grid" use:dndzone={{ items: $cards, dropTargetStyle:{"outline": 'none'}, dragDisabled:watchState.compact||notDraggable.dragg}}  onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
       {#each $cards as card, index (card.id)}
-          <Card card={card} cardInd={index}/>
+      <Card card={card} cardInd={index}/>
       {/each}
-  </div>
-  {#if showAddForm}
+    </div>
+    {#if showAddForm}
     <AddForm closeForm={ hideShowForm } formName="Add Timer" />
-  {/if}
-  {#if !watchState.compact}
-  <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
-  {/if}
+    {/if}
+    {#if !watchState.compact}
+    <button class="add-btn" onclick={ hideShowForm }><img src="icons/buttons/add.svg" alt="add"/></button>
+    {/if}
 </div>
 
 <style>

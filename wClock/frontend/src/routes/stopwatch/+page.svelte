@@ -213,7 +213,7 @@
 }
 @media (max-height: 512px) {
   .stopwatch-content {
-    margin-top: 10rem;
+    margin-top: 12rem;
   }
 }
 </style>

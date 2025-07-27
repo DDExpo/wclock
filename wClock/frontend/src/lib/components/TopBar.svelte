@@ -81,7 +81,6 @@
   .controls {
     display: flex;
     padding-right: 16px;
-    user-select: none;
   }
 
   button {
@@ -92,6 +91,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
+    user-select: none;
 
   }
   

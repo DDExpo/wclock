@@ -12,8 +12,8 @@
 <style> 
 
   .circle-button {
-    width: clamp(30px, 6vw, 60px);
-    height: clamp(30px, 6vw, 60px);
+    width: clamp(35px, 6vw, 60px);
+    height: clamp(35px, 6vw, 60px);
     border-radius: 50%;
     border: transparent;
     background-color: #2f2f2f;

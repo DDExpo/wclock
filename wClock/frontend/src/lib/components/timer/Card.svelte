@@ -126,9 +126,9 @@
 .card.compact .bottom-buttons {
   position: absolute;
   z-index: 11;
-  top: 150px;
+  top: 147px;
   left: 6px;
-  gap: 130px;
+  gap: 120px;
 }
 
 .card.light {
@@ -174,7 +174,7 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  gap: 2.5vw;
+  gap: clamp(30px, 2.5vw, 40px);
   margin-top: -10px;
 }
 
