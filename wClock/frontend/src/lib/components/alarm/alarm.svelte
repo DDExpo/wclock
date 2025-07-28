@@ -228,16 +228,18 @@ input:checked + .slider:before {
   font-family: dark-theme-font;
   font-size: clamp(0.7rem, 2vw, 1.3rem);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.3s ease;
   margin-top: clamp(0px, 1vw, -20px);
   box-shadow: -6px 8px 5px rgba(0, 0, 0, 0.1);
 }
 .weekday-btn:hover {
   background: #afb9f2a8;
+  transform: translateY(-2px);
 }
 
 .weekday-btn.active {
   background: #327a45;
+  transform: translateY(0px);
 }
 
 .weekday-btn.active:hover {

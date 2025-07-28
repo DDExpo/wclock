@@ -26,9 +26,7 @@
   <div class="progress-content">
     <div class="side-column">
       <div class="label">Yesterday</div>
-      <div class="line" ></div>
       <div class="value">{yesterday}</div>
-      <div class="line" ></div>
       <div class="unit">hour</div>
     </div>
 
@@ -38,9 +36,7 @@
     
     <div class="side-column" style:margin-right=16px>
       <div class="label">Streak</div>
-      <div class="line" ></div>
       <div class="value">{streak}</div>
-      <div class="line" ></div>
       <div class="unit">days</div>
     </div>
   </div>
@@ -72,10 +68,6 @@
 
 }
 
-.goal-comp.light .label, 
-.goal-comp.light .value {
-    text-shadow: -2px 3px 3px rgba(16, 16, 16, 0.2);
-}
 
 .header {
   display: flex;
@@ -104,6 +96,7 @@
   padding-right: 1rem;
   padding-left: 0.5rem;
   align-items: center;
+  gap: 5px;
 }
 
 .side-column {
@@ -119,23 +112,12 @@
   position: relative;
   font-weight: bold;
   margin-bottom: 0.2rem;
-  text-shadow: -5px 5px 2px rgba(129, 129, 129, 0.2);
-}
-
-.line {
-  position: relative;
-  width: 55%;
-  height: 2px;
-  max-width: 100px;
-  background: gray;
-  margin: 2px 0;
 }
 
 .value {
   position: relative;
   display: flex;
   font-weight: bold;
-  text-shadow: -5px 5px 2px rgba(129, 129, 129, 0.2);
 }
 
 .unit {

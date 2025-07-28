@@ -25,6 +25,7 @@
     transition: background 0.2s;
     box-shadow: -4px 6px 8px rgba(23, 23, 23, 0.5);
     user-select: none;
+    cursor: pointer;
   }
   .circle-button:hover {
     background: #6b6b6b;
@@ -38,9 +39,8 @@
     height: 55%;
     filter: invert(90%) opacity(90%);
     object-fit: contain;
-    cursor: pointer;
   }
-
+  
   .circle-button.light {
     background-color: #e8eeffc6;
     box-shadow: -4px 6px 8px rgba(23, 23, 23, 0.2);

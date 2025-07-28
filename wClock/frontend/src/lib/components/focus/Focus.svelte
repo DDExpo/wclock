@@ -82,8 +82,21 @@
   color: #555;
 }
 .focus-comp.light .focus-options input {
-  accent-color: rgb(193, 232, 233);
+  background-color: #faece3;
+  box-shadow: 0px 3px 0px rgb(0, 0, 0, 0.3);
 }
+.focus-comp.light .focus-options input:checked {
+  background-color: #6FD7F7;
+}
+.focus-comp.light .focus-options input:hover {
+  box-shadow: 0px 3px 0px rgba(255, 253, 249, 0.648);
+}
+
+.focus-comp.light .focus-options input:active {
+  transform: translateY(0px);
+  box-shadow: 0px 3px 0px #6FD7F7;
+}
+
 .focus-comp.light .start-button {
   font-family: serif;
   border-radius: 12px;
@@ -148,7 +161,7 @@
   margin-bottom: 1rem;
   color: white;
   background: #202020;
-  box-shadow: 0px 2px 0px rgb(255, 255, 255);
+  box-shadow: 0px 3px 0px rgb(255, 255, 255);
   flex-direction: column;
 }
 
@@ -174,6 +187,7 @@
 
 .focus-options {
   display: flex;
+  position: relative;
   width: 100%;
   align-items: center;
   justify-content: center;
@@ -184,10 +198,46 @@
 }
 
 .focus-options input {
-  accent-color: #f3cb17;
+  appearance: none;
+  -webkit-appearance: none;
   width: 16px;
   height: 16px;
   cursor: pointer;
+  background-color: #181818bd;
+  box-shadow: 0px 3px 0px rgb(255, 255, 255);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.focus-options input:checked {
+  background-color: #f3cb17;
+}
+
+.focus-options input:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 5px 0px rgb(255, 255, 255);
+}
+
+.focus-options input:active {
+  transform: translateY(0px);
+  box-shadow: 0px 3px 0px #6FD7F7;
+}
+
+.focus-options input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  margin-top: 2px;
+  margin-left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid rgba(0, 0, 0, 0.685);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.focus-options input[type="checkbox"]:checked::after {
+  opacity: 1;
 }
 
 .start-button {
@@ -219,6 +269,6 @@
 
 .focus-comp.light .start-button:active {
   transform: translateY(0px);
-  box-shadow: 0px 6px 0px rgba(141, 254, 252, 0.93);
+  box-shadow: 0px 6px 0px #6FD7F7;
 }
 </style>

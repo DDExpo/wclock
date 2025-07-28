@@ -78,7 +78,7 @@
 
 .progress-label {
   fill: #eee;
-  font-size: clamp(25px, 4vw, 28px);
+  font-size: 27px;
   font-family: dark-theme-font;
   word-break: break-all;
 }
