@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { getAlarms, getCards, watchState } from "$lib/stores/utils.svelte";
+  import { appSettings, getAlarms, getCards, getTasks, validateSettings, watchState } from "$lib/stores/utils.svelte";
 
-  import { CloseWindow, SaveAlarm, SaveCard } from "$lib/wailsjs/go/main/App";
+  import { gofunc } from "$lib/wailsjs/go/models";
+  import { CloseWindow, SaveAlarm, SaveCard, SaveSettings, SaveTasks } from "$lib/wailsjs/go/main/App";
   import { WindowFullscreen, WindowMinimise, WindowUnfullscreen } from "$lib/wailsjs/runtime/runtime";
 
   let isFullScreen = $state(false)
@@ -10,6 +10,9 @@
   function close() {
     SaveCard(getCards())
     SaveAlarm(getAlarms())
+    SaveTasks(getTasks())
+    validateSettings(true, true)
+    SaveSettings(gofunc.AppSettings.createFrom(appSettings))
     CloseWindow()
   };
 
@@ -27,7 +30,7 @@
 
 </script>
 
-<header class={["topbar", { light: appTheme.light }]} >
+<header class={["topbar", { light: appSettings.Theme }]} >
   <div class="title">WClock</div>
   <div class="controls">
     <button onclick={ minimize }><img src="icons/topbar/minimize.svg" alt="minimize"/></button>

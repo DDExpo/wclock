@@ -26,6 +26,10 @@ export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
+export function GetTasks() {
+  return window['go']['main']['App']['GetTasks']();
+}
+
 export function GetWindowsPcColors() {
   return window['go']['main']['App']['GetWindowsPcColors']();
 }
@@ -44,6 +48,14 @@ export function SaveAlarm(arg1) {
 
 export function SaveCard(arg1) {
   return window['go']['main']['App']['SaveCard'](arg1);
+}
+
+export function SaveSettings(arg1) {
+  return window['go']['main']['App']['SaveSettings'](arg1);
+}
+
+export function SaveTasks(arg1) {
+  return window['go']['main']['App']['SaveTasks'](arg1);
 }
 
 export function SetWindowAlwaysOnTop(arg1) {

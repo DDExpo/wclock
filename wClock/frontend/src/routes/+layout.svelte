@@ -7,21 +7,23 @@
   
   import SideBar from "$lib/components/SideBar.svelte";
   import TopBar from "$lib/components/TopBar.svelte";
+  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm, SaveTasks, GetTasks } from "$lib/wailsjs/go/main/App";
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
-  import { debounce, getAlarms, getCards, watchState } from "$lib/stores/utils.svelte";
-  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm } from "$lib/wailsjs/go/main/App";
+  import { appSettings, debounce, getAlarms, getCards, getTasks, watchState } from "$lib/stores/utils.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
   import { alarms } from "$lib/stores/alarms.svelte";
   import { Card } from "$lib/stores/class/ClassCard.svelte";
   import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
+  import { Task } from "$lib/stores/class/ClassTask.svelte";
+  import { tasks } from '$lib/stores/focusState.svelte';
 
 	let { children } = $props();    
   const debounceCards = debounce(() => SaveCard(getCards()))
-  const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))  
+  const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))
+  const debounceTasks = debounce(() => SaveTasks(getTasks()))
 
   onMount(async() => {
-    const savedT = await GetSettings()
-    appTheme.light = savedT
+    GetSettings().then((data) => {Object.assign(appSettings, data);});
     const color = await GetWindowsPcColors()
     if (color) {appTheme.windowsColor = color};
     document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor)
@@ -37,13 +39,18 @@
       return alarm;
     }));
 
-      cards.subscribe(() => {
-        debounceCards()
-      });
+    const isPastClearDate = Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0);
+    const tasksGo = await GetTasks();
 
-  alarms.subscribe(() => {
-    debounceAlarms()
-  });
+    tasks.set(tasksGo.map(taskData => {
+      const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeSpent);
+      if (isPastClearDate) {task.timeSpent=""; task.checked=false}
+      return task;
+    }));
+
+    cards.subscribe(() => { debounceCards() });
+    alarms.subscribe(() => { debounceAlarms() });
+    tasks.subscribe(() => { debounceTasks() });
 })
 
 </script>
@@ -56,7 +63,7 @@
     {#if !(watchState.compact)}
     <SideBar />
     {/if}
-    <div class={["background-img", { light: appTheme.light }]}></div>
+    <div class={["background-img", { light: appSettings.Theme }]}></div>
   </div>
 </main>
 

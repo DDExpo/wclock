@@ -14,7 +14,7 @@ import (
 	runtime_2 "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var userSettings gofunc.UserSettings
+var Settings gofunc.AppSettings
 
 // App struct
 type App struct {
@@ -71,7 +71,7 @@ func (a *App) startup(ctx context.Context) {
 	}
 	defer DB.Close()
 
-	userSettings, err = gofunc.ReadSettings(os.Getenv("APP_SETTINGS"))
+	Settings, err = gofunc.LoadOrInitSettings(os.Getenv("APP_SETTINGS"))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -87,7 +87,6 @@ func (a *App) GetCards() []gofunc.Card {
 	}
 	return cards
 }
-
 func (a *App) SaveCard(cards []gofunc.Card) {
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
@@ -108,7 +107,6 @@ func (a *App) GetAlarms() []gofunc.Alarm {
 	}
 	return alarms
 }
-
 func (a *App) SaveAlarm(alarms []gofunc.Alarm) {
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
@@ -119,23 +117,69 @@ func (a *App) SaveAlarm(alarms []gofunc.Alarm) {
 	}
 }
 
-func (a *App) DbDelete(id string, table string) {
+func (a *App) GetTasks() []gofunc.Task {
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
-	err := db.DbDelete(DB, id, table)
+	tasks, err := db.GetAllTasks(DB)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return tasks
+}
+func (a *App) SaveTasks(tasks []gofunc.Task) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
+	defer DB.Close()
+	err := db.SaveTasks(DB, tasks)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func (a *App) GetSettings() bool {
-	return userSettings.AppTheme
+func (a *App) DbDelete(ids []string, table string) {
+
+	DB := db.GetDB(os.Getenv("APP_DB"))
+	defer DB.Close()
+	err := db.DbDelete(DB, ids, table)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
-func (a *App) Shutdown(ctx context.Context) {
+func (a *App) GiveNewSettings(newSettings map[string]any) {
 
-	u, err := json.Marshal(userSettings)
+	key := ""
+	for k := range newSettings {
+		key = k
+		break
+	}
+
+	switch key {
+	case "Theme":
+		Settings.Theme = newSettings[key].(bool)
+	case "Focus":
+		data, _ := json.Marshal(newSettings[key])
+		err := json.Unmarshal(data, &Settings.Focus.FocusCard)
+		if err != nil {
+			fmt.Println("Failed to unmarshal FocusCard:", err)
+		}
+
+	case "goal":
+		data, _ := json.Marshal(newSettings[key])
+		err := json.Unmarshal(data, &Settings.Focus.Goal)
+		if err != nil {
+			fmt.Println("Failed to unmarshal Goal:", err)
+		}
+	default:
+		fmt.Println("Fuck")
+	}
+
+}
+
+func (a *App) SaveSettings(appSettings gofunc.AppSettings) {
+
+	u, err := json.MarshalIndent(appSettings, "", "  ")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -144,10 +188,11 @@ func (a *App) Shutdown(ctx context.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	Settings = appSettings
 }
 
-func (a *App) GiveNewSettings(theme bool) {
-	userSettings.AppTheme = theme
+func (a *App) GetSettings() gofunc.AppSettings {
+	return Settings
 }
 
 func (a *App) GetWindowsPcColors() string {
@@ -177,6 +222,11 @@ func (a *App) MakeMiniWindowSize(width int, height int, compact bool) {
 	}
 }
 
+func (a *App) CheckWindowSize() bool {
+	width, _ := runtime_2.WindowGetSize(a.ctx)
+	return width > 681
+}
+
 func (a *App) TimerFinished(typeNotify string, name string) {
 	err := gofunc.Notify(typeNotify+":"+name, "Finished!")
 	if err != nil {
@@ -184,12 +234,11 @@ func (a *App) TimerFinished(typeNotify string, name string) {
 	}
 }
 
+func (a *App) Shutdown(ctx context.Context) {
+	a.SaveSettings(Settings)
+}
+
 func (a *App) CloseWindow() {
 	a.Shutdown(a.ctx)
 	runtime_2.Quit(a.ctx)
-}
-
-func (a *App) CheckWindowSize() bool {
-	width, _ := runtime_2.WindowGetSize(a.ctx)
-	return width > 681
 }

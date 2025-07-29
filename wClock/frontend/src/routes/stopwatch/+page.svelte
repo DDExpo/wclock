@@ -3,9 +3,8 @@
   import CircleButton from "$lib/components/CircleButton.svelte";
   import TopRightButton from "$lib/components/TopRightButton.svelte";
   
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { stopWatch, markers, stopWatchState } from "$lib/stores/stopWatch.svelte";
-  import { makeMiniWindow } from "$lib/stores/utils.svelte";
+  import { appSettings, makeMiniWindow } from "$lib/stores/utils.svelte";
 
   let stopWatchCompact = $state(false)
 
@@ -44,7 +43,7 @@
 
 <div class="stopwatch-page">
   <div class={["stopwatch-content", { compact: stopWatchCompact }]}>
-    <div class={["stopwatch-dial", { light: appTheme.light }]}>
+    <div class={["stopwatch-dial", { light: appSettings.Theme }]}>
       <TopRightButton onClick={ makeWindowCompact } icon="icons/buttons/arrow-up-right-from-square.svg" alt="Compact mode" compact={stopWatchCompact} --left="15px"/>
       {$stopWatch.h1}{$stopWatch.h}:{$stopWatch.m1}{$stopWatch.m}:{$stopWatch.s1}{$stopWatch.s}<span class="small-dots">:</span><span class="time-part small">{$stopWatch.ms1}</span>
       <div class="stopwatch-buttons">
@@ -59,7 +58,7 @@
         <CircleButton onClick={ resetStopWatch } icon="icons/buttons/reset.svg" alt="reset"/>
       </div>
     </div>
-    <div class={["stop-markers", { light: appTheme.light, compact: stopWatchCompact }]}>
+    <div class={["stop-markers", { light: appSettings.Theme, compact: stopWatchCompact }]}>
       <div class="titles">
         <span>Laps</span>
         <span>Time</span>
@@ -194,7 +193,7 @@
   margin-top: 20px;
   font-size: medium;
   grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid var(--user-pc-color,);
+  border-bottom: 1px solid var(--user-pc-color, rgb(255, 180, 94));
 }
 
 .stop-markers {

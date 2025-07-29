@@ -1,9 +1,5 @@
 package gofunc
 
-type UserSettings struct {
-	AppTheme bool
-}
-
 type Card struct {
 	ID          string
 	Name        string
@@ -18,4 +14,40 @@ type Alarm struct {
 	Text     string
 	Dial     [4]int
 	WeekDays [7]bool
+}
+
+type Task struct {
+	ID        string
+	Text      string
+	Checked   bool
+	TimeSpent string
+}
+
+type Goal struct {
+	DailyProgress   [2]int `json:"dailyProgress"`
+	Streak          int    `json:"streak"`
+	Yesterday       int    `json:"yesterday"`
+	Completed       int    `json:"completed"`
+	DailyGoal       int    `json:"dailyGoal"`
+	ClearHours      int    `json:"clearHours"`
+	ClearMinutes    int    `json:"clearMinutes"`
+	IncludeWeekdays bool   `json:"includeWeekdays"`
+}
+
+type FocusCard struct {
+	Hours      int  `json:"hours"`
+	Minutes    int  `json:"minutes"`
+	Breaks     int  `json:"breaks"`
+	BreaksTime int  `json:"breaksTime"`
+	SkipBreaks bool `json:"skipBreaks"`
+}
+
+type FocusSettings struct {
+	Goal      Goal      `json:"goal"`
+	FocusCard FocusCard `json:"focus"`
+}
+
+type AppSettings struct {
+	Theme bool          `json:"Theme"`
+	Focus FocusSettings `json:"Focus"`
 }

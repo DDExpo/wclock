@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
 
   let { icon, alt, onClick, compact=false} = $props()
 
 </script>
 
-<button class={["btn-top-right", { light: appTheme.light, compact: compact }]} onclick={ onClick }>
+<button class={["btn-top-right", { light: appSettings.Theme, compact: compact }]} onclick={ onClick }>
   <img src="{icon}" alt="{alt}"/>
 </button>
 
@@ -20,11 +20,11 @@
   background: none;
   border: none;
   user-select: none;
+  cursor: pointer;
 }
 .btn-top-right img {
   width: clamp(var(--start, 12px), var(--middle, 2.5vw), var(--end, 26px));
   filter:  invert(90%) opacity(30%);
-  cursor: pointer;
   transition: transform 0.3s ease;
 }
 .btn-top-right img:hover {

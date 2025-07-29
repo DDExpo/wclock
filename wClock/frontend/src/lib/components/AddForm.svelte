@@ -3,7 +3,7 @@
   
   import type { dialTime, PropsForm } from "$lib/types/StoreComponentsTypes";
 
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
   import { createCard, updateCard, validateDial } from "$lib/stores/timerWatch.svelte";
   import { createAlarm, updateAlarm } from "$lib/stores/alarms.svelte";
   
@@ -97,10 +97,10 @@
 </script>
 
 <div class="add-form" bind:this={modal} draggable="false">
-  <div class={["modal", { "light": appTheme.light }]}>
+  <div class={["modal", { "light": appSettings.Theme }]}>
     <h2>{formName}</h2>
     <input class={["input-name", { invalid: isTimerInvalid }]} placeholder="Text" bind:value={name} />
-    <div class={["dial", { "light": appTheme.light, "invalid": isTimerInvalid  && !isDialValid }]}>
+    <div class={["dial", { "light": appSettings.Theme, "invalid": isTimerInvalid  && !isDialValid }]}>
       <div class="digit">
         {#each Array.from({ length: digitsLen }) as _, i (i)}
           <div class="digit-arrows">

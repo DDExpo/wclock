@@ -2,8 +2,8 @@
   import { onDestroy, onMount } from "svelte";
 
   import { dndzone } from "svelte-dnd-action";
-  
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+
+  import { appSettings } from "$lib/stores/utils.svelte";
   import { focusComponents, gridSeizeState } from "$lib/stores/focusState.svelte";
   
   let gridEl: HTMLDivElement;
@@ -88,7 +88,7 @@
 
 
 <div class="pa">
-  <div class={["focus-page", {"light": appTheme.light}]}>
+  <div class={["focus-page", {"light": appSettings.Theme}]}>
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div class="grid-container" use:dndzone={{items: $focusComponents, dragDisabled:drag, dropTargetStyle:{"outline": 'none' }}} 
                                 onconsider={ handleDndConsider } onfinalize={ handleDndFinalize }>

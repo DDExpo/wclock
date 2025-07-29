@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { PropsCard } from "$lib/types/StoreComponentsTypes";
-
+  
   import AddForm from "../AddForm.svelte";
   import CircleButton from "../CircleButton.svelte";
   import CircleProgress from './CircleProgress.svelte';
   import TopRightButton from "../TopRightButton.svelte";
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+
   import { deleteCard, notDraggable } from "$lib/stores/timerWatch.svelte";
-  import { makeMiniWindow } from "$lib/stores/utils.svelte";
+  import { appSettings, makeMiniWindow } from "$lib/stores/utils.svelte";
   
   let { card, cardInd }: PropsCard = $props()
   let showCardForm: boolean = $state(false)
@@ -37,7 +37,7 @@
 
 </script>
 
-<div class={["card", { light: appTheme.light, "compact": cardStateCompact}]}>
+<div class={["card", { light: appSettings.Theme, "compact": cardStateCompact}]}>
   <div class="card-header">
     <div class="card-name">{card.name}</div>
     <div class="top-buttons">
@@ -52,7 +52,7 @@
     </div>
   </div>
   <div class="circle-progress-bar">
-    <CircleProgress progress={card.timeLeft} cardTime={card.time}/>
+    <CircleProgress progress={card.timeLeft} time={card.time}/>
   </div>
   <div class="bottom-buttons">
     <CircleButton

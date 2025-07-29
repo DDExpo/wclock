@@ -1,16 +1,19 @@
 <script lang="ts">
+  import { appSettings } from '$lib/stores/utils.svelte';
   import { isAlwaysOnTop, appTheme } from '$lib/stores/sideBarAndTheme.svelte'
   import { CheckWindowSize, SetWindowAlwaysOnTop, GiveNewSettings } from '$lib/wailsjs/go/main/App';
-
 
   let isSidebarOpen: boolean = $state(false);
   let appWindowSizeEnough: boolean = $state(false)
 
-  async function toggleTheme() {
-    appTheme.light = !appTheme.light;
-    if (["#eee", "#242323d6"].includes(appTheme.windowsColor)) { appTheme.windowsColor = appTheme.light ? "#eee": "#242323d6"};
-    GiveNewSettings(appTheme.light);
-    document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
+  function toggleTheme() {
+    appSettings.Theme = !appSettings.Theme;
+    if (appTheme.windowsColor) {
+      document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor);
+    }
+  
+    GiveNewSettings({ Theme: appSettings.Theme });
+
   }
 
   async function checkWindowSizeEnough() {
@@ -32,7 +35,7 @@
 </script>
 
 <main style="display: flex">
-  <div class={["sidebar", { light: appTheme.light, open: isSidebarOpen && appWindowSizeEnough}]}
+  <div class={["sidebar", { light: appSettings.Theme, open: isSidebarOpen && appWindowSizeEnough}]}
   onmouseenter={ checkWindowSizeEnough } onmouseleave={() => (isSidebarOpen = false)}
   role="region">
   <ul>
@@ -53,7 +56,7 @@
     <li>{@render sidebarButton('/alarm', 'icons/sidebar/alarm-exclamation.svg', 'Alarm menu', 'Alarm')}</li>
   </ul>
 
-  <div class={["util-buttons",{light: appTheme.light}]} >
+  <div class={["util-buttons",{light: appSettings.Theme}]} >
     <button class="icon-btn-util" onclick={ toggleTheme }><img src="/icons/sidebar/moon.svg" alt="Theme"></button>
     <button class="icon-btn-util" onclick={ setAlwaysOnTop }>
       {#if !isAlwaysOnTop.onTop}
@@ -109,7 +112,7 @@
 }
 
 .sidebar.light .dot {
-  background: var(--user-pc-color);
+  background: var(--user-pc-color, rgb(255, 180, 94));
 }
 .sidebar.light .icon-btn:hover {
   background: #EBE8F2;

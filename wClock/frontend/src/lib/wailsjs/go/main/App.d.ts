@@ -7,23 +7,29 @@ export function CheckWindowSize():Promise<boolean>;
 
 export function CloseWindow():Promise<void>;
 
-export function DbDelete(arg1:string,arg2:string):Promise<void>;
+export function DbDelete(arg1:Array<string>,arg2:string):Promise<void>;
 
 export function GetAlarms():Promise<Array<gofunc.Alarm>>;
 
 export function GetCards():Promise<Array<gofunc.Card>>;
 
-export function GetSettings():Promise<boolean>;
+export function GetSettings():Promise<gofunc.AppSettings>;
+
+export function GetTasks():Promise<Array<gofunc.Task>>;
 
 export function GetWindowsPcColors():Promise<string>;
 
-export function GiveNewSettings(arg1:boolean):Promise<void>;
+export function GiveNewSettings(arg1:Record<string, any>):Promise<void>;
 
 export function MakeMiniWindowSize(arg1:number,arg2:number,arg3:boolean):Promise<void>;
 
 export function SaveAlarm(arg1:Array<gofunc.Alarm>):Promise<void>;
 
 export function SaveCard(arg1:Array<gofunc.Card>):Promise<void>;
+
+export function SaveSettings(arg1:gofunc.AppSettings):Promise<void>;
+
+export function SaveTasks(arg1:Array<gofunc.Task>):Promise<void>;
 
 export function SetWindowAlwaysOnTop(arg1:boolean):Promise<void>;
 

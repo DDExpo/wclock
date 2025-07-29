@@ -1,6 +1,2 @@
-export const appTheme = $state({
-  light: false,
-  windowsColor: "#eee",  
-}
-)
+export const appTheme = $state({windowsColor: 'unset'})
 export const isAlwaysOnTop = $state({ onTop: false})

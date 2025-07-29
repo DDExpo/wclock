@@ -5,7 +5,7 @@
   import Alarm from "$lib/components/alarm/Alarm.svelte";
 
   import { alarms } from "$lib/stores/alarms.svelte";
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
   import { notDraggable } from "$lib/stores/timerWatch.svelte";
   
   let showAddForm: boolean = $state(false);
@@ -22,7 +22,7 @@
 
 </script>
 
-<div class={["alarm-page", { light: appTheme.light }]}>
+<div class={["alarm-page", { light: appSettings.Theme}]}>
   <div class="alarm-grid" use:dndzone={{ items: $alarms, dropTargetStyle:{"outline": 'none'}, dragDisabled:notDraggable.dragg}} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
     {#each $alarms as alr, index (alr.id)}
       <Alarm alarm={alr} alarmInd={index} timeTo={alr.timeToAlarm} />

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte"
+  import { appSettings } from "$lib/stores/utils.svelte";
   import type { PropsCircleProgress } from "$lib/types/StoreComponentsTypes";
 
-  let { progress, cardTime }: PropsCircleProgress = $props();
+  let { progress, time, focus=false }: PropsCircleProgress = $props();
 
   const radius = 60;
   const stroke = 12;
@@ -21,14 +21,14 @@
   class="circle-progress"
 >
   <circle
-    class={["bg", {light: appTheme.light }]}
+    class={["bg", {light: appSettings.Theme }]}
     cx={radius + stroke / 2}
     cy={radius + stroke / 2}
     r={radius}
     stroke-width={stroke}
   />
   <circle
-    class={["fg", {light: appTheme.light }]}
+    class={["fg", {light: appSettings.Theme }]}
     cx={radius + stroke / 2}
     cy={radius + stroke / 2}
     r={radius}
@@ -44,8 +44,13 @@
     dominant-baseline="middle"
     textLength="80"
     lengthAdjust="spacingAndGlyphs"
-    class={["progress-label", {light: appTheme.light }]}
-  >{$cardTime[0]}{$cardTime[1]}:{$cardTime[2]}{$cardTime[3]}:{$cardTime[4]}{$cardTime[5]}</text>
+    class={["progress-label", {light: appSettings.Theme }]}>
+    {#if !focus}
+      {$time[0]}{$time[1]}:{$time[2]}{$time[3]}:{$time[4]}{$time[5]}
+    {:else}
+      {$time[1]} h: {$time[2]} min
+    {/if}
+  </text>
 
 </svg>
 

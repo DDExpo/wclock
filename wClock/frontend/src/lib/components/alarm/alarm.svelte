@@ -3,8 +3,9 @@
   import AddForm from "../AddForm.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
-  import type { dialTime, PropsAlarm, weekDaysBool } from "$lib/types/StoreComponentsTypes";
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import type { dialTime, PropsAlarm } from "$lib/types/StoreComponentsTypes";
+
+  import { appSettings } from "$lib/stores/utils.svelte";
   import { deleteAlarm } from "$lib/stores/alarms.svelte";
   import { notDraggable } from "$lib/stores/timerWatch.svelte";
   
@@ -32,7 +33,7 @@
 </script>
 
 
-<div class={["alarm", { light: appTheme.light, disabled: alarm.disabled}]} draggable="false">
+<div class={["alarm", { light: appSettings.Theme, disabled: alarm.disabled}]} draggable="false">
   <div class="alarm-header">
     <div class="top-buttons">
       <label class="switch">

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
 
 
 
 </script>
 
 
-<div class={["pass-comp", {light: appTheme.light}]}>
+<div class={["pass-comp", {light: appSettings.Theme}]}>
 </div>
 
 <style>

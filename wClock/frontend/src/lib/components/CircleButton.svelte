@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
 
   let { onClick, icon, alt, isRunning=false } = $props()
 
 </script>
 
-<button class={["circle-button", { "running": isRunning, "light": appTheme.light }]} onclick={ onClick }>
+<button class={["circle-button", { "running": isRunning, "light": appSettings.Theme }]} onclick={ onClick }>
   <img src="{icon}" alt="{alt}"/>
 </button>
 

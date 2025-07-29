@@ -10,8 +10,6 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-var userSettings UserSettings
-
 func InitEnv() error {
 
 	var appPath string
@@ -40,25 +38,44 @@ func InitEnv() error {
 
 	return err
 }
+func LoadOrInitSettings(filepath string) (AppSettings, error) {
+	var settings AppSettings
 
-func ReadSettings(settingsPath string) (UserSettings, error) {
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		settings = AppSettings{Theme: false}
+		settings.Focus.Goal.DailyProgress = [2]int{0, 0}
+		settings.Focus.Goal.Streak = 0
+		settings.Focus.Goal.Yesterday = 0
+		settings.Focus.Goal.Completed = 0
+		settings.Focus.Goal.DailyGoal = 8
+		settings.Focus.Goal.ClearHours = 12
+		settings.Focus.Goal.ClearMinutes = 30
+		settings.Focus.Goal.IncludeWeekdays = false
 
-	file, err := os.Open(settingsPath)
-	if err != nil {
-		return userSettings, nil
+		settings.Focus.FocusCard.Hours = 8
+		settings.Focus.FocusCard.Minutes = 60
+		settings.Focus.FocusCard.Breaks = 4
+		settings.Focus.FocusCard.BreaksTime = 5
+		settings.Focus.FocusCard.SkipBreaks = false
+
+		data, err := json.MarshalIndent(settings, "", "  ")
+		if err != nil {
+			return settings, err
+		}
+		err = os.WriteFile(os.Getenv("APP_SETTINGS"), data, 0644)
+		if err != nil {
+			return settings, err
+		}
+		return settings, nil
 	}
-	defer file.Close()
 
-	fileBytes, err := os.ReadFile(settingsPath)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
-		return userSettings, fmt.Errorf("fuck me: %v", err)
+		return settings, err
 	}
 
-	err = json.Unmarshal(fileBytes, &userSettings)
-	if err != nil {
-		return userSettings, fmt.Errorf("fuck me: %v", err)
-	}
-	return userSettings, nil
+	err = json.Unmarshal(data, &settings)
+	return settings, err
 }
 
 func GetWindowsPcColors() (string, error) {

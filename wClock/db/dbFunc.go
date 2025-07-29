@@ -17,6 +17,18 @@ func GetDB(dbPath string) *sqlx.DB {
 	return db
 }
 
+func DbDelete(DB *sqlx.DB, ids []string, table string) error {
+
+	query, args, err := sqlx.In("DELETE FROM "+table+" WHERE id IN (?)", ids)
+	if err != nil {
+		return err
+	}
+	query = DB.Rebind(query)
+
+	_, err = DB.Exec(query, args...)
+	return err
+}
+
 func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 
 	items := []gofunc.Card{}
@@ -33,10 +45,10 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 		var dialRaw string
 		var initialdialRaw string
 
-		err = rows.Scan(&card.ID, &card.Name, &dialRaw, &card.TimeLeft, &initialdialRaw)
+		rows.Scan(&card.ID, &card.Name, &dialRaw, &card.TimeLeft, &initialdialRaw)
 		errj := json.Unmarshal([]byte(dialRaw), &card.Dial)
 		if errj != nil {
-			return items, fmt.Errorf("error when unmarshall column Cards dial: %v", err)
+			return items, fmt.Errorf("error when unmarshall column Cards dial: %v", errj)
 		}
 		errjd := json.Unmarshal([]byte(initialdialRaw), &card.InitialDial)
 		if errjd != nil {
@@ -49,11 +61,6 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 		return items, fmt.Errorf("error when getting all Cards: %v", err)
 	}
 	return items, err
-}
-
-func DbDelete(DB *sqlx.DB, id string, table string) error {
-	_, err := DB.Exec(("DELETE FROM " + table + " WHERE id = ?"), id)
-	return err
 }
 
 func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
@@ -112,10 +119,10 @@ func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
 		var dialRaw string
 		var weekDaysRaw string
 
-		err = rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw)
+		rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw)
 		errj := json.Unmarshal([]byte(dialRaw), &alarm.Dial)
 		if errj != nil {
-			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", err)
+			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", errj)
 		}
 		errjd := json.Unmarshal([]byte(weekDaysRaw), &alarm.WeekDays)
 		if errjd != nil {
@@ -171,6 +178,64 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 	return tx.Commit()
 }
 
+func GetAllTasks(DB *sqlx.DB) ([]gofunc.Task, error) {
+	items := []gofunc.Task{}
+
+	rows, err := DB.Query("SELECT * FROM tasks")
+
+	if err != nil {
+		return items, fmt.Errorf("error when getting all Tasks: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tasks gofunc.Task
+
+		rows.Scan(&tasks.ID, &tasks.Text, &tasks.Checked, &tasks.TimeSpent)
+		items = append(items, tasks)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return items, fmt.Errorf("error when getting all Tasks: %v", err)
+	}
+	return items, err
+}
+
+func SaveTasks(DB *sqlx.DB, tasks []gofunc.Task) error {
+
+	tx, err := DB.Beginx()
+	if err != nil {
+		return err
+	}
+
+	stmt, err := tx.Preparex(`
+		INSERT INTO tasks (id, text, checked, timespent)
+		VALUES (?, ?, ?, ?)
+		ON CONFLICT(id) DO UPDATE SET
+			text = excluded.text,
+			checked = excluded.checked,
+			timespent = excluded.timespent
+	`)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	defer stmt.Close()
+
+	for _, t := range tasks {
+		_, err := stmt.Exec(t.ID, t.Text, t.Checked, t.TimeSpent)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	return tx.Commit()
+}
+
 func RunFirstTimeShemas(db *sqlx.DB) error {
 	schemaCards := `CREATE TABLE IF NOT EXISTS cards (
 		id TEXT PRIMARY KEY,
@@ -186,6 +251,12 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		dial BLOB,
 		weekdays BLOB
 	);`
+	schemaTasks := `CREATE TABLE IF NOT EXISTS tasks (
+		id TEXT PRIMARY KEY,
+		text TEXT,
+		checked BOOLEAN,
+		timespent TEXT
+	);`
 	_, err := db.Exec(schemaCards)
 	if err != nil {
 		return fmt.Errorf("error on executing shemaCards: %v", err)
@@ -193,6 +264,10 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 	_, err = db.Exec(schemaAlarms)
 	if err != nil {
 		return fmt.Errorf("error on executing shemaAlarms: %v", err)
+	}
+	_, err = db.Exec(schemaTasks)
+	if err != nil {
+		return fmt.Errorf("error on executing shemaTasks: %v", err)
 	}
 
 	return nil

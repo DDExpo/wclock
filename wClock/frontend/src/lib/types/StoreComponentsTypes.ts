@@ -13,7 +13,8 @@ export interface PropsForm {
 
 export interface PropsCircleProgress {
   progress?: Writable<number>
-  cardTime: Writable<dialTime>;
+  time: Writable<dialTime>;
+  focus?: boolean;
 }
 
 export interface PropsAlarm {
@@ -45,10 +46,34 @@ export type dialTime = [number, number, number, number, number, number]
 
 export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
 
+export type AppSettings = {
+  Theme: boolean
+  Focus: {
+    goal: {
+      dailyProgress: [number, number]
+      streak: number
+      yesterday: number
+      completed: number
+      dailyGoal: number
+      clearHours: number
+      clearMinutes: number
+      includeWeekdays: boolean
+    }
+    focus: {
+      hours: number
+      minutes: number
+      breaks: number
+      breaksTime: number
+      skipBreaks: boolean
+    }
+  }
+}
+
 export type TaskType = {
   id: string;
   text: string;
   checked: boolean;
+  timeSpent: string;
 };
 
 export type AlarmType = {

@@ -4,9 +4,8 @@
   import AddForm from "$lib/components/AddForm.svelte";
   import Card from "$lib/components/timer/Card.svelte";
 
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { cards, notDraggable } from "$lib/stores/timerWatch.svelte";
-  import { watchState } from "$lib/stores/utils.svelte";
+  import { appSettings, watchState } from "$lib/stores/utils.svelte";
 
   let showAddForm: boolean = $state(false);
 
@@ -22,7 +21,7 @@
 
 </script>
 
-<div class={["timer-page", { light: appTheme.light, "compact": watchState.compact}]}>
+<div class={["timer-page", { light: appSettings.Theme, "compact": watchState.compact}]}>
     <div class="card-grid" use:dndzone={{ items: $cards, dropTargetStyle:{"outline": 'none'}, dragDisabled:watchState.compact||notDraggable.dragg}}  onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
       {#each $cards as card, index (card.id)}
       <Card card={card} cardInd={index}/>

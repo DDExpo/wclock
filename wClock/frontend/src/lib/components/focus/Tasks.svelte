@@ -1,24 +1,16 @@
 <script lang="ts">
-  import { tasksState } from "$lib/stores/focusState.svelte";
-  import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
-  function addTask() {
-    tasksState.update(t => [...t, {id: crypto.randomUUID(), text: "task", checked: false}])
-  }
-
-  function deleteTask(ind: number) {
-    tasksState.update(t => t.filter((_, i) => i !== ind));
-  }
-
+  import { createTask, deleteTask, tasks } from "$lib/stores/focusState.svelte";
+  import { appSettings } from "$lib/stores/utils.svelte";
 </script>
 
 
-<div class={["tasks-comp", {light: appTheme.light}]}>
+<div class={["tasks-comp", {light: appSettings.Theme}]}>
   <div class="header">
     <div class="name">Tasks</div>
     <div class="top-buttons">
-      <TopRightButton onClick={ addTask } icon="icons/focus/plus.svg" alt="add" --end=16px/>
+      <TopRightButton onClick={ createTask } icon="icons/focus/plus.svg" alt="add" --end=16px/>
     </div>
   </div>
   <div class="table">
@@ -26,11 +18,12 @@
       <span class="task-text-header">Check tasks for this session</span>
     </div>
 
-    {#each $tasksState as t, ind}
+    {#each $tasks as t}
       <div class="row">
         <input type="checkbox" class="round-checkbox" bind:checked={t.checked}/>
         <input type="text" bind:value={t.text} class="task-text" />
-        <div class="delete"><TopRightButton onClick={ () => { deleteTask(ind) }} icon="icons/buttons/trash.svg" alt="delete" --end=14px /></div>
+        <span>{t.timeSpent}</span>
+        <div class="delete"><TopRightButton onClick={ () => { deleteTask(t.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=14px /></div>
       </div>
     {/each}
   </div>
@@ -109,6 +102,14 @@
   padding-bottom: 4px;
 }
 
+.row span {
+  width: 40%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
 .delete {
   display: flex;
   width: 20px;
@@ -122,6 +123,7 @@
   overflow: hidden;
   white-space: nowrap;
   cursor: auto;
+  margin-right: 10px;
   text-overflow: ellipsis;
 }
 

@@ -1,15 +1,69 @@
 
 import { isAlwaysOnTop } from "$lib/stores/sideBarAndTheme.svelte";
+import type { AppSettings } from "$lib/types/StoreComponentsTypes";
 import { MakeMiniWindowSize, SetWindowAlwaysOnTop } from "$lib/wailsjs/go/main/App";
 import { gofunc } from "$lib/wailsjs/go/models";
 import { WindowUnfullscreen } from "$lib/wailsjs/runtime/runtime";
 import { alarms } from "./alarms.svelte";
+import { tasks } from "./focusState.svelte";
 import { cards } from "./timerWatch.svelte";
 import { get } from 'svelte/store';
 
 export const watchState = $state({
   compact: false
 }) 
+
+export const appSettings: AppSettings = $state({
+  Theme: false,
+  Focus: {
+    goal: {
+      dailyProgress: [0, 0],
+      streak: 0,
+      yesterday: 0,
+      completed: 0,
+      dailyGoal: 1,
+      clearHours: 12,
+      clearMinutes: 30,
+      includeWeekdays: false,
+    },
+    focus: {
+      hours: 4,
+      minutes: 30,
+      breaks: 4,
+      breaksTime: 5,
+      skipBreaks: false,
+    }
+  }
+});
+
+export function validateSettings(goalCardValidation = false, focusCardValidation = false): boolean {
+  let isNotValid = false;
+
+  const clamp = (val: any, max: number, fallback: number): number => {
+    const num = Number(val);
+    console.log(num, val)
+    if (isNaN(num) || num < 0 || num > max) {
+      isNotValid = true;
+      return fallback;
+    }
+    return num;
+  };
+
+  if (goalCardValidation) {
+    appSettings.Focus.goal.clearHours = clamp(appSettings.Focus.goal.clearHours, 23, 12);
+    appSettings.Focus.goal.clearMinutes = clamp(appSettings.Focus.goal.clearMinutes, 59, 30);
+    appSettings.Focus.goal.dailyGoal = clamp(appSettings.Focus.goal.dailyGoal, 24, 6);
+  }
+
+  if (focusCardValidation) {
+    appSettings.Focus.focus.minutes = clamp(appSettings.Focus.focus.minutes, 1440, 60);
+    appSettings.Focus.focus.hours = clamp(appSettings.Focus.focus.hours, 24, 8);
+    appSettings.Focus.focus.breaks = clamp(appSettings.Focus.focus.breaks, appSettings.Focus.focus.hours, appSettings.Focus.focus.hours);
+    appSettings.Focus.focus.breaksTime = clamp(appSettings.Focus.focus.breaksTime, appSettings.Focus.focus.hours * 30, 5);
+  }
+
+  return isNotValid;
+}
 
 export function makeMiniWindow(compact: boolean, width: number=200, height: number=180) {
   watchState.compact = compact;
@@ -22,33 +76,45 @@ export function makeMiniWindow(compact: boolean, width: number=200, height: numb
 };
 
 export function getCards(): gofunc.Card[] {
-  var cardsGo: gofunc.Card[] = []
-  var curCards = get(cards)
-  for (const c of curCards) {
-    const dial = get(c.time) as number[]
-    cardsGo.push({
+  const curCards = get(cards);
+  return curCards.map((c) => {
+    const dial = get(c.time) as number[];
+    return gofunc.Card.createFrom({
       ID: c.id,
       Name: c.name,
       Dial: [...dial],
-      TimeLeft: Number(get(c.timeLeft).toFixed(3)),
-      InitialDial: [...c.initialTime] as number[],
-    })
-  }
-  return cardsGo
+      TimeLeft: Number(get(c.timeLeft).toFixed(5)),
+      InitialDial: [...c.initialTime],
+    });
+  });
 }
 
 export function getAlarms(): gofunc.Alarm[] {
-  var curAlarms = get(alarms)
-  return curAlarms.map((a) => ({
-    ID: a.id,
-    Disabled: a.disabled,
-    Text: a.text,
-    Dial: a.dialNumber as number[],
-    WeekDays: a.weekDays as boolean[],
-  }));
+  const curAlarms = get(alarms);
+  return curAlarms.map((a) =>
+    gofunc.Alarm.createFrom({
+      ID: a.id,
+      Disabled: a.disabled,
+      Text: a.text,
+      Dial: a.dialNumber,
+      WeekDays: a.weekDays,
+    })
+  );
 }
 
-export function debounce(callback: CallableFunction, delay: number=3000) {
+export function getTasks(): gofunc.Task[] {
+  const curTasks = get(tasks);
+  return curTasks.map((t) =>
+    gofunc.Task.createFrom({
+      ID: t.id,
+      Text: t.text,
+      Checked: t.checked,
+      TimeSpent: t.timeSpent,
+    })
+  );
+}
+
+export function debounce(callback: CallableFunction, delay: number=2000) {
   let timeoutId: number
 
   return (...args: any[]) => {
@@ -57,3 +123,18 @@ export function debounce(callback: CallableFunction, delay: number=3000) {
       callback(...args)}, delay)
     };
 };
+
+export function debounceDelete(callback: (ids: string[], table: string) => void, table: string, delay: number =1000) {
+  let timeoutId: number;
+  let deleteQueue: string[] = [];
+
+  return (id: string) => {
+    deleteQueue.push(id);
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      callback(deleteQueue, table);
+      deleteQueue = [];
+    }, delay);
+  };
+}
