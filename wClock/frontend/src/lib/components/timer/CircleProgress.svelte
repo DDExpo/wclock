@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { appSettings } from "$lib/stores/utils.svelte";
-  import type { PropsCircleProgress } from "$lib/types/StoreComponentsTypes";
+  import type { dialTime, PropsCircleProgress } from "$lib/types/StoreComponentsTypes";
 
-  let { progress, time, focus=false }: PropsCircleProgress = $props();
+  import { writable } from "svelte/store";
+  import { appSettings } from "$lib/stores/utils.svelte";
+
+  let { progress, time=writable([0, 0, 0, 0, 0, 0] as dialTime), goal=0, focus=false }: PropsCircleProgress = $props();
 
   const radius = 60;
   const stroke = 12;
@@ -48,7 +50,7 @@
     {#if !focus}
       {$time[0]}{$time[1]}:{$time[2]}{$time[3]}:{$time[4]}{$time[5]}
     {:else}
-      {$time[1]} h: {$time[2]} min
+      {goal} hour
     {/if}
   </text>
 
@@ -90,6 +92,7 @@
 
 .progress-label.light {
   fill: #3B2F2F;
+  color: #3B2F2F;
   font-family: serif;
 }
 

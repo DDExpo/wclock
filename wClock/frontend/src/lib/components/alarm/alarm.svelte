@@ -35,6 +35,7 @@
 
 <div class={["alarm", { light: appSettings.Theme, disabled: alarm.disabled}]} draggable="false">
   <div class="alarm-header">
+    <span class="title">Alarm</span>
     <div class="top-buttons">
       <label class="switch">
         <input type="checkbox" checked={alarm.disabled} onchange={ enableAlarm } />
@@ -109,6 +110,18 @@
   justify-content: flex-end;
   margin-top: -4px;
   margin-right: -10px;
+}
+
+.title {
+  text-align: start;
+  color: #ebebeb57;
+  width: 100%;
+  font-weight: bolder;
+  padding-left: 1rem;
+}
+
+.alarm.light .title {
+  color: #20202057;
 }
 
 .top-buttons {

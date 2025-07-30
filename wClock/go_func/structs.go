@@ -6,6 +6,7 @@ type Card struct {
 	Dial        [6]int
 	TimeLeft    float64
 	InitialDial [6]int
+	Order       int
 }
 
 type Alarm struct {
@@ -14,6 +15,7 @@ type Alarm struct {
 	Text     string
 	Dial     [4]int
 	WeekDays [7]bool
+	Order    int
 }
 
 type Task struct {

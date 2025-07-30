@@ -41,7 +41,6 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
 
   const clamp = (val: any, max: number, fallback: number): number => {
     const num = Number(val);
-    console.log(num, val)
     if (isNaN(num) || num < 0 || num > max) {
       isNotValid = true;
       return fallback;
@@ -85,6 +84,7 @@ export function getCards(): gofunc.Card[] {
       Dial: [...dial],
       TimeLeft: Number(get(c.timeLeft).toFixed(5)),
       InitialDial: [...c.initialTime],
+      Order: c.order,
     });
   });
 }
@@ -98,6 +98,7 @@ export function getAlarms(): gofunc.Alarm[] {
       Text: a.text,
       Dial: a.dialNumber,
       WeekDays: a.weekDays,
+      Order: a.order,
     })
   );
 }

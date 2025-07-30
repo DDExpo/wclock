@@ -83,7 +83,7 @@
         }
       } else {
         if (change) {
-          updateCard(ind, name, digits, digits)
+          updateCard(ind, name, [...digits], [...digits])
         } else {
           createCard(String(name),digits, digits)
         }

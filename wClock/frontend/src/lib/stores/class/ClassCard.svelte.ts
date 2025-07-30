@@ -11,6 +11,7 @@ export class Card {
   timer: TimerCard;
   timeLeft: Writable<number>;
   initialTime: dialTime;
+  order: number
 
   update(name: string, initialT: dialTime, newDial: dialTime) {
     this.name = name;
@@ -19,12 +20,13 @@ export class Card {
     this.timer.updateWatchCard(this.initialTime, this.name);
   }
 
-  constructor(id: string, name: string, initialT: dialTime, t: dialTime, timeleft: number) {
+  constructor(id: string, name: string, initialT: dialTime, t: dialTime, timeleft: number, order: number) {
     this.id = id
     this.name = name;
     this.initialTime = initialT;
     this.time = writable(t);
     this.timeLeft = writable(timeleft)
     this.timer = createWatch(this.initialTime, this.time, this.timeLeft, this.name);
+    this.order = order
   };
 };

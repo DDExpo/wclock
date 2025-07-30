@@ -51,9 +51,11 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
     audio.play().catch((e) => console.error("Audio playback failed:", e));
   }
 
-  function updateWatchCard(initialT: dialTime, timerName: string) {
-    step = 1 / (((initialT[0] * 10 + initialT[1]) * 60 + (initialT[2] * 10 + initialT[3])) * 60 + (initialT[4] * 10 + initialT[5]));
+  function updateWatchCard(initialTimer: dialTime, timerName: string) {
+    step = 1 / (((initialTimer[0] * 10 + initialTimer[1]) * 60 + (initialTimer[2] * 10 + initialTimer[3])) * 60 + (initialTimer[4] * 10 + initialTimer[5]));
     name  = timerName
+    initialT = initialTimer
+    t.set(initialTimer)
   }
 
   function stop() {
@@ -76,7 +78,7 @@ export const createWatch = (initialT: dialTime, t: Writable<dialTime>, timeLeft:
 };
 
 export function createCard( name: string, initialT: dialTime, t: dialTime, id: string=crypto.randomUUID(), timeLeft: number=0) {
-  cards.update(c => [...c, new Card(id, name, initialT, t, timeLeft)]);
+  cards.update(c => [...c, new Card(id, name, initialT, t, timeLeft, c.length+1)]);
 }
 
 export function updateCard(ind: number, name: string, initialT: dialTime, dial: dialTime) {

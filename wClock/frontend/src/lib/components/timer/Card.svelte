@@ -45,7 +45,7 @@
       {#if !cardStateCompact}
         <TopRightButton onClick={ hideShowCardForm } icon="icons/buttons/edit.svg" alt="edit" --end=16px/>
           {#if showCardForm }
-            <AddForm closeForm={ hideShowCardForm } formName="Save Timer" Text={card.name} Dial={[...card.initialTime]} change={true} ind={cardInd}/>
+            <AddForm closeForm={ hideShowCardForm } formName="Save Timer" Text={card.name} Dial={card.initialTime} change={true} ind={cardInd}/>
           {/if}
           <TopRightButton onClick={() => { deleteCard(cardInd, card.id) }} icon="icons/buttons/trash.svg" alt="delete" --end=16px/>
       {/if}

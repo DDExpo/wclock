@@ -6,6 +6,7 @@ export namespace gofunc {
 	    Text: string;
 	    Dial: number[];
 	    WeekDays: boolean[];
+	    Order: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Alarm(source);
@@ -18,6 +19,7 @@ export namespace gofunc {
 	        this.Text = source["Text"];
 	        this.Dial = source["Dial"];
 	        this.WeekDays = source["WeekDays"];
+	        this.Order = source["Order"];
 	    }
 	}
 	export class FocusCard {
@@ -136,6 +138,7 @@ export namespace gofunc {
 	    Dial: number[];
 	    TimeLeft: number;
 	    InitialDial: number[];
+	    Order: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Card(source);
@@ -148,6 +151,7 @@ export namespace gofunc {
 	        this.Dial = source["Dial"];
 	        this.TimeLeft = source["TimeLeft"];
 	        this.InitialDial = source["InitialDial"];
+	        this.Order = source["Order"];
 	    }
 	}
 	

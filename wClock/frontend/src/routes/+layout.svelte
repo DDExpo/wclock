@@ -30,23 +30,36 @@
     
     const cardsGo = await GetCards();
     cards.set(cardsGo.map(card =>
-    new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft)));
+    new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft, card.Order)));
     
+    console.log($cards)
     const alarmsGo = await GetAlarms();
     alarms.set(alarmsGo.map(alarmData => {
-      const alarm = new Alarm(alarmData.ID, alarmData.Text, alarmData.Dial as [number, number, number, number], alarmData.Disabled, alarmData.WeekDays as weekDaysBool);
+      const alarm = new Alarm(alarmData.ID, alarmData.Text, alarmData.Dial as [number, number, number, number], alarmData.Disabled, alarmData.WeekDays as weekDaysBool, alarmData.Order);
       if (!alarm.disabled) {alarm.timerToAlarm.start()};
       return alarm;
     }));
 
+    console.log($alarms)
+    const today = new Date();
     const isPastClearDate = Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0);
+    
     const tasksGo = await GetTasks();
-
     tasks.set(tasksGo.map(taskData => {
       const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeSpent);
       if (isPastClearDate) {task.timeSpent=""; task.checked=false}
       return task;
     }));
+    
+    if (isPastClearDate  && (appSettings.Focus.goal.dailyGoal < Math.floor(appSettings.Focus.goal.completed / 60))) {
+      if ((!appSettings.Focus.goal.includeWeekdays && today.getDay() < 5 ) || (appSettings.Focus.goal.includeWeekdays && today.getDay() > 4)) {
+        appSettings.Focus.goal.streak += 1
+      } else {
+        appSettings.Focus.goal.streak += 0
+      }
+      appSettings.Focus.goal.yesterday = Math.floor(appSettings.Focus.goal.completed / 60)
+      appSettings.Focus.goal.completed = 0
+    }
 
     cards.subscribe(() => { debounceCards() });
     alarms.subscribe(() => { debounceAlarms() });

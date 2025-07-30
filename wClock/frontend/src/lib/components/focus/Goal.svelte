@@ -14,11 +14,14 @@
   let isNotValidSettings: boolean = $state(false)
 
   const progress = writable(appSettings.Focus.goal.completed);
-  const time = writable([0, appSettings.Focus.goal.dailyProgress[0], appSettings.Focus.goal.dailyProgress[1], 0, 0, 0] as dialTime);
+  const time = writable([0, 0, 0, 0, 0, 0] as dialTime);
 
   function saveValidateyGoalState() {
     isNotValidSettings = validateSettings(true)
-    if (!isNotValidSettings) {GiveNewSettings({ goal: appSettings.Focus.goal })};
+    if (!isNotValidSettings) {
+      GiveNewSettings({ goal: appSettings.Focus.goal })
+      time.update(t => { t[3] = appSettings.Focus.goal.dailyGoal; return t})  
+    };
   }
 
 </script>
@@ -39,7 +42,7 @@
           <div class="unit">hour</div>
         </div>
         <div class="circle-wrapper">
-          <CircleProgress {progress} {time} focus={true} />
+          <CircleProgress {progress} goal={appSettings.Focus.goal.dailyGoal} focus={true} />
         </div>
         <div class="side-column" style:margin-right=16px>
           <div class="label">Streak</div>
@@ -47,7 +50,7 @@
           <div class="unit">days</div>
         </div>
       </div>
-      <div class="completed">Completed: {appSettings.Focus.goal.completed}</div>
+      <div class="completed">Completed: {appSettings.Focus.goal.completed} minutes</div>
     </div>
 
     <div class="back">
@@ -209,6 +212,7 @@
 .circle-wrapper {
   display: flex;
   position: relative;
+  color: inherit;
   width: 100%;
   height: 100%;
 }

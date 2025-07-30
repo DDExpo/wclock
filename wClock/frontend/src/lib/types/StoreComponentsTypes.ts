@@ -13,8 +13,9 @@ export interface PropsForm {
 
 export interface PropsCircleProgress {
   progress?: Writable<number>
-  time: Writable<dialTime>;
+  time?: Writable<dialTime>;
   focus?: boolean;
+  goal?: number
 }
 
 export interface PropsAlarm {
@@ -79,6 +80,7 @@ export type TaskType = {
 export type AlarmType = {
   id: string;
   text: string;
+  order: number;
   timerToAlarm: Timer;
   timeToAlarm: Writable<string>;
   dial: string;
@@ -92,6 +94,7 @@ export type CardType = {
   id: string;
   running: boolean;
   name: string;
+  order: number;
   time: Writable<dialTime>;
   timer: TimerCard;
   timeLeft: Writable<number>;

@@ -2,7 +2,6 @@
   import { appSettings } from "$lib/stores/utils.svelte";
 
   let { onClick, icon, alt, isRunning=false } = $props()
-
 </script>
 
 <button class={["circle-button", { "running": isRunning, "light": appSettings.Theme }]} onclick={ onClick }>

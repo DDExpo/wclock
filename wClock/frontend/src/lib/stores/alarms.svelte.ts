@@ -130,7 +130,7 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
 }
 
 export function createAlarm(text: string, dial: [number, number, number, number], id: string=crypto.randomUUID(), disabled: boolean=false, weekDays: weekDaysBool=[false, false, false, false, false, false, false]) {
-  alarms.update(a => [...a, new Alarm(id, text, dial, disabled, weekDays)]);
+  alarms.update(a => [...a, new Alarm(id, text, dial, disabled, weekDays, a.length+1)]);
 }
 
 export function updateAlarm(ind: number, text: string, dial: [number, number, number, number]) {

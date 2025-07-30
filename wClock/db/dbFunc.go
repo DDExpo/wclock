@@ -33,7 +33,7 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 
 	items := []gofunc.Card{}
 
-	rows, err := DB.Query("SELECT * FROM cards")
+	rows, err := DB.Query(`SELECT * FROM cards ORDER BY sort_order ASC`)
 
 	if err != nil {
 		return items, fmt.Errorf("error when getting all Cards: %v", err)
@@ -45,7 +45,7 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 		var dialRaw string
 		var initialdialRaw string
 
-		rows.Scan(&card.ID, &card.Name, &dialRaw, &card.TimeLeft, &initialdialRaw)
+		rows.Scan(&card.ID, &card.Name, &dialRaw, &card.TimeLeft, &initialdialRaw, &card.Order)
 		errj := json.Unmarshal([]byte(dialRaw), &card.Dial)
 		if errj != nil {
 			return items, fmt.Errorf("error when unmarshall column Cards dial: %v", errj)
@@ -69,13 +69,14 @@ func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
 		return err
 	}
 	stmt, err := tx.Preparex(`
-		INSERT INTO cards (id, name, dial, timeleft, initialdial)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO cards (id, name, dial, timeleft, initialdial, sort_order)
+		VALUES (?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			name = excluded.name,
 			dial = excluded.dial,
 			timeleft = excluded.timeleft,
-			initialdial = excluded.initialdial
+			initialdial = excluded.initialdial,
+			sort_order = excluded.sort_order
 	`)
 	if err != nil {
 		tx.Rollback()
@@ -94,7 +95,7 @@ func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
 			tx.Rollback()
 			return fmt.Errorf("marshal initialDial: %w", err)
 		}
-		_, err = stmt.Exec(c.ID, c.Name, dialJSON, c.TimeLeft, initialDialJSON)
+		_, err = stmt.Exec(c.ID, c.Name, dialJSON, c.TimeLeft, initialDialJSON, c.Order)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -107,7 +108,7 @@ func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
 
 	items := []gofunc.Alarm{}
 
-	rows, err := DB.Query("SELECT * FROM alarms")
+	rows, err := DB.Query(`SELECT * FROM alarms ORDER BY sort_order ASC`)
 
 	if err != nil {
 		return items, fmt.Errorf("error when getting all Alarms: %v", err)
@@ -119,7 +120,7 @@ func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
 		var dialRaw string
 		var weekDaysRaw string
 
-		rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw)
+		rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw, &alarm.Order)
 		errj := json.Unmarshal([]byte(dialRaw), &alarm.Dial)
 		if errj != nil {
 			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", errj)
@@ -144,13 +145,14 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 		return err
 	}
 	stmt, err := tx.Preparex(`
-		INSERT INTO alarms (id, text, dial, disabled, weekdays)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO alarms (id, text, dial, disabled, weekdays, sort_order)
+		VALUES (?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			text = excluded.text,
 			dial = excluded.dial,
 			disabled = excluded.disabled,
-			weekdays = excluded.weekdays
+			weekdays = excluded.weekdays,
+			sort_order = excluded.sort_order
 	`)
 	if err != nil {
 		tx.Rollback()
@@ -169,7 +171,7 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 			tx.Rollback()
 			return fmt.Errorf("marshal weekdays: %w", err)
 		}
-		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Disabled, weekDaysJSON)
+		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Disabled, weekDaysJSON, a.Order)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -242,14 +244,16 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		name TEXT,
 		dial BLOB,
 		timeleft REAL,
-		initialdial BLOB
+		initialdial BLOB,
+		sort_order SMALLINT
 	);`
 	schemaAlarms := `CREATE TABLE IF NOT EXISTS alarms (
 		id TEXT PRIMARY KEY,
 		text TEXT,
 		disabled BOOLEAN,
 		dial BLOB,
-		weekdays BLOB
+		weekdays BLOB,
+		sort_order SMALLINT
 	);`
 	schemaTasks := `CREATE TABLE IF NOT EXISTS tasks (
 		id TEXT PRIMARY KEY,

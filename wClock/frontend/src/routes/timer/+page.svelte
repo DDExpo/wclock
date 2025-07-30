@@ -14,9 +14,11 @@
   }
   function handleDndConsider(e: CustomEvent) {
     cards.set(e.detail.items);
+
   };
   function handleDndFinalize(e: CustomEvent) {
     cards.set(e.detail.items);
+    $cards.forEach((c, i) => {c.order = i;});
   };
 
 </script>

@@ -13,17 +13,19 @@
   function hideShowForm() {
     showAddForm = !showAddForm;
   };
+
   function handleDndConsider(e: CustomEvent) {
     alarms.set(e.detail.items);
-  };
+  }
   function handleDndFinalize(e: CustomEvent) {
     alarms.set(e.detail.items);
-  }
+    $alarms.forEach((a, i) => {a.order = i;});
+}
 
 </script>
 
 <div class={["alarm-page", { light: appSettings.Theme}]}>
-  <div class="alarm-grid" use:dndzone={{ items: $alarms, dropTargetStyle:{"outline": 'none'}, dragDisabled:notDraggable.dragg}} onconsider={handleDndConsider} onfinalize={handleDndFinalize}>
+  <div class="alarm-grid" use:dndzone={{ items: $alarms, dropTargetStyle:{"outline": 'none'}, dragDisabled:notDraggable.dragg}} onconsider={ handleDndConsider } onfinalize={ handleDndFinalize }>
     {#each $alarms as alr, index (alr.id)}
       <Alarm alarm={alr} alarmInd={index} timeTo={alr.timeToAlarm} />
     {/each}
