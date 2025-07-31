@@ -9,6 +9,10 @@ import { tasks } from "./focusState.svelte";
 import { cards } from "./timerWatch.svelte";
 import { get } from 'svelte/store';
 
+export const isDeleteHappening = $state({
+  yes: false
+})
+
 export const watchState = $state({
   compact: false
 }) 
@@ -24,10 +28,10 @@ export const appSettings: AppSettings = $state({
       dailyGoal: 1,
       clearHours: 12,
       clearMinutes: 30,
+      monthDay: [0, 0],
       includeWeekdays: false,
     },
     focus: {
-      hours: 4,
       minutes: 30,
       breaks: 4,
       breaksTime: 5,
@@ -40,7 +44,7 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
   let isNotValid = false;
 
   const clamp = (val: any, max: number, fallback: number): number => {
-    const num = Number(val);
+    const num = Math.floor(Number(val));
     if (isNaN(num) || num < 0 || num > max) {
       isNotValid = true;
       return fallback;
@@ -52,13 +56,14 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
     appSettings.Focus.goal.clearHours = clamp(appSettings.Focus.goal.clearHours, 23, 12);
     appSettings.Focus.goal.clearMinutes = clamp(appSettings.Focus.goal.clearMinutes, 59, 30);
     appSettings.Focus.goal.dailyGoal = clamp(appSettings.Focus.goal.dailyGoal, 24, 6);
+    const now = new Date()
+    appSettings.Focus.goal.monthDay = [now.getMonth(), now.getDate()]
   }
-
+  
   if (focusCardValidation) {
     appSettings.Focus.focus.minutes = clamp(appSettings.Focus.focus.minutes, 1440, 60);
-    appSettings.Focus.focus.hours = clamp(appSettings.Focus.focus.hours, 24, 8);
-    appSettings.Focus.focus.breaks = clamp(appSettings.Focus.focus.breaks, appSettings.Focus.focus.hours, appSettings.Focus.focus.hours);
-    appSettings.Focus.focus.breaksTime = clamp(appSettings.Focus.focus.breaksTime, appSettings.Focus.focus.hours * 30, 5);
+    appSettings.Focus.focus.breaks = clamp(appSettings.Focus.focus.breaks, 99, appSettings.Focus.goal.dailyGoal);
+    appSettings.Focus.focus.breaksTime = clamp(appSettings.Focus.focus.breaksTime, 720, 5);
   }
 
   return isNotValid;
@@ -81,10 +86,10 @@ export function getCards(): gofunc.Card[] {
     return gofunc.Card.createFrom({
       ID: c.id,
       Name: c.name,
+      Order: c.order,
       Dial: [...dial],
       TimeLeft: Number(get(c.timeLeft).toFixed(5)),
       InitialDial: [...c.initialTime],
-      Order: c.order,
     });
   });
 }
@@ -94,11 +99,11 @@ export function getAlarms(): gofunc.Alarm[] {
   return curAlarms.map((a) =>
     gofunc.Alarm.createFrom({
       ID: a.id,
-      Disabled: a.disabled,
       Text: a.text,
       Dial: a.dialNumber,
-      WeekDays: a.weekDays,
       Order: a.order,
+      WeekDays: a.weekDays,
+      Disabled: a.disabled,
     })
   );
 }
@@ -109,16 +114,20 @@ export function getTasks(): gofunc.Task[] {
     gofunc.Task.createFrom({
       ID: t.id,
       Text: t.text,
+      Order: t.order,
       Checked: t.checked,
-      TimeSpent: t.timeSpent,
+      TimeToSpend: t.timeToSpend,
+      TimeInitToSpend: t.timeInitToSpend,
     })
   );
 }
 
 export function debounce(callback: CallableFunction, delay: number=2000) {
+  
   let timeoutId: number
-
+  
   return (...args: any[]) => {
+    if (isDeleteHappening.yes) return
     clearTimeout(timeoutId)
     timeoutId = setTimeout(() => {
       callback(...args)}, delay)
@@ -128,10 +137,10 @@ export function debounce(callback: CallableFunction, delay: number=2000) {
 export function debounceDelete(callback: (ids: string[], table: string) => void, table: string, delay: number =1000) {
   let timeoutId: number;
   let deleteQueue: string[] = [];
-
+  
   return (id: string) => {
     deleteQueue.push(id);
-
+    
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       callback(deleteQueue, table);

@@ -13,14 +13,14 @@
 
   let isNotValidSettings: boolean = $state(false)
 
-  const progress = writable(appSettings.Focus.goal.completed);
+  const progress = $derived(appSettings.Focus.goal.completed/(appSettings.Focus.goal.dailyGoal*60));
   const time = writable([0, 0, 0, 0, 0, 0] as dialTime);
 
   function saveValidateyGoalState() {
     isNotValidSettings = validateSettings(true)
+    console.log(appSettings.Focus.goal.dailyGoal)
     if (!isNotValidSettings) {
       GiveNewSettings({ goal: appSettings.Focus.goal })
-      time.update(t => { t[3] = appSettings.Focus.goal.dailyGoal; return t})  
     };
   }
 
@@ -42,7 +42,7 @@
           <div class="unit">hour</div>
         </div>
         <div class="circle-wrapper">
-          <CircleProgress {progress} goal={appSettings.Focus.goal.dailyGoal} focus={true} />
+          <CircleProgress progress={writable(progress)} goal={appSettings.Focus.goal.dailyGoal} focus={true} />
         </div>
         <div class="side-column" style:margin-right=16px>
           <div class="label">Streak</div>
@@ -59,7 +59,7 @@
         <label class="field">
           <span class="title">Daily goal</span>
           <div class="wrapper-daily">
-            <input class="daily-hours" type="text" bind:value={appSettings.Focus.goal.dailyGoal}  placeholder="0"/>
+            <input class="daily-hours" type="text" bind:value={appSettings.Focus.goal.dailyGoal} placeholder="0"/>
             <span>Hours</span>
           </div>
         </label>
@@ -67,7 +67,7 @@
         <label class="field">
           <span style:color=inherit>Clear daily progress and completed tasks</span>
           <div class="time-select">
-            <input type="text" bind:value={appSettings.Focus.goal.clearHours}  placeholder="  0"/> <span>hours</span>
+            <input type="text" bind:value={appSettings.Focus.goal.clearHours} placeholder="  0"/> <span>hours</span>
             <input type="text" bind:value={appSettings.Focus.goal.clearMinutes} placeholder="  0"/> <span>minutes</span>
           </div>
         </label>
@@ -104,6 +104,8 @@
   user-select: none;
   container-type: inline-size;
   perspective: 1000px;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .flipper {
@@ -143,7 +145,7 @@
 }
 
 .goal-comp.light {
-  background: rgb(225, 182, 175);
+  background: #E1B6AF;
 }
 
 .goal-comp.light .unit,
@@ -246,9 +248,9 @@
 }
 
 .goal-comp.light .edit-goal-form {
-  border: 1.5px solid rgba(0, 0, 0, 0.264);
+  border: 0.7cqw solid rgba(0, 0, 0, 0.37);
   border-radius: 15px;
-  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.286);
+  box-shadow: 0px 1cqw 1px rgba(0, 0, 0, 0.45);
   justify-content: center;
 }
 .goal-comp.light .edit-goal-form .field span,
@@ -263,11 +265,12 @@
 .edit-goal-form {
   display: flex;
   flex-direction: column;
+  padding: 0.5rem;
   gap: 1rem;
-  width: 90%;
-  height: 90%;
-  border: 1.5px solid #6FD7F7;
-  box-shadow: 0px 4px 0px #6FD7F7;
+  width: 85%;
+  height: 85%;
+  border: 0.7cqw solid #6FD7F7;
+  box-shadow: 0px 1cqw 0px #6FD7F7;
   justify-content: center;
   align-items: center;
   overflow-y: scroll;
@@ -287,14 +290,14 @@
 }
 
 .goal-comp.light .edit-goal-form .time-select input {
-  border-bottom: 2px solid rgb(163, 120, 244);
+  border-bottom: 1cqw solid rgb(163, 120, 244);
   color: #151515;
 
 }
 .goal-comp.light .edit-goal-form .field .wrapper-daily {
-  border: 2px solid rgb(163, 120, 244);
+  border: 0.7cqw solid rgb(163, 120, 244);
   color: #3B2F2F;
-  border-bottom: 4px solid rgb(163, 120, 244);
+  border-bottom: 2cqw solid rgb(163, 120, 244);
 }
 
 .field {
@@ -317,9 +320,9 @@
   justify-content: space-between;
   gap: 0.7em;
   padding: 0.5em 1em;
-  border: 2px solid rgba(164, 237, 238);
-  border-bottom: 5px solid rgb(164, 237, 238);
-  border-radius: 0.5em;
+  border: 0.7cqw solid rgba(164, 237, 238);
+  border-bottom: 2cqw solid rgb(164, 237, 238);
+  border-radius: clamp(0.5rem, 5cqw, 3rem);
   width: 50%;
   box-sizing: border-box;
 }
@@ -346,7 +349,7 @@
   all: unset;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 0.3em;
-  border-bottom: 2px solid rgba(164, 237, 238, 1);
+  border-bottom: 0.7cqw solid rgba(164, 237, 238, 1);
   text-align: center;
   width: 10%;
   padding: 0.2em 0.4em;

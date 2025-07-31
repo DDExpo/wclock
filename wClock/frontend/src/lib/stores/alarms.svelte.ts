@@ -3,7 +3,7 @@ import type { AlarmType, weekDaysBool } from "$lib/types/StoreComponentsTypes"
 import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
 import { writable, type Writable } from "svelte/store";
 import { Alarm } from "./class/ClassAlarms.svelte"
-import { debounceDelete } from "./utils.svelte";
+import { debounceDelete, isDeleteHappening } from "./utils.svelte";
 
 export const alarms = writable<AlarmType[]>([])
 
@@ -143,9 +143,11 @@ export function updateAlarm(ind: number, text: string, dial: [number, number, nu
 const deleteDebounceAlarms = debounceDelete(DbDelete, "alarms");
 
 export function deleteAlarm(ind: number, id: string) {
+  deleteDebounceAlarms(id)
+  isDeleteHappening.yes = true
   alarms.update(a => {
     a[ind].timerToAlarm.stop()
     return a.filter(alarm => alarm.id !== id);
   });
-  deleteDebounceAlarms(id)
+  setTimeout(() => isDeleteHappening.yes=false, 250)
 };

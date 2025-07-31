@@ -1,27 +1,28 @@
+import type { Tween } from "svelte/motion";
 import type { Writable } from "svelte/store"
 
 export interface PropsForm {
   closeForm: () => void
-  formName: string;
+  ind?: number;
   Text?: string;
   Dial?: dialTime; 
-  ind?: number;
-  digitsLen?: number;
-  change?: boolean;
   alarm?: boolean;
+  change?: boolean;
+  formName: string;
+  digitsLen?: number;
 }
 
 export interface PropsCircleProgress {
-  progress?: Writable<number>
+  goal?: number
   time?: Writable<dialTime>;
   focus?: boolean;
-  goal?: number
+  progress?: Writable<number>
 }
 
 export interface PropsAlarm {
   alarm: AlarmType
-  alarmInd: number
   timeTo: Writable<string>
+  alarmInd: number
 }
 
 export interface PropsCard {
@@ -30,15 +31,15 @@ export interface PropsCard {
 }
 
 export type Timer = {
-  start: () => void;
   stop: () => void;
-  updateTimeToAlarm: (change: boolean) => void;
+  start: () => void;
   updateWatchAlarm: (newDial: [number, number, number, number], textAlarm: string) => void;
+  updateTimeToAlarm: (change: boolean) => void;
 };
 
 export type TimerCard = {
-  start: () => void;
   stop: () => void;
+  start: () => void;
   reset: () => void;
   updateWatchCard: (initialT: dialTime, timerName: string) => void;
 };
@@ -51,19 +52,19 @@ export type AppSettings = {
   Theme: boolean
   Focus: {
     goal: {
-      dailyProgress: [number, number]
       streak: number
+      monthDay: [number, number]
       yesterday: number
       completed: number
       dailyGoal: number
       clearHours: number
       clearMinutes: number
+      dailyProgress: [number, number]
       includeWeekdays: boolean
     }
     focus: {
-      hours: number
-      minutes: number
       breaks: number
+      minutes: number
       breaksTime: number
       skipBreaks: boolean
     }
@@ -73,30 +74,33 @@ export type AppSettings = {
 export type TaskType = {
   id: string;
   text: string;
+  order: number;
   checked: boolean;
-  timeSpent: string;
+  tweenTime: Tween<number>
+  timeToSpend: number;
+  timeInitToSpend: number;
 };
 
 export type AlarmType = {
   id: string;
   text: string;
-  order: number;
-  timerToAlarm: Timer;
-  timeToAlarm: Writable<string>;
   dial: string;
-  dialNumber: [number, number, number, number];
+  order: number;
   disabled: boolean;
   weekDays: weekDaysBool;
+  dialNumber: [number, number, number, number];
+  timeToAlarm: Writable<string>;
+  timerToAlarm: Timer;
   update: (text: string, dial: [number, number, number, number]) => void;
 };
 
 export type CardType = {
   id: string;
-  running: boolean;
   name: string;
   order: number;
   time: Writable<dialTime>;
   timer: TimerCard;
+  running: boolean;
   timeLeft: Writable<number>;
   initialTime: dialTime;
   update: (name: string, initialT: dialTime, newDial: dialTime) => void;

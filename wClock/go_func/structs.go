@@ -19,10 +19,12 @@ type Alarm struct {
 }
 
 type Task struct {
-	ID        string
-	Text      string
-	Checked   bool
-	TimeSpent string
+	ID              string
+	Text            string
+	Checked         bool
+	TimeInitToSpend int
+	TimeToSpend     int
+	Order           int
 }
 
 type Goal struct {
@@ -33,11 +35,11 @@ type Goal struct {
 	DailyGoal       int    `json:"dailyGoal"`
 	ClearHours      int    `json:"clearHours"`
 	ClearMinutes    int    `json:"clearMinutes"`
+	MonthDay        [2]int `json:"monthDay"`
 	IncludeWeekdays bool   `json:"includeWeekdays"`
 }
 
 type FocusCard struct {
-	Hours      int  `json:"hours"`
 	Minutes    int  `json:"minutes"`
 	Breaks     int  `json:"breaks"`
 	BreaksTime int  `json:"breaksTime"`

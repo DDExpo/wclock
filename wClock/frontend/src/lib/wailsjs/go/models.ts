@@ -23,7 +23,6 @@ export namespace gofunc {
 	    }
 	}
 	export class FocusCard {
-	    hours: number;
 	    minutes: number;
 	    breaks: number;
 	    breaksTime: number;
@@ -35,7 +34,6 @@ export namespace gofunc {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.hours = source["hours"];
 	        this.minutes = source["minutes"];
 	        this.breaks = source["breaks"];
 	        this.breaksTime = source["breaksTime"];
@@ -50,6 +48,7 @@ export namespace gofunc {
 	    dailyGoal: number;
 	    clearHours: number;
 	    clearMinutes: number;
+	    monthDay: number[];
 	    includeWeekdays: boolean;
 	
 	    static createFrom(source: any = {}) {
@@ -65,6 +64,7 @@ export namespace gofunc {
 	        this.dailyGoal = source["dailyGoal"];
 	        this.clearHours = source["clearHours"];
 	        this.clearMinutes = source["clearMinutes"];
+	        this.monthDay = source["monthDay"];
 	        this.includeWeekdays = source["includeWeekdays"];
 	    }
 	}
@@ -161,7 +161,9 @@ export namespace gofunc {
 	    ID: string;
 	    Text: string;
 	    Checked: boolean;
-	    TimeSpent: string;
+	    TimeInitToSpend: number;
+	    TimeToSpend: number;
+	    Order: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Task(source);
@@ -172,7 +174,9 @@ export namespace gofunc {
 	        this.ID = source["ID"];
 	        this.Text = source["Text"];
 	        this.Checked = source["Checked"];
-	        this.TimeSpent = source["TimeSpent"];
+	        this.TimeInitToSpend = source["TimeInitToSpend"];
+	        this.TimeToSpend = source["TimeToSpend"];
+	        this.Order = source["Order"];
 	    }
 	}
 

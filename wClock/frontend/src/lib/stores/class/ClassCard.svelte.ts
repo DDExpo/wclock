@@ -5,13 +5,13 @@ import { createWatch } from '../timerWatch.svelte';
 
 export class Card {
   id: string;
-  running = $state(false);
   name = $state('');
   time: Writable<dialTime>;
   timer: TimerCard;
+  order: number
+  running = $state(false);
   timeLeft: Writable<number>;
   initialTime: dialTime;
-  order: number
 
   update(name: string, initialT: dialTime, newDial: dialTime) {
     this.name = name;
@@ -23,10 +23,10 @@ export class Card {
   constructor(id: string, name: string, initialT: dialTime, t: dialTime, timeleft: number, order: number) {
     this.id = id
     this.name = name;
-    this.initialTime = initialT;
+    this.order = order
     this.time = writable(t);
     this.timeLeft = writable(timeleft)
+    this.initialTime = initialT;
     this.timer = createWatch(this.initialTime, this.time, this.timeLeft, this.name);
-    this.order = order
   };
 };

@@ -7,21 +7,19 @@
   
   import SideBar from "$lib/components/SideBar.svelte";
   import TopBar from "$lib/components/TopBar.svelte";
-  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm, SaveTasks, GetTasks } from "$lib/wailsjs/go/main/App";
+
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { appSettings, debounce, getAlarms, getCards, getTasks, watchState } from "$lib/stores/utils.svelte";
-  import { cards } from "$lib/stores/timerWatch.svelte";
+  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm, SaveTasks, GetTasks } from "$lib/wailsjs/go/main/App";
   import { alarms } from "$lib/stores/alarms.svelte";
-  import { Card } from "$lib/stores/class/ClassCard.svelte";
-  import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
-  import { Task } from "$lib/stores/class/ClassTask.svelte";
+  import { cards } from "$lib/stores/timerWatch.svelte";
   import { tasks } from '$lib/stores/focusState.svelte';
+  import { Card } from "$lib/stores/class/ClassCard.svelte";
+  import { Task } from "$lib/stores/class/ClassTask.svelte";
+  import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
 
 	let { children } = $props();    
-  const debounceCards = debounce(() => SaveCard(getCards()))
-  const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))
-  const debounceTasks = debounce(() => SaveTasks(getTasks()))
-
+  
   onMount(async() => {
     GetSettings().then((data) => {Object.assign(appSettings, data);});
     const color = await GetWindowsPcColors()
@@ -32,39 +30,39 @@
     cards.set(cardsGo.map(card =>
     new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft, card.Order)));
     
-    console.log($cards)
     const alarmsGo = await GetAlarms();
     alarms.set(alarmsGo.map(alarmData => {
       const alarm = new Alarm(alarmData.ID, alarmData.Text, alarmData.Dial as [number, number, number, number], alarmData.Disabled, alarmData.WeekDays as weekDaysBool, alarmData.Order);
       if (!alarm.disabled) {alarm.timerToAlarm.start()};
       return alarm;
     }));
-
-    console.log($alarms)
+    
     const today = new Date();
-    const isPastClearDate = Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0);
+    const isPastClearDate = (Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0) &&
+    appSettings.Focus.goal.monthDay[0] !== today.getMonth() && appSettings.Focus.goal.monthDay[1] !== today.getDate());
     
     const tasksGo = await GetTasks();
     tasks.set(tasksGo.map(taskData => {
-      const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeSpent);
-      if (isPastClearDate) {task.timeSpent=""; task.checked=false}
+      const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeInitToSpend, taskData.TimeToSpend, taskData.Order);
+      if (isPastClearDate) { task.checked=false, task.timeToSpend=0, task.order=0}
       return task;
     }));
     
-    if (isPastClearDate  && (appSettings.Focus.goal.dailyGoal < Math.floor(appSettings.Focus.goal.completed / 60))) {
-      if ((!appSettings.Focus.goal.includeWeekdays && today.getDay() < 5 ) || (appSettings.Focus.goal.includeWeekdays && today.getDay() > 4)) {
+    if (isPastClearDate) {
+      if ((appSettings.Focus.goal.dailyGoal <= Math.floor(appSettings.Focus.goal.completed / 60)) && (!appSettings.Focus.goal.includeWeekdays && today.getDay() < 5 ) || (appSettings.Focus.goal.includeWeekdays && today.getDay() > 4)) {
         appSettings.Focus.goal.streak += 1
-      } else {
-        appSettings.Focus.goal.streak += 0
       }
       appSettings.Focus.goal.yesterday = Math.floor(appSettings.Focus.goal.completed / 60)
       appSettings.Focus.goal.completed = 0
     }
-
-    cards.subscribe(() => { debounceCards() });
-    alarms.subscribe(() => { debounceAlarms() });
-    tasks.subscribe(() => { debounceTasks() });
-})
+    
+    const debounceCards = debounce(() => SaveCard(getCards()))
+    const debounceTasks = debounce(() => SaveTasks(getTasks()))
+    const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))
+    cards.subscribe(debounceCards);
+    tasks.subscribe(debounceTasks);
+    alarms.subscribe(debounceAlarms);
+  });
 
 </script>
 

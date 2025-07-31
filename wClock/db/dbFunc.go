@@ -120,7 +120,7 @@ func GetAllAlarms(DB *sqlx.DB) ([]gofunc.Alarm, error) {
 		var dialRaw string
 		var weekDaysRaw string
 
-		rows.Scan(&alarm.ID, &alarm.Text, &alarm.Disabled, &dialRaw, &weekDaysRaw, &alarm.Order)
+		rows.Scan(&alarm.ID, &alarm.Text, &dialRaw, &alarm.Disabled, &weekDaysRaw, &alarm.Order)
 		errj := json.Unmarshal([]byte(dialRaw), &alarm.Dial)
 		if errj != nil {
 			return items, fmt.Errorf("error when unmarshall column alarms dial: %v", errj)
@@ -193,7 +193,7 @@ func GetAllTasks(DB *sqlx.DB) ([]gofunc.Task, error) {
 	for rows.Next() {
 		var tasks gofunc.Task
 
-		rows.Scan(&tasks.ID, &tasks.Text, &tasks.Checked, &tasks.TimeSpent)
+		rows.Scan(&tasks.ID, &tasks.Text, &tasks.Checked, &tasks.TimeToSpend, &tasks.TimeInitToSpend, &tasks.Order)
 		items = append(items, tasks)
 	}
 
@@ -212,12 +212,14 @@ func SaveTasks(DB *sqlx.DB, tasks []gofunc.Task) error {
 	}
 
 	stmt, err := tx.Preparex(`
-		INSERT INTO tasks (id, text, checked, timespent)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO tasks (id, text, checked, time_to_spend, time_init_to_spend, queue_order)
+		VALUES (?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			text = excluded.text,
 			checked = excluded.checked,
-			timespent = excluded.timespent
+			time_to_spend = excluded.time_to_spend,
+			time_init_to_spend = excluded.time_init_to_spend,
+			queue_order = excluded.queue_order
 	`)
 
 	if err != nil {
@@ -228,7 +230,7 @@ func SaveTasks(DB *sqlx.DB, tasks []gofunc.Task) error {
 	defer stmt.Close()
 
 	for _, t := range tasks {
-		_, err := stmt.Exec(t.ID, t.Text, t.Checked, t.TimeSpent)
+		_, err := stmt.Exec(t.ID, t.Text, t.Checked, t.TimeToSpend, t.TimeInitToSpend, t.Order)
 		if err != nil {
 			tx.Rollback()
 			return err
@@ -250,8 +252,8 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 	schemaAlarms := `CREATE TABLE IF NOT EXISTS alarms (
 		id TEXT PRIMARY KEY,
 		text TEXT,
-		disabled BOOLEAN,
 		dial BLOB,
+		disabled BOOLEAN,
 		weekdays BLOB,
 		sort_order SMALLINT
 	);`
@@ -259,7 +261,9 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		id TEXT PRIMARY KEY,
 		text TEXT,
 		checked BOOLEAN,
-		timespent TEXT
+		time_to_spend SMALLINT,
+		time_init_to_spend SMALLINT,
+		queue_order SMALLINT
 	);`
 	_, err := db.Exec(schemaCards)
 	if err != nil {

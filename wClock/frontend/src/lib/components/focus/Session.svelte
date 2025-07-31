@@ -1,7 +1,7 @@
 <script lang="ts">
   import TopRightButton from "../TopRightButton.svelte";
 
-  import { tasksState, focusCardState } from "$lib/stores/focusState.svelte";
+  import { focusCardState } from "$lib/stores/focusState.svelte";
   import { appSettings, validateSettings } from "$lib/stores/utils.svelte";
 
   import { GiveNewSettings } from '$lib/wailsjs/go/main/App';
@@ -16,7 +16,7 @@
   function startSesion() {
     isNotValidTime = validateSettings(false, true)
     if (!isNotValidTime) {
-      tasksState.progress += 1
+      // 
     }
   }
 
@@ -54,21 +54,13 @@
           <div class="input-group">
             <label>
               <input class="daily-hours" type="text" bind:value={appSettings.Focus.focus.breaks} placeholder="0" />
-              <span class="max-container">
-                <span class="max-label">max</span>
-                <span class="max-value">99</span>
-              </span>
               <span>Breaks</span>
             </label>
           </div>
           <div class="input-group">
             <label>
               <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
-              <span class="max-container">
-                <span class="max-label">max</span>
-                <span class="max-value">720</span>
-              </span>
-              <span>Breaks Time</span>
+              <span class="b">Breaks Time</span>
             </label>
           </div>
         </div>
@@ -101,7 +93,6 @@
   overflow-y: scroll;
   scrollbar-width: none;
   perspective: 1000px;
-  container-type: inline-size;
 }
 
 .flipper {
@@ -117,7 +108,7 @@
 }
 
 .focus-comp.light {
-  background: #F7B36F;
+  background: rgb(247, 179, 111);
 }
 .focus-comp.light .focus-title {
   color: #2b2b2b;
@@ -137,6 +128,7 @@
 }
 
 .focus-comp.light .focus-timer input{
+  font-size: 2.45rem;
   margin-bottom: 5px;
 }
 .focus-comp.light .focus-input {
@@ -172,7 +164,6 @@
 .header {
   display: flex;
   position: relative;
-  z-index: 1;
   width: 100;
   padding: 0.7rem;
   align-items: center;
@@ -204,7 +195,7 @@
 }
 
 .focus-title {
-  font-size: clamp(10px, 7cqw, 100px);
+  font-size: 1.25rem;
   font-weight: 700;
   color: #f2f2f2;
   letter-spacing: 0.01em;
@@ -212,7 +203,7 @@
 }
 
 .focus-subtitle {
-  font-size: clamp(0.85rem, 3cqw, 2rem);
+  font-size: 0.85rem;
   width: 80%;
   text-align: center;
   color: #c3c3c3;
@@ -223,11 +214,8 @@
 .focus-timer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 15%;
-  height: 14%;
-  min-width: 90px;
-  min-height: 63px;
+  width: 100px;
+  height: 70px;
   padding-bottom: 15px;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
@@ -235,19 +223,22 @@
   background: #202020;
   box-shadow: 0px 3px 0px rgb(255, 255, 255);
   flex-direction: column;
-  overflow: hidden;
 }
 
 .focus-timer.valid {
   background: rgba(255, 0, 0, 0.464);
 }
 
+.focus-timer input {
+  font-size: 3rem;
+}
+
 .focus-input {
   all: unset;
   background: transparent;
-  width: 100%;
+  width: 60px;
   color: #eee;
-  font-size: clamp(2.3rem, 5cqw, 5rem);
+  font-size: 2rem;
   text-align: center;
   padding: 0.5rem;
   cursor: pointer;
@@ -260,7 +251,7 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #c3c3c3;
   gap: 10px;
   margin-bottom: 10px;
@@ -291,7 +282,7 @@
   box-shadow: 0px 3px 0px #6FD7F7;
 }
 
-.focus-options input::after {
+.focus-options input[type="checkbox"]::after {
   content: '';
   position: absolute;
   margin-top: 2px;
@@ -305,7 +296,7 @@
   pointer-events: none;
 }
 
-.focus-options input:checked::after {
+.focus-options input[type="checkbox"]:checked::after {
   opacity: 1;
 }
 
@@ -349,6 +340,8 @@
   height: 100%;
   transform: rotateY(180deg);
   backface-visibility: hidden;
+  align-content: center;
+  justify-items: center;
 }
 
 .focus-body-settings.valid input {
@@ -384,9 +377,9 @@
 }
 
 .focus-comp.light .wrapper-input {
-  border: 0.7cqw solid rgb(163, 120, 244);
+  border: 2px solid rgb(163, 120, 244);
   color: #3B2F2F;
-  border-bottom: 2cqw solid rgb(163, 120, 244);
+  border-bottom: 4px solid rgb(163, 120, 244);
   font-size: clamp(10px, 5cqw, 40px);
 }
 
@@ -394,6 +387,10 @@
   border-radius: 0.4em;
   background-color: rgba(255, 248, 233, 0.2);
   border: 1.5px solid rgba(163, 120, 244, 0.2)
+}
+
+.focus-comp.light .wrapper-input .b {
+  margin-left: -2.5cqw;
 }
 
 .focus-comp.light .daily-hours:focus {
@@ -406,57 +403,31 @@
   display: flex;
   padding: 0.5rem 1rem;
   color: white;
-  border: 0.5cqw solid rgba(164, 237, 238);
-  border-bottom: 2cqw solid rgb(164, 237, 238);
-  border-radius: clamp(0.5rem, 5cqw, 3rem);
-  width:clamp(110px, 55cqw, 600px);
+  border: 2px solid rgba(164, 237, 238);
+  border-bottom: 5px solid rgb(164, 237, 238);
+  border-radius: 0.5rem;
+  width:50%;
   font-size: clamp(10px, 5cqw, 40px);
   background: rgba(255, 255, 255, 0.02);
 }
 
-.input-group input {
+.input-group {
   display: flex;
-  align-self: center;
-  justify-items: center;
+  flex-direction: column;
 }
 
 .input-group label {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.2em;
-  position: relative;
-}
-
-.max-container {
-  position: absolute;
-  top: 0.3em;
-  right: -0.1rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.6em;
-  opacity: 0.5;
-  color: currentColor;
-  pointer-events: none;
-  font-family: dark-theme-font;
-}
-
-.max-label,
-.max-value {
-  margin: 0;
-  padding: 0;
-}
-
-.focus-comp.light .max-container {
-  font-family: serif;
+  gap: 0.1em;
+  width: 100%;
 }
 
 .daily-hours {
   all: unset;
   display: flex;
   text-align: center;
-  width: 20%;
+  width: 30%;
   padding: 0.25em 0.5em;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(164, 237, 238, 0.3);
@@ -471,7 +442,9 @@
 }
 
 .wrapper-input span {
-  min-width: 7ch;
+  min-width: 6ch;
+  align-content: center;
+  text-align: start;
 }
 
 .settings-buttons {

@@ -22,23 +22,37 @@
   viewBox={`0 0 ${radius * 2 + stroke} ${radius * 2 + stroke}`}
   class="circle-progress"
 >
-  <circle
-    class={["bg", {light: appSettings.Theme }]}
-    cx={radius + stroke / 2}
-    cy={radius + stroke / 2}
-    r={radius}
-    stroke-width={stroke}
-  />
-  <circle
-    class={["fg", {light: appSettings.Theme }]}
-    cx={radius + stroke / 2}
-    cy={radius + stroke / 2}
-    r={radius}
-    stroke-width={stroke}
-    stroke-dasharray={circumference}
-    stroke-dashoffset={offset}
-    transform={`rotate(-90 ${radius + stroke / 2} ${radius + stroke / 2})`}
-  />
+  <defs>
+    <filter id="depressed-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="1" dy="5" />
+      <feGaussianBlur stdDeviation="7" result="offset-blur" />
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
+      <feFlood flood-color="rgba(0, 0, 0, 0.7)" result="color" />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+    </filter>
+  </defs>
+
+  <g filter="url(#depressed-shadow)">
+    <circle
+      class={["bg", {light: appSettings.Theme}]}
+      cx={radius + stroke / 2}
+      cy={radius + stroke / 2}
+      r={radius}
+      stroke-width={stroke}
+    />
+    <circle
+      class={["fg", {light: appSettings.Theme }]}
+      cx={radius + stroke / 2}
+      cy={radius + stroke / 2}
+      r={radius}
+      stroke-width={stroke}
+      fill="none"
+      stroke-dasharray={circumference}
+      stroke-dashoffset={offset}
+      transform={`rotate(-90 ${radius + stroke / 2} ${radius + stroke / 2})`}
+    />
+  </g>
   <text
     x="50%"
     y="50%"
@@ -46,11 +60,13 @@
     dominant-baseline="middle"
     textLength="80"
     lengthAdjust="spacingAndGlyphs"
+    fill="#3B2F2F"
+    style="text-shadow: 1px 1px 1px rgba(0,0,0,0.2), -1px -1px 1px rgba(255,255,255,0.2);"
     class={["progress-label", {light: appSettings.Theme }]}>
     {#if !focus}
       {$time[0]}{$time[1]}:{$time[2]}{$time[3]}:{$time[4]}{$time[5]}
-    {:else}
-      {goal} hour
+    {:else if goal < 25}
+      {Math.floor(goal)} hour
     {/if}
   </text>
 
@@ -65,22 +81,23 @@
 }
 
 .bg {
-  fill: transparent;
-  stroke: rgba(255, 255, 255, 0.112);
+  fill: rgba(0, 0, 0, 0.129);
+  stroke: #707070;
 }
 
 .bg.light {
-  stroke: #23232319;
+  fill: transparent;
+  stroke: #ecc3c3;
 }
 
 .fg {
   fill: none;
   stroke: var(--user-pc-color, rgb(253, 154, 61));
   stroke-linecap: round;
+  stroke-opacity: 100%;
 }
 .fg.light {
   stroke: var(--user-pc-color, rgb(119, 197, 245));
-  stroke-opacity: 100%;
 }
 
 .progress-label {

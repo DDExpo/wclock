@@ -52,7 +52,8 @@ func LoadOrInitSettings(filepath string) (AppSettings, error) {
 		settings.Focus.Goal.ClearMinutes = 30
 		settings.Focus.Goal.IncludeWeekdays = false
 
-		settings.Focus.FocusCard.Hours = 8
+		settings.Focus.Goal.MonthDay = [2]int{0, 0}
+		settings.Focus.FocusCard.Minutes = 60
 		settings.Focus.FocusCard.Minutes = 60
 		settings.Focus.FocusCard.Breaks = 4
 		settings.Focus.FocusCard.BreaksTime = 5

@@ -5,7 +5,7 @@ import type { CardType, dialTime } from "$lib/types/StoreComponentsTypes";
 
 import { Card } from "$lib/stores/class/ClassCard.svelte";
 import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
-import { debounceDelete } from "./utils.svelte";
+import { debounceDelete, isDeleteHappening } from "./utils.svelte";
 
 export const cards = writable<CardType[]>([]);
 export const notDraggable = $state({ dragg: false})
@@ -91,11 +91,15 @@ export function updateCard(ind: number, name: string, initialT: dialTime, dial: 
 const deleteDebounceCards = debounceDelete(DbDelete, "cards");
 
 export  function deleteCard(ind: number, id: string) {
+  isDeleteHappening.yes = true
+
+  deleteDebounceCards(id)
   cards.update(c => {
     c[ind].timer.reset();
     return c.filter(card => card.id !== id);
   });
-  deleteDebounceCards(id)
+  
+  setTimeout(() => isDeleteHappening.yes=false, 50)
 };
 
 export function validateDial(cardDial: number[]): boolean {

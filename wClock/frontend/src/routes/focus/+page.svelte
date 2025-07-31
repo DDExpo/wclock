@@ -130,7 +130,7 @@
 
 .focus-page.light .splitter,
 .focus-page.light .splitter-horiz {
-  background: #fff4e9;
+  background: #FFF4E9;
 }
 
 .grid-container {
