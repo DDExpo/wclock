@@ -10,14 +10,19 @@ import { Task } from "./class/ClassTask.svelte";
 import { DbDelete } from "$lib/wailsjs/go/main/App";
 import { debounceDelete, isDeleteHappening } from "./utils.svelte";
 
-export const tasksState = $state({
-  progress: 0,
-  countChecked: 0
-});
+export const sessionState = $state({
+  started: false
+})
 
 export const focusComponents = writable(
   [{id: 10, componenet: Focus}, {id: 20, componenet: Tasks}, {id: 30, componenet: Goal}]
 );
+
+export const tasksState = $state({
+  progress: 0,
+  countChecked: 0,
+  checkedIndex: new Set<number>(),
+});
 
 export const goalCardState = $state({
   dailyGoal: 8,
@@ -42,15 +47,13 @@ export const tasks = writable<TaskType[]>([]);
 const deleteDebounceTasks = debounceDelete(DbDelete, "tasks");
 
 export function createTask() {
-  tasks.update(t => [...t, new Task(crypto.randomUUID(), "task", false, 0, 0, 0)])
+  tasks.update(t => [...t, new Task(crypto.randomUUID(), "task", false, 15, 0, 0)])
 }
 
 export function deleteTask(id: string) {
   isDeleteHappening.yes = true
   deleteDebounceTasks(id)
-  tasks.update(
-    t => {return t.filter(task => task.id!== id);
-  });
-  setTimeout(() => isDeleteHappening.yes=false, 250)
+  tasks.update(t => {return t.filter(task => task.id!== id);});
 
+  setTimeout(() => isDeleteHappening.yes=false, 250)
 }

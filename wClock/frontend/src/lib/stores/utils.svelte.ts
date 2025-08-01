@@ -117,7 +117,7 @@ export function getTasks(): gofunc.Task[] {
       Order: t.order,
       Checked: t.checked,
       TimeToSpend: t.timeToSpend,
-      TimeInitToSpend: t.timeInitToSpend,
+      TimeInitToSpend: Number(t.timeInitToSpend),
     })
   );
 }

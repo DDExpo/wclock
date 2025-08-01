@@ -17,6 +17,6 @@ export class Task {
     this.checked = checked
     this.timeToSpend = timeToSpend
     this.timeInitToSpend = timeInitToSpend;
-    this.tweenTime = new Tween(0, {duration: this.timeInitToSpend, easing: cubicOut})
+    this.tweenTime = new Tween(0, {easing: cubicOut})
   };
 };

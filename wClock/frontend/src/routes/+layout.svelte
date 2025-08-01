@@ -13,7 +13,7 @@
   import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm, SaveTasks, GetTasks } from "$lib/wailsjs/go/main/App";
   import { alarms } from "$lib/stores/alarms.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
-  import { tasks } from '$lib/stores/focusState.svelte';
+  import { tasks, tasksState } from '$lib/stores/focusState.svelte';
   import { Card } from "$lib/stores/class/ClassCard.svelte";
   import { Task } from "$lib/stores/class/ClassTask.svelte";
   import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
@@ -45,6 +45,7 @@
     tasks.set(tasksGo.map(taskData => {
       const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeInitToSpend, taskData.TimeToSpend, taskData.Order);
       if (isPastClearDate) { task.checked=false, task.timeToSpend=0, task.order=0}
+      if (task.checked) {tasksState.countChecked += 1}
       return task;
     }));
     
