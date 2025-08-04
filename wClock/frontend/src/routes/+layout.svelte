@@ -39,8 +39,8 @@
     
     const today = new Date();
     const isPastClearDate = (Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0) &&
-    appSettings.Focus.goal.monthDay[0] !== today.getMonth() && appSettings.Focus.goal.monthDay[1] !== today.getDate());
-    
+    appSettings.Focus.goal.monthDay[0] !== today.getMonth() || appSettings.Focus.goal.monthDay[1] !== today.getDate());
+
     const tasksGo = await GetTasks();
     tasks.set(tasksGo.map(taskData => {
       const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeInitToSpend, taskData.TimeToSpend, taskData.Order);
@@ -53,7 +53,8 @@
       if ((appSettings.Focus.goal.dailyGoal <= Math.floor(appSettings.Focus.goal.completed / 60)) && (!appSettings.Focus.goal.includeWeekdays && today.getDay() < 5 ) || (appSettings.Focus.goal.includeWeekdays && today.getDay() > 4)) {
         appSettings.Focus.goal.streak += 1
       }
-      appSettings.Focus.goal.yesterday = Math.floor(appSettings.Focus.goal.completed / 60)
+      appSettings.Focus.goal.yesterday[0] = appSettings.Focus.goal.yesterday[1]
+      appSettings.Focus.goal.yesterday[1] = 0
       appSettings.Focus.goal.completed = 0
     }
     

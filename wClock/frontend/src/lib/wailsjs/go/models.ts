@@ -24,7 +24,9 @@ export namespace gofunc {
 	}
 	export class FocusCard {
 	    minutes: number;
+	    curMinutes: number;
 	    breaks: number;
+	    breaksAtEvery: number;
 	    breaksTime: number;
 	    skipBreaks: boolean;
 	
@@ -35,7 +37,9 @@ export namespace gofunc {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.minutes = source["minutes"];
+	        this.curMinutes = source["curMinutes"];
 	        this.breaks = source["breaks"];
+	        this.breaksAtEvery = source["breaksAtEvery"];
 	        this.breaksTime = source["breaksTime"];
 	        this.skipBreaks = source["skipBreaks"];
 	    }
@@ -68,7 +72,22 @@ export namespace gofunc {
 	        this.includeWeekdays = source["includeWeekdays"];
 	    }
 	}
+	export class GridSeize {
+	    left: number;
+	    bottom: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new GridSeize(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.left = source["left"];
+	        this.bottom = source["bottom"];
+	    }
+	}
 	export class FocusSettings {
+	    gridSeize: GridSeize;
 	    goal: Goal;
 	    focus: FocusCard;
 	
@@ -78,6 +97,7 @@ export namespace gofunc {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.gridSeize = this.convertValues(source["gridSeize"], GridSeize);
 	        this.goal = this.convertValues(source["goal"], Goal);
 	        this.focus = this.convertValues(source["focus"], FocusCard);
 	    }
@@ -154,6 +174,7 @@ export namespace gofunc {
 	        this.Order = source["Order"];
 	    }
 	}
+	
 	
 	
 	

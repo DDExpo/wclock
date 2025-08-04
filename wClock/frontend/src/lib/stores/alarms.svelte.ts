@@ -22,7 +22,7 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
       return
     }
     updateTimeToAlarm();
-    idInterval = setInterval(updateTimeToAlarm, 30000);
+    idInterval = setInterval(updateTimeToAlarm, 10000);
   };
   
   function updateTimeToAlarm(change: boolean = false) {
@@ -41,13 +41,12 @@ export const createWatchAlarm = (dial: [number, number, number, number], alarmTe
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     
-    if (diffHours === 0 && diffMinutes === 0 && diffMs < 5000) {
+    if (diffHours === 0 && diffMinutes === 0 && diffMs < 3000) {
       timeToAlarmSetter.set(`${0} hours ${0} minutes`);
-      stop();
       TimerFinished("Alarm", alarmText);
-      setTimeout(soundNotify, 150);
-      getNextDay();
-      setTimeout(start, 7000); 
+      setTimeout(soundNotify, 200);
+      clearInterval(idInterval)
+      setTimeout(start, 3000); 
       return;
     }
     

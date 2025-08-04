@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition';
+  
+  import Session from "./Session.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
-  import { tasksState, focusCardState } from "$lib/stores/focusState.svelte";
+  import { tasksState, focusCardState, focusWatch } from "$lib/stores/focusState.svelte";
   import { appSettings, validateSettings } from "$lib/stores/utils.svelte";
 
   import { GiveNewSettings } from '$lib/wailsjs/go/main/App';
@@ -16,75 +19,87 @@
   function startSesion() {
     isNotValidTime = validateSettings(false, true)
     if (!isNotValidTime) {
-      tasksState.progress += 1
+      focusWatch.updateFocusWatch(appSettings.Focus.focus.minutes, appSettings.Focus.focus.breaksTime,
+                                  appSettings.Focus.focus.breaksAtEvery, appSettings.Focus.focus.skipBreaks)
+      focusCardState.sessionStarted = true
     }
   }
 
 </script>
 
-<div class={["focus-comp", {light: appSettings.Theme, settings: focusCardState.isSettingsSide, session: focusCardState.sessionSide}]}>
-  <div class="header">
-    <div class="name">Focus</div>
-    <div class="top-buttons">
-        <TopRightButton onClick={ () => focusCardState.isSettingsSide = !focusCardState.isSettingsSide } icon="icons/focus/dots.svg" alt="settings" --end=16px/>
-    </div>
-  </div>
+<div class={["focus-comp", {light: appSettings.Theme, settings: focusCardState.isSettingsSide}]}>
+  
+  {#if focusCardState.sessionStarted}
+    <div transition:fade>
 
-  <div class="flipper">
-    <div class="focus-body">
-      <div class="focus-title">Ready, set, focus</div>
-      <div class="focus-subtitle">
-        Achieve your goals and get more done with focus sessions.
+      <div class="session-body">
+        <Session /> 
       </div>
-      <div class={["focus-timer", { valid: isNotValidTime }]}>
-        <input type="text" bind:value={appSettings.Focus.focus.minutes} class="focus-input"  placeholder="0"/>
-        <div class="mins" style:margin-top=-10px>mins</div>
-      </div>
-      <div class="focus-options">
-        <input type="checkbox" bind:checked={appSettings.Focus.focus.skipBreaks} />
-        <span>Skip breaks</span>
-      </div>
-      <button class="start-button" onclick={ startSesion }>Start focus session</button>
     </div>
-
-    <div class={["focus-body-settings", { valid: isNotValidTime }]}>
-      <div class="focus-settings">
-        <div class="title">Settings</div>
-        <div class="wrapper-input">
-          <div class="input-group">
-            <label>
-              <input class="daily-hours" type="text" bind:value={appSettings.Focus.focus.breaks} placeholder="0" />
-              <span class="max-container">
-                <span class="max-label">max</span>
-                <span class="max-value">99</span>
-              </span>
-              <span>Breaks</span>
-            </label>
+  {:else}
+    <div transition:fade>
+      
+        <div class="header">
+          <div class="name">Focus</div>
+          <div class="top-buttons">
+              <TopRightButton onClick={ () => focusCardState.isSettingsSide = !focusCardState.isSettingsSide } icon="icons/focus/dots.svg" alt="settings" --end=16px/>
           </div>
-          <div class="input-group">
-            <label>
-              <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
-              <span class="max-container">
-                <span class="max-label">max</span>
-                <span class="max-value">720</span>
-              </span>
-              <span>Breaks Time</span>
-            </label>
+        </div>
+      
+        <div class="flipper">
+          <div class="focus-body">
+            <div class="focus-title">Ready, set, focus</div>
+            <div class="focus-subtitle">
+              Achieve your goals and get more done with focus sessions.
+            </div>
+            <div class={["focus-timer", { valid: isNotValidTime }]}>
+              <input type="text" bind:value={appSettings.Focus.focus.minutes} class="focus-input"  placeholder="0"/>
+              <div class="mins" style:margin-top=-10px>mins</div>
+            </div>
+            <div class="focus-options">
+              <input type="checkbox" bind:checked={appSettings.Focus.focus.skipBreaks} />
+              <span>Skip breaks</span>
+            </div>
+            <button class="start-button" onclick={ startSesion }>Start focus session</button>
+          </div>
+      
+          <div class={["focus-body-settings", { valid: isNotValidTime }]}>
+            <div class="focus-settings">
+              <div class="title">Settings</div>
+              <div class="wrapper-input">
+                <div class="input-group">
+                  <label>
+                    <span>Breaks at every</span>
+                    <input class="daily-hours" type="text" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
+                    <span class="label-below">hour</span>
+                  </label>
+                </div>
+
+                <div class="rows">
+                  <div class="input-group">
+                    <label>
+                      <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
+                      <span>Breaks Time</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-buttons">
+                <button class="save" onclick={ saveValidate }>
+                  <img src="icons/focus/disk.svg" alt="save icon" />
+                  Save
+                </button>
+                <button class="cancel" onclick={() => focusCardState.isSettingsSide = false }>
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="settings-buttons">
-          <button class="save" onclick={ saveValidate }>
-            <img src="icons/focus/disk.svg" alt="save icon" />
-            Save
-          </button>
-          <button class="cancel" onclick={() => focusCardState.isSettingsSide = false }>
-            Cancel
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
+  {/if}
 </div>
 <style>
 
@@ -101,7 +116,7 @@
   overflow-y: scroll;
   scrollbar-width: none;
   perspective: 1000px;
-  container-type: inline-size;
+  container: comp / inline-size;
 }
 
 .flipper {
@@ -117,7 +132,7 @@
 }
 
 .focus-comp.light {
-  background: #F7B36F;
+  background: #e8ad72;
 }
 .focus-comp.light .focus-title {
   color: #2b2b2b;
@@ -189,6 +204,7 @@
   justify-content: end;
 }
 
+.session-body, 
 .focus-body {
   display: flex;
   flex-direction: column;
@@ -197,10 +213,16 @@
   width: 100%;
   height: 100%;
   gap: 5px;
-  margin-top: 10px;
+  margin-top: -20px;
   padding-bottom: 2rem;
   align-items: center;
   backface-visibility: hidden;
+}
+
+@container comp (width > 512px) {
+  .focus-body {
+    margin-top: 70px;
+  }
 }
 
 .focus-title {
@@ -273,6 +295,7 @@
   height: 16px;
   cursor: pointer;
   background-color: #181818bd;
+  border-radius: 3px;
   box-shadow: 0px 3px 0px rgb(255, 255, 255);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -367,14 +390,13 @@
   height:100%;
   justify-content: center;
   align-items: center;
-  margin-top: -30px;
   overflow: hidden;
   container-type: inline-size;
 }
 
 .focus-settings .title {
   font-weight: bolder;
-  font-size: clamp(5px, 8cqw, 30px);
+  font-size: clamp(5px, 10cqw, 50px);
   text-align: center;
   color: white;
 }
@@ -387,7 +409,8 @@
   border: 0.7cqw solid rgb(163, 120, 244);
   color: #3B2F2F;
   border-bottom: 2cqw solid rgb(163, 120, 244);
-  font-size: clamp(10px, 5cqw, 40px);
+  font-size: clamp(10px, 5cqw, 25px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .focus-comp.light .daily-hours {
@@ -405,6 +428,7 @@
 .wrapper-input {
   display: flex;
   padding: 0.5rem 1rem;
+  flex-direction: column;
   color: white;
   border: 0.5cqw solid rgba(164, 237, 238);
   border-bottom: 2cqw solid rgb(164, 237, 238);
@@ -412,6 +436,7 @@
   width:clamp(110px, 55cqw, 600px);
   font-size: clamp(10px, 5cqw, 40px);
   background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
 .input-group input {
@@ -428,28 +453,14 @@
   position: relative;
 }
 
-.max-container {
-  position: absolute;
-  top: 0.3em;
-  right: -0.1rem;
+.label-below {
+  margin-right: clamp(5px, 2cqw, 20px);
   text-align: center;
+}
+
+.rows {
   display: flex;
-  flex-direction: column;
-  font-size: 0.6em;
-  opacity: 0.5;
-  color: currentColor;
-  pointer-events: none;
-  font-family: dark-theme-font;
-}
-
-.max-label,
-.max-value {
-  margin: 0;
-  padding: 0;
-}
-
-.focus-comp.light .max-container {
-  font-family: serif;
+  flex-direction: row;
 }
 
 .daily-hours {

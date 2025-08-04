@@ -51,10 +51,14 @@ export type weekDaysBool = [boolean, boolean, boolean, boolean, boolean, boolean
 export type AppSettings = {
   Theme: boolean
   Focus: {
+    gridSeize: {
+      left: number
+      bottom: number
+    }
     goal: {
       streak: number
       monthDay: [number, number]
-      yesterday: number
+      yesterday: [number, number]
       completed: number
       dailyGoal: number
       clearHours: number
@@ -63,10 +67,11 @@ export type AppSettings = {
       includeWeekdays: boolean
     }
     focus: {
-      breaks: number
       minutes: number
+      curMinutes: number
       breaksTime: number
       skipBreaks: boolean
+      breaksAtEvery: number
     }
   }
 }
@@ -79,6 +84,7 @@ export type TaskType = {
   tweenTime: Tween<number>
   timeToSpend: number;
   timeInitToSpend: number;
+  completed: boolean;
 };
 
 export type AlarmType = {

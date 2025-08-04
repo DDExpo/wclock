@@ -74,7 +74,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;;
-  height: clamp(190px, 25vw, 280px);
+  height: clamp(190px, 25vw, 245px);
   width: clamp(230px, 45vw, 400px);
   justify-content: start;
   background: #373737;
@@ -195,7 +195,7 @@ input:checked + .slider:before {
   justify-content: start;
   align-items: center;
   margin-left: 1rem;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   font-size: clamp(1rem, 2vw, 1.5rem);
   filter: opacity(50%);
   color: white;

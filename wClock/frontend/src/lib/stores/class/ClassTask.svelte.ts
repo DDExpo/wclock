@@ -6,9 +6,11 @@ export class Task {
   text = $state("task");
   order = $state(0)
   checked = $state(false);
+  completed = $state(false);
   tweenTime: Tween<number> 
   timeToSpend = $state(0);
   timeInitToSpend = $state(0);
+
 
   constructor(id: string, text: string, checked: boolean, timeInitToSpend: number, timeToSpend: number, order: number) {
     this.id = id
@@ -18,5 +20,6 @@ export class Task {
     this.timeToSpend = timeToSpend
     this.timeInitToSpend = timeInitToSpend;
     this.tweenTime = new Tween(0, {easing: cubicOut})
+    this.completed = timeToSpend <= 0
   };
 };

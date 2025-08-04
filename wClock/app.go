@@ -154,10 +154,16 @@ func (a *App) GiveNewSettings(newSettings map[string]any) {
 		key = k
 		break
 	}
-
 	switch key {
 	case "Theme":
 		Settings.Theme = newSettings[key].(bool)
+
+	case "Grid":
+		data, _ := json.Marshal(newSettings[key])
+		err := json.Unmarshal(data, &Settings.Focus.GridSeize)
+		if err != nil {
+			fmt.Println("Failed to unmarshal GridSeize:", err)
+		}
 	case "Focus":
 		data, _ := json.Marshal(newSettings[key])
 		err := json.Unmarshal(data, &Settings.Focus.FocusCard)

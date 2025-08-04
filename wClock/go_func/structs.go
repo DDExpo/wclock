@@ -30,7 +30,7 @@ type Task struct {
 type Goal struct {
 	DailyProgress   [2]int `json:"dailyProgress"`
 	Streak          int    `json:"streak"`
-	Yesterday       int    `json:"yesterday"`
+	Yesterday       [2]int `json:"yesterday"`
 	Completed       int    `json:"completed"`
 	DailyGoal       int    `json:"dailyGoal"`
 	ClearHours      int    `json:"clearHours"`
@@ -40,13 +40,20 @@ type Goal struct {
 }
 
 type FocusCard struct {
-	Minutes    int  `json:"minutes"`
-	Breaks     int  `json:"breaks"`
-	BreaksTime int  `json:"breaksTime"`
-	SkipBreaks bool `json:"skipBreaks"`
+	Minutes       int  `json:"minutes"`
+	CurMinutes    int  `json:"curMinutes"`
+	BreaksAtEvery int  `json:"breaksAtEvery"`
+	BreaksTime    int  `json:"breaksTime"`
+	SkipBreaks    bool `json:"skipBreaks"`
+}
+
+type GridSeize struct {
+	Left   int `json:"left"`
+	Bottom int `json:"bottom"`
 }
 
 type FocusSettings struct {
+	GridSeize GridSeize `json:"gridSeize"`
 	Goal      Goal      `json:"goal"`
 	FocusCard FocusCard `json:"focus"`
 }

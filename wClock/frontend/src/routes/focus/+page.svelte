@@ -4,7 +4,8 @@
   import { dndzone } from "svelte-dnd-action";
 
   import { appSettings } from "$lib/stores/utils.svelte";
-  import { focusComponents, gridSeizeState } from "$lib/stores/focusState.svelte";
+  import { focusComponents } from "$lib/stores/focusState.svelte";
+  import { GiveNewSettings } from "$lib/wailsjs/go/main/App";
   
   let gridEl: HTMLDivElement;
 
@@ -27,61 +28,61 @@
     isResizing = true;
     drag = true;
   };
-
+  
   function onMouseMove(e: MouseEvent) {
     if (!isResizing) return;
-
+    
     newLeft += e.movementX;
-
-    const minLeft = 190;
+    
+    const minLeft = 230;
     const maxLeft = gridEl.offsetWidth - 10 - minLeft;
-
+    
     newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
-
+    
     gridEl.style.gridTemplateColumns = `${newLeft}px 5px`;
   };
-
-
+  
+  
   function onMouseMoveHoriz(e: MouseEvent) {
     if (!isResizing) return;
-
+    
     newBottom += e.movementY;
-
-    const minTop = 250;
+    
+    const minTop = 330;
     const maxTop = gridEl.offsetHeight - 10 - minTop;
-
+    
     newBottom = Math.max(minTop, Math.min(newBottom, maxTop));
-
+    
     gridEl.style.gridTemplateRows = `${newBottom}px 1fr`;
   }
-
+  
   function onMouseOver() {
     drag = true;
   }
-
+  
   function onMouseOut() {
     drag = false
     isResizing = false
-
   }
-
+  
   function onMouseUp() {
     isResizing = false;
     drag = false
-    setTimeout(() => {document.exitPointerLock(), 1000})
+    setTimeout(() => {document.exitPointerLock(), 500})
   }
-
+  
   onDestroy(() => {
-    gridSeizeState.Left = newLeft < 190 ? 190: newLeft
-    gridSeizeState.Bottom = newBottom < 250 ? 250: newBottom
+    appSettings.Focus.gridSeize.left = newLeft < 230 ? 230: newLeft
+    appSettings.Focus.gridSeize.bottom = newBottom < 330 ? 330: newBottom
+    GiveNewSettings({"Grid": appSettings.Focus.gridSeize})
   })
 
   onMount(() => {
     gridEl = document.querySelector(".grid-container")!;
-    gridEl.style.gridTemplateColumns = `${gridSeizeState.Left}px 5px`;
-    gridEl.style.gridTemplateRows = `${gridSeizeState.Bottom}px 1fr`;
-    newLeft = gridSeizeState.Left
-    newBottom = gridSeizeState.Bottom
+    gridEl.style.gridTemplateColumns = `${appSettings.Focus.gridSeize.left}px 5px`;
+    gridEl.style.gridTemplateRows = `${appSettings.Focus.gridSeize.bottom}px 1fr`;
+    newLeft = appSettings.Focus.gridSeize.left
+    newBottom = appSettings.Focus.gridSeize.bottom
   });
 
 </script>
@@ -154,8 +155,8 @@
 }
 
 .grid-item {
-  min-width: 200px;
-  min-height: 250px;
+  min-width: 230px;
+  min-height: 330px;
 }
 
 .grid-a {
@@ -177,7 +178,7 @@
   position: relative;
   grid-column: 2 / 3;
   grid-row: 1 / 3;
-  background: rgb(255, 180, 94);
+  background: #c3a66d;
   cursor: col-resize;
   width: 5px;
   height: 100%;
@@ -188,7 +189,7 @@
   position: relative;
   grid-column: 1 / 3;
   grid-row: 2;
-  background: rgb(255, 180, 94);
+  background: #b79d68;
   cursor: row-resize;
   height: 5px;
   width: 100%;

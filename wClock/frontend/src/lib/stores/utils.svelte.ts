@@ -20,10 +20,14 @@ export const watchState = $state({
 export const appSettings: AppSettings = $state({
   Theme: false,
   Focus: {
+    gridSeize: {
+      left: 230,
+      bottom: 330
+    },
     goal: {
       dailyProgress: [0, 0],
       streak: 0,
-      yesterday: 0,
+      yesterday: [0, 0],
       completed: 0,
       dailyGoal: 1,
       clearHours: 12,
@@ -33,9 +37,10 @@ export const appSettings: AppSettings = $state({
     },
     focus: {
       minutes: 30,
-      breaks: 4,
+      curMinutes: 0,
       breaksTime: 5,
       skipBreaks: false,
+      breaksAtEvery: 1,
     }
   }
 });
@@ -62,8 +67,8 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
   
   if (focusCardValidation) {
     appSettings.Focus.focus.minutes = clamp(appSettings.Focus.focus.minutes, 1440, 60);
-    appSettings.Focus.focus.breaks = clamp(appSettings.Focus.focus.breaks, 99, appSettings.Focus.goal.dailyGoal);
     appSettings.Focus.focus.breaksTime = clamp(appSettings.Focus.focus.breaksTime, 720, 5);
+    appSettings.Focus.focus.breaksAtEvery = clamp(appSettings.Focus.focus.breaksAtEvery, 12, 1);
   }
 
   return isNotValid;

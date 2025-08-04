@@ -14,7 +14,6 @@
   let isNotValidSettings: boolean = $state(false)
 
   const progress = $derived(appSettings.Focus.goal.completed/(appSettings.Focus.goal.dailyGoal*60));
-  const time = writable([0, 0, 0, 0, 0, 0] as dialTime);
 
   function saveValidateyGoalState() {
     isNotValidSettings = validateSettings(true)
@@ -38,7 +37,7 @@
       <div class="progress-content">
         <div class="side-column">
           <div class="label">Yesterday</div>
-          <div class="value">{appSettings.Focus.goal.yesterday}</div>
+          <div class="value">{appSettings.Focus.goal.yesterday[0]}</div>
           <div class="unit">hour</div>
         </div>
         <div class="circle-wrapper">
@@ -195,6 +194,7 @@
 
 .label {
   display: flex;
+  min-width: 5ch;
   position: relative;
   font-weight: bold;
   margin-bottom: 0.2rem;
@@ -300,6 +300,24 @@
   border-bottom: 2cqw solid rgb(163, 120, 244);
 }
 
+.goal-comp.light .checkbox input {
+  background-color:rgba(255, 255, 255, 0.244);
+  box-shadow: 0px 2px 0px rgb(163, 120, 244);
+}
+.goal-comp.light .checkbox input:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 5px 0px rgb(163, 120, 244);
+}
+.goal-comp.light .checkbox input:active {
+  transform: translateY(0px);
+  box-shadow: 0px 3px 0px rgb(163, 120, 244);
+}
+
+.goal-comp.light .checkbox input::after {
+  border: solid #3B2F2F;
+  border-width: 0 2px 2px 0;
+}
+
 .field {
   display: flex;
   color: inherit;
@@ -362,10 +380,51 @@
 .checkbox {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5em;
+  font-size: 0.9rem;
 }
 
+.checkbox input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  background-color: #c4c4c40e;
+  box-shadow: 0px 2px 0px rgb(164, 237, 238);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  border-radius: 3px;
+}
+
+.checkbox input:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 5px 0px rgb(164, 237, 238);
+}
+
+.checkbox input:active {
+  transform: translateY(0px);
+  box-shadow: 0px 3px 0px #6FD7F7;
+}
+
+.checkbox input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid rgb(255, 255, 255);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox input:checked::after {
+  opacity: 1;
+}
 .checkbox span {
  font-size:  clamp(8px, 4cqw, 20px);
 }

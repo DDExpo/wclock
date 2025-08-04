@@ -45,7 +45,7 @@ func LoadOrInitSettings(filepath string) (AppSettings, error) {
 		settings = AppSettings{Theme: false}
 		settings.Focus.Goal.DailyProgress = [2]int{0, 0}
 		settings.Focus.Goal.Streak = 0
-		settings.Focus.Goal.Yesterday = 0
+		settings.Focus.Goal.Yesterday = [2]int{0, 0}
 		settings.Focus.Goal.Completed = 0
 		settings.Focus.Goal.DailyGoal = 8
 		settings.Focus.Goal.ClearHours = 12
@@ -55,8 +55,8 @@ func LoadOrInitSettings(filepath string) (AppSettings, error) {
 		settings.Focus.Goal.MonthDay = [2]int{0, 0}
 		settings.Focus.FocusCard.Minutes = 60
 		settings.Focus.FocusCard.Minutes = 60
-		settings.Focus.FocusCard.Breaks = 4
 		settings.Focus.FocusCard.BreaksTime = 5
+		settings.Focus.FocusCard.BreaksAtEvery = 1
 		settings.Focus.FocusCard.SkipBreaks = false
 
 		data, err := json.MarshalIndent(settings, "", "  ")

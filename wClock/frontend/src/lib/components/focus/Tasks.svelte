@@ -4,7 +4,7 @@
   import type { TaskType } from "$lib/types/StoreComponentsTypes";
   
   import { appSettings } from "$lib/stores/utils.svelte";
-  import { createTask, tasksState, deleteTask, tasks, sessionState } from "$lib/stores/focusState.svelte";
+  import { createTask, tasksState, deleteTask, tasks, focusCardState} from "$lib/stores/focusState.svelte";
   
   let isNotValid: boolean = $state(false)
 
@@ -12,11 +12,13 @@
     let num = Number(t.timeInitToSpend)
     if (isNaN(num) || num <= 0 || num > 1440) {
       t.timeInitToSpend = 15
+      t.timeToSpend = 15
       isNotValid = true
       t.checked = false
       return false
     };
     t.timeInitToSpend = num
+    t.timeToSpend = num
     isNotValid = false
     return true
   }
@@ -58,18 +60,18 @@
     </div>
 
     {#each $tasks as t, ind}
-      <div class="row">
+      <div class={["row", {completed: t.completed}]}>
         {#if t.checked}
           <span>{t.order}</span>
         {/if}
         <input type="checkbox" class={["round-checkbox", {checked: t.checked}]} onchange={() => toggleChecked(t, ind)}/>
         <input type="text" bind:value={t.text} class="task-text" readonly={t.checked}>
         <div class={["input-with-progress", {valid: isNotValid}]}>
-          <progress max=100 value={t.tweenTime.current + 100}></progress>
-          {#if sessionState.started}
-            <input type="number" readonly value={t.timeToSpend}>
+          <progress max=100 value={t.tweenTime.current}></progress>
+          {#if focusCardState.sessionStarted}
+            <input type="number" readonly value={`${Math.floor(t.timeToSpend / 60)}:${(t.timeToSpend % 60).toString().padStart(2, '0')}`}>
           {:else}
-            <input type="number" min=0 max=1440 readonly={t.checked} bind:value={t.timeInitToSpend} placeholder="00:00">
+            <input type="number" min=0 max=1440 readonly={t.checked} bind:value={t.timeInitToSpend} placeholder="minutes">
           {/if}
         </div>
         {#if !t.checked}
@@ -161,6 +163,10 @@
   margin-left: 7px;
   border-bottom: 1px solid #666666;
   padding-bottom: 4px;
+}
+
+.row.completed {
+  background-color: rgba(127, 255, 212, 0.657);
 }
 
 .delete {
