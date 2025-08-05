@@ -10,6 +10,7 @@ import { Task } from "./class/ClassTask.svelte";
 import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
 import { appSettings, debounceDelete, isDeleteHappening } from "./utils.svelte";
 
+
 export const focusComponents = writable(
   [{id: 10, componenet: Focus}, {id: 20, componenet: Tasks}, {id: 30, componenet: Goal}]
 );
@@ -30,45 +31,60 @@ export const goalCardState = $state({
 
 export const focusCardState = $state({
   sessionStarted: false,
+  sessionWatchStoped: false,
   sessionIsOnBreak: false,
   isSettingsSide: false,
+  seconds: 0,
 }); 
 
 export const tasks = writable<TaskType[]>([]);
 
 
-export const createFocusWatch = (initailTime: number, breaksTime: number, breaksAt: number, skipBreaks: boolean) => {
+export const createFocusWatch = (initailTime: number, breaksTime: number, breaksAtMinutes: number, skipBreaks: boolean) => {
 
-  let sound: string = "/sounds/timer.mp3"
-  let breaks: number = Math.floor(initailTime / breaksAt)
+  let breaks: number = Math.floor(initailTime / breaksAtMinutes)
   let curTime: number = initailTime * 60 * 1000
+  let timeLeft: number = 0
   let curTask: TaskType | null
   let timeTask: number
   let startTime: number = 0
   let idInterval: number
   let curTaskInd: number | null = null
   let breakIdInterval: number
+  let startTaskTime: number = 0
   let lastRecordedMinutes: number = 0;
 
   function startSession() {
 
     let startTime = Date.now();
+    curTask = getCurTask()
 
-    curTask = getCurTask()    
     idInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const timeLeft = curTime - elapsed;
-      const minutes = Math.floor(timeLeft / 60000);
-      const hours = Math.floor(minutes / 60);
-      
+      const totalMinutes = Math.floor(elapsed / 60000);
+  
+      const deltaMinutes = totalMinutes - lastRecordedMinutes;
+      if (deltaMinutes > 0) {
+        appSettings.Focus.goal.completed += deltaMinutes;
+        appSettings.Focus.goal.yesterday[1] += Math.floor(deltaMinutes / 60);
+        lastRecordedMinutes = totalMinutes;
+      };
+
       if (curTask !== null) {
-        curTask.tweenTime.set((elapsed / timeTask) * 100)
-        curTask.timeToSpend = minutes
-        if (elapsed > timeTask) {
-          curTask.completed = true;
-          curTask = getCurTask();
-        }};
-      if (skipBreaks && breaks > 0 && (minutes % breaksAt) === 0) {
+        if (!curTask.completed){
+          const elapsedTask = (Date.now() - startTaskTime)
+          curTask.tweenTime.target += (10001/timeTask) * 100
+          curTask.timeToSpend = curTask.timeToSpend - Math.floor(elapsedTask/60000)
+          if (elapsedTask >= timeTask) {
+            curTask.completed = true;
+            curTask.cuurentTaskSession = false
+            curTask = getCurTask();
+          }
+        }
+      };
+  
+      if (skipBreaks && breaks > 0 && (totalMinutes % breaksAtMinutes) === 0) {
         curTime = timeLeft;
         clearInterval(idInterval);
         notify("/sounds/timer.mp3");
@@ -76,19 +92,12 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
         startBreak();
       };
 
-      const deltaMinutes = minutes - lastRecordedMinutes;
-      if (deltaMinutes > 0) {
-        appSettings.Focus.goal.completed += deltaMinutes;
-        appSettings.Focus.goal.yesterday[1] += Math.floor(deltaMinutes / 60);
-        lastRecordedMinutes = minutes;
-      };
-      appSettings.Focus.focus.curMinutes = minutes;
-
-      if (curTime <= 0) {
+      if (timeLeft <= 0) {
         clearInterval(idInterval);
         notify("/sounds/luna.mp3");
       };
-  }, 30000);};
+
+  }, 10000);};
 
   function startBreak() {
     
@@ -108,16 +117,17 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   }, 30000);
 }  
 
-  function updateFocusWatch(initailTime: number, breaksTime: number, breaksAt: number, skipBreaks: boolean) {
+  function updateFocusWatch(initailTime: number, breaksTime: number, breaksAtMinutes: number, skipBreaks: boolean) {
     initailTime = initailTime
     breaksTime = breaksTime
-    breaksAt = breaksAt
+    breaksAtMinutes = breaksAtMinutes
     skipBreaks = skipBreaks
     curTime = initailTime * 60 * 1000
-    breaks = Math.floor(initailTime / breaksAt)
+    breaks = Math.floor(initailTime / breaksAtMinutes)
   }
   
   function getCurTask(): TaskType | null {
+    curTaskInd = null
     const curTasks = get(tasks)
     let curMin: number = Infinity
 
@@ -127,16 +137,24 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
         curMin = task.order;
         curTaskInd = ind;
       }});
-
+    
     if (curTaskInd === null) return null;
     else {
+      startTaskTime = Date.now()
+      curTasks[curTaskInd].cuurentTaskSession = true
       timeTask = curTasks[curTaskInd].timeInitToSpend * 60 * 1000
       return curTasks[curTaskInd]
     };
   };
   
-  function stop() {clearInterval(idInterval)};
-  function stopBreak() {clearInterval(breakIdInterval)};
+  function stop() {
+    curTime = timeLeft
+    clearInterval(idInterval)
+  };
+  function stopBreak() {
+    curTime = timeLeft
+    clearInterval(breakIdInterval)
+  };
 
   function notify(sound: string) {
     TimerFinished("Focus Session", "Your session ")
@@ -147,6 +165,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   return {
     stop,
     stopBreak,
+    startBreak,
     startSession,
     updateFocusWatch,
   };
@@ -155,7 +174,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
 const deleteDebounceTasks = debounceDelete(DbDelete, "tasks");
 
 export function createTask() {
-  tasks.update(t => [...t, new Task(crypto.randomUUID(), "task", false, 15, 15, 0)])
+  tasks.update(t => [...t, new Task(crypto.randomUUID(), "task", false, 15, 15, 0, false)])
 }
 
 export function deleteTask(id: string) {
@@ -163,8 +182,8 @@ export function deleteTask(id: string) {
   deleteDebounceTasks(id)
   tasks.update(t => {return t.filter(task => task.id!== id);});
 
-  setTimeout(() => isDeleteHappening.yes=false, 250)
+  isDeleteHappening.yes=false
+  setTimeout(() => {}, 250)
 }
 
-export const focusWatch = createFocusWatch(appSettings.Focus.focus.minutes, appSettings.Focus.focus.breaksTime,
-                                           appSettings.Focus.focus.breaksAtEvery, appSettings.Focus.focus.skipBreaks)
+export const focusWatch = createFocusWatch(0, 0, 0, false)

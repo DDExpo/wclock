@@ -77,61 +77,42 @@ func (a *App) startup(ctx context.Context) {
 	}
 }
 
-func (a *App) GetCards() []gofunc.Card {
+func (a *App) DBGet(table string) gofunc.ItemsDB {
+	var err error
+	items := gofunc.ItemsDB{}
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
-	cards, err := db.GetAllCards(DB)
+
+	switch table {
+	case "cards":
+		items.Cards, err = db.GetAllCards(DB)
+	case "tasks":
+		items.Tasks, err = db.GetAllTasks(DB)
+	case "alarms":
+		items.Alarms, err = db.GetAllAlarms(DB)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}
-	return cards
+	return items
 }
-func (a *App) SaveCard(cards []gofunc.Card) {
+
+func (a *App) DBSave(table string, items gofunc.ItemsDB) {
+	var err error
 
 	DB := db.GetDB(os.Getenv("APP_DB"))
 	defer DB.Close()
-	err := db.SaveCards(DB, cards)
-	if err != nil {
-		fmt.Println(err)
+
+	switch table {
+	case "cards":
+		err = db.SaveCards(DB, items.Cards)
+	case "tasks":
+		err = db.SaveTasks(DB, items.Tasks)
+	case "alarms":
+		err = db.SaveAlarms(DB, items.Alarms)
 	}
-}
 
-func (a *App) GetAlarms() []gofunc.Alarm {
-
-	DB := db.GetDB(os.Getenv("APP_DB"))
-	defer DB.Close()
-	alarms, err := db.GetAllAlarms(DB)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return alarms
-}
-func (a *App) SaveAlarm(alarms []gofunc.Alarm) {
-
-	DB := db.GetDB(os.Getenv("APP_DB"))
-	defer DB.Close()
-	err := db.SaveAlarms(DB, alarms)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func (a *App) GetTasks() []gofunc.Task {
-
-	DB := db.GetDB(os.Getenv("APP_DB"))
-	defer DB.Close()
-	tasks, err := db.GetAllTasks(DB)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return tasks
-}
-func (a *App) SaveTasks(tasks []gofunc.Task) {
-
-	DB := db.GetDB(os.Getenv("APP_DB"))
-	defer DB.Close()
-	err := db.SaveTasks(DB, tasks)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -180,20 +161,23 @@ func (a *App) GiveNewSettings(newSettings map[string]any) {
 	default:
 		fmt.Println("Fuck")
 	}
-
 }
 
 func (a *App) SaveSettings(appSettings gofunc.AppSettings) {
 
-	u, err := json.MarshalIndent(appSettings, "", "  ")
+	file, err := os.Create(os.Getenv("APP_SETTINGS"))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Failed to create settings file:", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+
+	if err := encoder.Encode(appSettings); err != nil {
+		fmt.Println("Failed to encode settings:", err)
 	}
 
-	err = os.WriteFile(os.Getenv("APP_SETTINGS"), u, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-	}
 	Settings = appSettings
 }
 

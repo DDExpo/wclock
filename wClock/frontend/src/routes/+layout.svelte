@@ -10,13 +10,14 @@
 
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { appSettings, debounce, getAlarms, getCards, getTasks, watchState } from "$lib/stores/utils.svelte";
-  import { GetWindowsPcColors, GetSettings, GetCards, GetAlarms, SaveCard, SaveAlarm, SaveTasks, GetTasks } from "$lib/wailsjs/go/main/App";
+  import { GetWindowsPcColors, GetSettings, DBSave, DBGet } from "$lib/wailsjs/go/main/App";
   import { alarms } from "$lib/stores/alarms.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
   import { tasks, tasksState } from '$lib/stores/focusState.svelte';
   import { Card } from "$lib/stores/class/ClassCard.svelte";
   import { Task } from "$lib/stores/class/ClassTask.svelte";
   import { Alarm } from "$lib/stores/class/ClassAlarms.svelte";
+  import { gofunc } from '$lib/wailsjs/go/models';
 
 	let { children } = $props();    
   
@@ -26,11 +27,11 @@
     if (color) {appTheme.windowsColor = color};
     document.documentElement.style.setProperty('--user-pc-color', appTheme.windowsColor)
     
-    const cardsGo = await GetCards();
+    const cardsGo = (await DBGet("cards")).Cards;
     cards.set(cardsGo.map(card =>
     new Card(card.ID, card.Name, card.InitialDial as dialTime, card.Dial as dialTime, card.TimeLeft, card.Order)));
     
-    const alarmsGo = await GetAlarms();
+    const alarmsGo = (await DBGet("alarms")).Alarms;
     alarms.set(alarmsGo.map(alarmData => {
       const alarm = new Alarm(alarmData.ID, alarmData.Text, alarmData.Dial as [number, number, number, number], alarmData.Disabled, alarmData.WeekDays as weekDaysBool, alarmData.Order);
       if (!alarm.disabled) {alarm.timerToAlarm.start()};
@@ -41,11 +42,13 @@
     const isPastClearDate = (Date.now() >= new Date().setHours(appSettings.Focus.goal.clearHours, appSettings.Focus.goal.clearMinutes, 0, 0) &&
     appSettings.Focus.goal.monthDay[0] !== today.getMonth() || appSettings.Focus.goal.monthDay[1] !== today.getDate());
 
-    const tasksGo = await GetTasks();
-    tasks.set(tasksGo.map(taskData => {
-      const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeInitToSpend, taskData.TimeToSpend, taskData.Order);
-      if (isPastClearDate) { task.checked=false, task.timeToSpend=0, task.order=0}
-      if (task.checked) {tasksState.countChecked += 1}
+    const tasksGo = (await DBGet("tasks")).Tasks;
+    tasks.set(tasksGo.map((taskData, ind) => {
+      const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeToSpend, taskData.TimeInitToSpend, taskData.Order, taskData.Completed);
+      if (task.timeToSpend !== task.timeInitToSpend) {task.tweenTime.set((task.timeToSpend/task.timeInitToSpend)*100)}
+      if (isPastClearDate) { task.checked=false, task.timeToSpend=task.timeInitToSpend, task.order=0, task.completed=false, task.tweenTime.set(0)};
+      if (task.checked) {tasksState.countChecked += 1, tasksState.checkedIndex.add(ind)};
+      if (task.completed) {task.tweenTime.set(100);};
       return task;
     }));
     
@@ -57,10 +60,10 @@
       appSettings.Focus.goal.yesterday[1] = 0
       appSettings.Focus.goal.completed = 0
     }
-    
-    const debounceCards = debounce(() => SaveCard(getCards()))
-    const debounceTasks = debounce(() => SaveTasks(getTasks()))
-    const debounceAlarms = debounce(() => SaveAlarm(getAlarms()))
+
+    const debounceCards = debounce(() => DBSave("cards", gofunc.ItemsDB.createFrom({ "Cards": getCards() })))
+    const debounceTasks = debounce(() => DBSave("tasks", gofunc.ItemsDB.createFrom({ "Tasks": getTasks() })))
+    const debounceAlarms = debounce(() => DBSave("alarms", gofunc.ItemsDB.createFrom({ "Alarms": getAlarms() })))
     cards.subscribe(debounceCards);
     tasks.subscribe(debounceTasks);
     alarms.subscribe(debounceAlarms);

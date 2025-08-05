@@ -1,5 +1,11 @@
 package gofunc
 
+type ItemsDB struct {
+	Cards  []Card
+	Tasks  []Task
+	Alarms []Alarm
+}
+
 type Card struct {
 	ID          string
 	Name        string
@@ -25,6 +31,7 @@ type Task struct {
 	TimeInitToSpend int
 	TimeToSpend     int
 	Order           int
+	Completed       bool
 }
 
 type Goal struct {

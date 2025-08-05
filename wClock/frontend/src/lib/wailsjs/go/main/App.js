@@ -10,24 +10,20 @@ export function CloseWindow() {
   return window['go']['main']['App']['CloseWindow']();
 }
 
+export function DBGet(arg1) {
+  return window['go']['main']['App']['DBGet'](arg1);
+}
+
+export function DBSave(arg1, arg2) {
+  return window['go']['main']['App']['DBSave'](arg1, arg2);
+}
+
 export function DbDelete(arg1, arg2) {
   return window['go']['main']['App']['DbDelete'](arg1, arg2);
 }
 
-export function GetAlarms() {
-  return window['go']['main']['App']['GetAlarms']();
-}
-
-export function GetCards() {
-  return window['go']['main']['App']['GetCards']();
-}
-
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
-}
-
-export function GetTasks() {
-  return window['go']['main']['App']['GetTasks']();
 }
 
 export function GetWindowsPcColors() {
@@ -42,20 +38,8 @@ export function MakeMiniWindowSize(arg1, arg2, arg3) {
   return window['go']['main']['App']['MakeMiniWindowSize'](arg1, arg2, arg3);
 }
 
-export function SaveAlarm(arg1) {
-  return window['go']['main']['App']['SaveAlarm'](arg1);
-}
-
-export function SaveCard(arg1) {
-  return window['go']['main']['App']['SaveCard'](arg1);
-}
-
 export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
-}
-
-export function SaveTasks(arg1) {
-  return window['go']['main']['App']['SaveTasks'](arg1);
 }
 
 export function SetWindowAlwaysOnTop(arg1) {

@@ -2,15 +2,15 @@
   import { appSettings, getAlarms, getCards, getTasks, validateSettings, watchState } from "$lib/stores/utils.svelte";
 
   import { gofunc } from "$lib/wailsjs/go/models";
-  import { CloseWindow, SaveAlarm, SaveCard, SaveSettings, SaveTasks } from "$lib/wailsjs/go/main/App";
+  import { CloseWindow, SaveSettings, DBSave} from "$lib/wailsjs/go/main/App";
   import { WindowFullscreen, WindowMinimise, WindowUnfullscreen } from "$lib/wailsjs/runtime/runtime";
 
   let isFullScreen = $state(false)
 
   function close() {
-    SaveCard(getCards())
-    SaveAlarm(getAlarms())
-    SaveTasks(getTasks())
+    DBSave("cards", gofunc.ItemsDB.createFrom({ Cards: getCards() }))
+    DBSave("tasks", gofunc.ItemsDB.createFrom({ Tasks: getTasks() }))
+    DBSave("alarms", gofunc.ItemsDB.createFrom({ Alarms: getTasks() }))
     validateSettings(true, true)
     SaveSettings(gofunc.AppSettings.createFrom(appSettings))
     CloseWindow()

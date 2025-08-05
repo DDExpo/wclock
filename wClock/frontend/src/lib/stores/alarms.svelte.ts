@@ -148,5 +148,6 @@ export function deleteAlarm(ind: number, id: string) {
     a[ind].timerToAlarm.stop()
     return a.filter(alarm => alarm.id !== id);
   });
-  setTimeout(() => isDeleteHappening.yes=false, 250)
+  isDeleteHappening.yes=false
+  setTimeout(() => {}, 250)
 };

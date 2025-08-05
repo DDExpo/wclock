@@ -9,23 +9,26 @@
   let isNotValid: boolean = $state(false)
 
   function validTime(t: TaskType) {
-    let num = Number(t.timeInitToSpend)
+    let num = Math.floor(Number(t.timeInitToSpend))
     if (isNaN(num) || num <= 0 || num > 1440) {
       t.timeInitToSpend = 15
       t.timeToSpend = 15
       isNotValid = true
       t.checked = false
+      tasksState.countChecked -= 1
       return false
     };
     t.timeInitToSpend = num
-    t.timeToSpend = num
+    if (t.tweenTime.current > 0){
+      t.timeToSpend = Math.floor((num / 100) * t.tweenTime.current)
+    } else {t.timeToSpend = num}
     isNotValid = false
     return true
   }
 
   function toggleChecked(t: TaskType, ind: number) {
-    t.checked = !t.checked
     if (!validTime(t)) return
+    t.checked = !t.checked
     if (!t.checked) {
       tasksState.checkedIndex.delete(ind) 
       for (const ind of tasksState.checkedIndex) {
@@ -43,6 +46,12 @@
     tasksState.checkedIndex = new Set([...tasksState.checkedIndex] .map(i => i > ind ? i - 1 : i));
     deleteTask(id)
   };
+
+  function restartProgress(t: TaskType) {
+    t.timeToSpend = t.timeInitToSpend
+    t.completed = false
+    t.tweenTime.set(0)
+  }
 
 </script>
 
@@ -64,18 +73,19 @@
         {#if t.checked}
           <span>{t.order}</span>
         {/if}
-        <input type="checkbox" class={["round-checkbox", {checked: t.checked}]} onchange={() => toggleChecked(t, ind)}/>
+        <input type="checkbox" disabled={t.cuurentTaskSession} class={["round-checkbox", {checked: t.checked}]} onchange={() => toggleChecked(t, ind)}/>
         <input type="text" bind:value={t.text} class="task-text" readonly={t.checked}>
         <div class={["input-with-progress", {valid: isNotValid}]}>
           <progress max=100 value={t.tweenTime.current}></progress>
-          {#if focusCardState.sessionStarted}
-            <input type="number" readonly value={`${Math.floor(t.timeToSpend / 60)}:${(t.timeToSpend % 60).toString().padStart(2, '0')}`}>
+          {#if focusCardState.sessionStarted && t.checked}
+            <input type="text" readonly value='{Math.floor(t.timeToSpend/60)}:{(t.timeToSpend % 60).toString().padStart(2, '0')}'>
           {:else}
             <input type="number" min=0 max=1440 readonly={t.checked} bind:value={t.timeInitToSpend} placeholder="minutes">
           {/if}
         </div>
         {#if !t.checked}
           <div class="delete"><TopRightButton onClick={ () => { deleteTaskById(t.id, ind) }} icon="icons/buttons/trash.svg" alt="delete" --end=17px /></div>
+          <div class="restart"><TopRightButton onClick={ () => { restartProgress(t) }} icon="icons/buttons/rotate-right.svg" alt="restart" --end=17px /></div>
         {/if}
       </div>
     {/each}
@@ -161,14 +171,23 @@
   gap: 0.5rem;
   font-size: larger;
   margin-left: 7px;
-  border-bottom: 1px solid #666666;
   padding-bottom: 4px;
 }
-
 .row.completed {
-  background-color: rgba(127, 255, 212, 0.657);
+  background: 
+    linear-gradient(145deg, #c4d073, #a9a01c) border-box,
+    linear-gradient(145deg, #c4d073, #d0c633b7) padding-box;
+  border-top: 3px solid transparent;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
 }
 
+.tasks-comp.light .row.completed {
+  background: 
+    linear-gradient(145deg, #BEB3E8, rgb(240, 130, 201)) border-box,
+    linear-gradient(145deg, #BEB3E8, rgb(251, 69, 188)) padding-box;
+  border-radius: 6px;
+}
 .delete {
   width: 26px;
   display: flex;
@@ -246,7 +265,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .input-with-progress progress {
   width: 100%;
-  height: 100%;
+  height: 98%;
   z-index: 1;
   position: absolute;
   appearance: none;
@@ -260,8 +279,8 @@ progress::-webkit-progress-bar {
 }
 
 progress::-webkit-progress-value {
-  border-radius: 7px;
-  background-color: rgb(0, 166, 255); /* light blue overlay */
+  border-radius: 9px;
+  background-color: rgb(0, 166, 255);
 }
 
 .tasks-comp.light .task-text,

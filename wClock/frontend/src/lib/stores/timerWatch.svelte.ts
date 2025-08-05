@@ -98,8 +98,8 @@ export  function deleteCard(ind: number, id: string) {
     c[ind].timer.reset();
     return c.filter(card => card.id !== id);
   });
-  
-  setTimeout(() => isDeleteHappening.yes=false, 50)
+  isDeleteHappening.yes=false
+  setTimeout(() => {}, 250)
 };
 
 export function validateDial(cardDial: number[]): boolean {

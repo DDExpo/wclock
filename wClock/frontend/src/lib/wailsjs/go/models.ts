@@ -25,7 +25,6 @@ export namespace gofunc {
 	export class FocusCard {
 	    minutes: number;
 	    curMinutes: number;
-	    breaks: number;
 	    breaksAtEvery: number;
 	    breaksTime: number;
 	    skipBreaks: boolean;
@@ -38,7 +37,6 @@ export namespace gofunc {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.minutes = source["minutes"];
 	        this.curMinutes = source["curMinutes"];
-	        this.breaks = source["breaks"];
 	        this.breaksAtEvery = source["breaksAtEvery"];
 	        this.breaksTime = source["breaksTime"];
 	        this.skipBreaks = source["skipBreaks"];
@@ -47,7 +45,7 @@ export namespace gofunc {
 	export class Goal {
 	    dailyProgress: number[];
 	    streak: number;
-	    yesterday: number;
+	    yesterday: number[];
 	    completed: number;
 	    dailyGoal: number;
 	    clearHours: number;
@@ -185,6 +183,7 @@ export namespace gofunc {
 	    TimeInitToSpend: number;
 	    TimeToSpend: number;
 	    Order: number;
+	    Completed: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Task(source);
@@ -198,7 +197,42 @@ export namespace gofunc {
 	        this.TimeInitToSpend = source["TimeInitToSpend"];
 	        this.TimeToSpend = source["TimeToSpend"];
 	        this.Order = source["Order"];
+	        this.Completed = source["Completed"];
 	    }
+	}
+	export class ItemsDB {
+	    Cards: Card[];
+	    Tasks: Task[];
+	    Alarms: Alarm[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ItemsDB(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Cards = this.convertValues(source["Cards"], Card);
+	        this.Tasks = this.convertValues(source["Tasks"], Task);
+	        this.Alarms = this.convertValues(source["Alarms"], Alarm);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 
 }

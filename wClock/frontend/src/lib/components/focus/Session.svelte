@@ -1,17 +1,22 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   import { appSettings } from '$lib/stores/utils.svelte';
   import { focusCardState, focusWatch } from '$lib/stores/focusState.svelte';
   
   let minutes = $derived(appSettings.Focus.focus.minutes % 60)
   let hours = $derived(Math.floor(appSettings.Focus.focus.minutes / 60))
-  let breaks = $derived(Math.floor(appSettings.Focus.focus.minutes / appSettings.Focus.focus.breaksAtEvery))
-  let curBreaks = $derived(Math.floor((appSettings.Focus.focus.minutes - appSettings.Focus.focus.curMinutes) / appSettings.Focus.focus.breaksAtEvery))
+  let breaks = $derived(Math.floor(appSettings.Focus.focus.minutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
+  let curBreaks = $derived(Math.floor(appSettings.Focus.focus.curMinutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
 
   function stopWatch() {
+    focusCardState.sessionWatchStoped = true
     if (focusCardState.sessionIsOnBreak) {focusWatch.stopBreak()}
     else {focusWatch.stop()};
+  }
+
+  function startWatch() {
+    focusCardState.sessionWatchStoped = false
+    if (focusCardState.sessionIsOnBreak) {focusWatch.startBreak()}
+    else {focusWatch.startSession()};
   }
 
   function fullStopWatch() {
@@ -29,7 +34,7 @@
   </div>
   
   <div class="time-row minute-row">
-    <div class="track minute-track" style:animation-iteration-count={minutes}, style:--offset={minutes*100}px>
+    <div class="track minute-track" style:animation-iteration-count={minutes}, style:--offset={-minutes*100}px>
       {#each Array.from({length: 180}, (_, i) => i % 60) as minute}
         <span>{minute}</span>
       {/each}
@@ -40,7 +45,7 @@
   </div>
   
   <div class="time-row hour-row">
-    <div class="track hour-track" style:animation-iteration-count={hours}, style:--offset={hours*120}px>
+    <div class="track hour-track" style:animation-iteration-count={hours}, style:--offset={-hours*120}px>
       {#each Array.from({length: 72}, (h, i) => i % 24) as hour}
         <span>{hour}</span>
       {/each}
@@ -61,7 +66,7 @@
     </div>
   </div>
 
-  {#if !appSettings.Focus.focus.skipBreaks}
+  {#if !appSettings.Focus.focus.skipBreaks && breaks !== curBreaks}
     {#if focusCardState.sessionIsOnBreak}
       <div class="next">
           Up next: {appSettings.Focus.focus.breaksAtEvery} minutes session
@@ -74,7 +79,11 @@
   {/if}
 
   <div class="button-container">
-    <button class="engraved-button" onclick={ stopWatch }>Stop</button>
+    {#if focusCardState.sessionWatchStoped }
+      <button class="engraved-button" onclick={ startWatch }>Start</button>
+    {:else}
+      <button class="engraved-button" onclick={ stopWatch }>Stop</button>
+    {/if}
     <button class="engraved-button" onclick={ fullStopWatch }>Full Stop</button>
   </div>
 
@@ -266,12 +275,12 @@ span {
 .next {
   font-size: larger;
   text-align: center;
+  margin-bottom: -15px;
 }
 
 .button-container {
   display: flex;
   gap: 0.5rem;
-  margin-top: -15px;
   justify-content: center;
 }
 

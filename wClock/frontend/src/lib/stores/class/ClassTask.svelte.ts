@@ -10,16 +10,17 @@ export class Task {
   tweenTime: Tween<number> 
   timeToSpend = $state(0);
   timeInitToSpend = $state(0);
+  cuurentTaskSession = $state(false);
 
 
-  constructor(id: string, text: string, checked: boolean, timeInitToSpend: number, timeToSpend: number, order: number) {
+  constructor(id: string, text: string, checked: boolean, timeToSpend: number, timeInitToSpend:  number, order: number, completed: boolean) {
     this.id = id
     this.text = text
     this.order = order 
     this.checked = checked
-    this.timeToSpend = timeToSpend
-    this.timeInitToSpend = timeInitToSpend;
     this.tweenTime = new Tween(0, {easing: cubicOut})
-    this.completed = timeToSpend <= 0
+    this.timeToSpend = timeToSpend
+    this.completed = completed
+    this.timeInitToSpend = timeInitToSpend;
   };
 };

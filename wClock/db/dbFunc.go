@@ -60,7 +60,7 @@ func GetAllCards(DB *sqlx.DB) ([]gofunc.Card, error) {
 	if err != nil {
 		return items, fmt.Errorf("error when getting all Cards: %v", err)
 	}
-	return items, err
+	return items, nil
 }
 
 func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
@@ -80,7 +80,7 @@ func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
 	`)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return fmt.Errorf("error then preparing save Cards: %v", err)
 	}
 	defer stmt.Close()
 
@@ -98,7 +98,7 @@ func SaveCards(DB *sqlx.DB, cards []gofunc.Card) error {
 		_, err = stmt.Exec(c.ID, c.Name, dialJSON, c.TimeLeft, initialDialJSON, c.Order)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return fmt.Errorf("error then executing save Cards: %v", err)
 		}
 	}
 	return tx.Commit()
@@ -156,7 +156,7 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 	`)
 	if err != nil {
 		tx.Rollback()
-		return err
+		return fmt.Errorf("error then preparing save Alarms: %v", err)
 	}
 	defer stmt.Close()
 
@@ -174,7 +174,7 @@ func SaveAlarms(DB *sqlx.DB, alarms []gofunc.Alarm) error {
 		_, err = stmt.Exec(a.ID, a.Text, dialJSON, a.Disabled, weekDaysJSON, a.Order)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return fmt.Errorf("error then executing save Alarms: %v", err)
 		}
 	}
 	return tx.Commit()
@@ -193,7 +193,7 @@ func GetAllTasks(DB *sqlx.DB) ([]gofunc.Task, error) {
 	for rows.Next() {
 		var tasks gofunc.Task
 
-		rows.Scan(&tasks.ID, &tasks.Text, &tasks.Checked, &tasks.TimeToSpend, &tasks.TimeInitToSpend, &tasks.Order)
+		rows.Scan(&tasks.ID, &tasks.Text, &tasks.Checked, &tasks.TimeToSpend, &tasks.TimeInitToSpend, &tasks.Order, &tasks.Completed)
 		items = append(items, tasks)
 	}
 
@@ -212,28 +212,29 @@ func SaveTasks(DB *sqlx.DB, tasks []gofunc.Task) error {
 	}
 
 	stmt, err := tx.Preparex(`
-		INSERT INTO tasks (id, text, checked, time_to_spend, time_init_to_spend, queue_order)
-		VALUES (?, ?, ?, ?, ?, ?)
+		INSERT INTO tasks (id, text, checked, time_to_spend, time_init_to_spend, queue_order, completed)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(id) DO UPDATE SET
 			text = excluded.text,
 			checked = excluded.checked,
 			time_to_spend = excluded.time_to_spend,
 			time_init_to_spend = excluded.time_init_to_spend,
-			queue_order = excluded.queue_order
+			queue_order = excluded.queue_order,
+			completed = excluded.completed
 	`)
 
 	if err != nil {
 		tx.Rollback()
-		return err
+		return fmt.Errorf("error then preparing save Tasks: %v", err)
 	}
 
 	defer stmt.Close()
 
 	for _, t := range tasks {
-		_, err := stmt.Exec(t.ID, t.Text, t.Checked, t.TimeToSpend, t.TimeInitToSpend, t.Order)
+		_, err := stmt.Exec(t.ID, t.Text, t.Checked, t.TimeToSpend, t.TimeInitToSpend, t.Order, t.Completed)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return fmt.Errorf("error then executing save Tasks: %v", err)
 		}
 	}
 
@@ -263,7 +264,8 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		checked BOOLEAN,
 		time_to_spend SMALLINT,
 		time_init_to_spend SMALLINT,
-		queue_order SMALLINT
+		queue_order SMALLINT,
+		completed BOOLEAN
 	);`
 	_, err := db.Exec(schemaCards)
 	if err != nil {

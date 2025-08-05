@@ -81,10 +81,11 @@ export type TaskType = {
   text: string;
   order: number;
   checked: boolean;
+  completed: boolean;
   tweenTime: Tween<number>
   timeToSpend: number;
   timeInitToSpend: number;
-  completed: boolean;
+  cuurentTaskSession: boolean;
 };
 
 export type AlarmType = {

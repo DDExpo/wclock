@@ -20,7 +20,9 @@
     isNotValidTime = validateSettings(false, true)
     if (!isNotValidTime) {
       focusWatch.updateFocusWatch(appSettings.Focus.focus.minutes, appSettings.Focus.focus.breaksTime,
-                                  appSettings.Focus.focus.breaksAtEvery, appSettings.Focus.focus.skipBreaks)
+                                  Math.floor(appSettings.Focus.focus.breaksAtEvery*60), appSettings.Focus.focus.skipBreaks)
+      
+      focusWatch.startSession()
       focusCardState.sessionStarted = true
     }
   }
@@ -67,19 +69,19 @@
             <div class="focus-settings">
               <div class="title">Settings</div>
               <div class="wrapper-input">
-                <div class="input-group">
-                  <label>
-                    <span>Breaks at every</span>
-                    <input class="daily-hours" type="text" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
-                    <span class="label-below">hour</span>
-                  </label>
-                </div>
-
                 <div class="rows">
                   <div class="input-group">
                     <label>
-                      <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
+                      <span>Breaks at every</span>
+                      <input class="daily-hours" type="text" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
+                      <span class="bottom-span">hour</span>
+                    </label>
+                  </div>
+
+                  <div class="input-group">
+                    <label>
                       <span>Breaks Time</span>
+                      <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
                     </label>
                   </div>
                 </div>
@@ -409,7 +411,7 @@
   border: 0.7cqw solid rgb(163, 120, 244);
   color: #3B2F2F;
   border-bottom: 2cqw solid rgb(163, 120, 244);
-  font-size: clamp(10px, 5cqw, 25px);
+  font-size: clamp(5px, 4cqw, 25px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -439,6 +441,12 @@
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
 }
 
+.bottom-span {
+  width: 100%;
+  text-align: center;
+  margin-right: 5px;
+}
+
 .input-group input {
   display: flex;
   align-self: center;
@@ -453,11 +461,6 @@
   position: relative;
 }
 
-.label-below {
-  margin-right: clamp(5px, 2cqw, 20px);
-  text-align: center;
-}
-
 .rows {
   display: flex;
   flex-direction: row;
@@ -467,7 +470,7 @@
   all: unset;
   display: flex;
   text-align: center;
-  width: 20%;
+  width: 30%;
   padding: 0.25em 0.5em;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(164, 237, 238, 0.3);
@@ -479,10 +482,6 @@
   background-color: rgba(255, 255, 255, 0.08);
   border-color: rgb(164, 237, 238);
   outline: none;
-}
-
-.wrapper-input span {
-  min-width: 7ch;
 }
 
 .settings-buttons {
