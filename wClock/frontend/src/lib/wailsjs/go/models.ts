@@ -180,8 +180,8 @@ export namespace gofunc {
 	    ID: string;
 	    Text: string;
 	    Checked: boolean;
-	    TimeInitToSpend: number;
 	    TimeToSpend: number;
+	    TimeInitToSpend: number;
 	    Order: number;
 	    Completed: boolean;
 	
@@ -194,8 +194,8 @@ export namespace gofunc {
 	        this.ID = source["ID"];
 	        this.Text = source["Text"];
 	        this.Checked = source["Checked"];
-	        this.TimeInitToSpend = source["TimeInitToSpend"];
 	        this.TimeToSpend = source["TimeToSpend"];
+	        this.TimeInitToSpend = source["TimeInitToSpend"];
 	        this.Order = source["Order"];
 	        this.Completed = source["Completed"];
 	    }

@@ -6,7 +6,7 @@
   import type { dialTime, PropsAlarm } from "$lib/types/StoreComponentsTypes";
 
   import { appSettings } from "$lib/stores/utils.svelte";
-  import { deleteAlarm } from "$lib/stores/alarms.svelte";
+  import { alarms, debounceUpdateAlarm, deleteAlarm } from "$lib/stores/alarms.svelte";
   import { notDraggable } from "$lib/stores/timerWatch.svelte";
   
   let { alarm, alarmInd, timeTo }: PropsAlarm = $props();
@@ -14,8 +14,9 @@
   let showAlarmForm: boolean = $state(false);
 
   function hideShowAlarmForm() {
-    alarm.timerToAlarm.stop()
     showAlarmForm = !showAlarmForm;
+    if (showAlarmForm) {alarm.timerToAlarm.stop()}
+    else {alarm.timerToAlarm.start()}
     notDraggable.dragg = showAlarmForm
   }
 
@@ -23,11 +24,13 @@
     alarm.disabled = !alarm.disabled
     if (alarm.disabled) {alarm.timerToAlarm.stop()}
     else {alarm.timerToAlarm.start()}
+    debounceUpdateAlarm()
   }
 
   function triggerSubscribe(i: number) {
     alarm.weekDays[i] = !alarm.weekDays[i];
     alarm.timerToAlarm.start()
+    debounceUpdateAlarm()
   };
 
 </script>

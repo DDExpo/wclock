@@ -99,7 +99,8 @@ export  function deleteCard(ind: number, id: string) {
     return c.filter(card => card.id !== id);
   });
   isDeleteHappening.yes=false
-  setTimeout(() => {}, 250)
+  setTimeout(() => {}, 150)
+  cards.update(c => c)
 };
 
 export function validateDial(cardDial: number[]): boolean {

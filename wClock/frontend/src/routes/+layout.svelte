@@ -55,7 +55,7 @@
     if (isPastClearDate) {
       if ((appSettings.Focus.goal.dailyGoal <= Math.floor(appSettings.Focus.goal.completed / 60)) && (!appSettings.Focus.goal.includeWeekdays && today.getDay() < 5 ) || (appSettings.Focus.goal.includeWeekdays && today.getDay() > 4)) {
         appSettings.Focus.goal.streak += 1
-      }
+      } else {appSettings.Focus.goal.streak = 0}
       appSettings.Focus.goal.yesterday[0] = appSettings.Focus.goal.yesterday[1]
       appSettings.Focus.goal.yesterday[1] = 0
       appSettings.Focus.goal.completed = 0
@@ -64,9 +64,12 @@
     const debounceCards = debounce(() => DBSave("cards", gofunc.ItemsDB.createFrom({ "Cards": getCards() })))
     const debounceTasks = debounce(() => DBSave("tasks", gofunc.ItemsDB.createFrom({ "Tasks": getTasks() })))
     const debounceAlarms = debounce(() => DBSave("alarms", gofunc.ItemsDB.createFrom({ "Alarms": getAlarms() })))
-    cards.subscribe(debounceCards);
-    tasks.subscribe(debounceTasks);
-    alarms.subscribe(debounceAlarms);
+    cards.subscribe(() => debounceCards());
+    tasks.subscribe(() => debounceTasks());
+    alarms.subscribe(() => debounceAlarms());
+
+    setInterval(debounceCards, 60000)
+
   });
 
 </script>

@@ -30,7 +30,11 @@
 <div class={["clock-container", {light: appSettings.Theme}]}>
 
   <div class="header">
-    <div >Focus period: {curBreaks} of {breaks}</div>
+    {#if appSettings.Focus.focus.skipBreaks}
+      <div >Focus period: 1 of 1</div>
+    {:else}
+      <div >Focus period: {curBreaks} of {breaks}</div>
+    {/if}
   </div>
   
   <div class="time-row minute-row">
@@ -79,10 +83,10 @@
   {/if}
 
   <div class="button-container">
-    {#if focusCardState.sessionWatchStoped }
-      <button class="engraved-button" onclick={ startWatch }>Start</button>
-    {:else}
+    {#if !focusCardState.sessionWatchStoped }
       <button class="engraved-button" onclick={ stopWatch }>Stop</button>
+    {:else}
+      <button class="engraved-button" onclick={ startWatch }>Start</button>
     {/if}
     <button class="engraved-button" onclick={ fullStopWatch }>Full Stop</button>
   </div>

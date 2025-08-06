@@ -50,7 +50,7 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
 
   const clamp = (val: any, max: number, fallback: number): number => {
     const num = Math.floor(Number(val));
-    if (isNaN(num) || num < 0 || num > max) {
+    if (isNaN(num) || num <= 0 || num > max) {
       isNotValid = true;
       return fallback;
     }
@@ -121,26 +121,29 @@ export function getTasks(): gofunc.Task[] {
       Text: t.text,
       Order: t.order,
       Checked: t.checked,
-      TimeToSpend: t.timeToSpend,
+      TimeToSpend: Math.floor(t.timeToSpend),
       TimeInitToSpend: Number(t.timeInitToSpend),
       Completed: t.completed,
     })
   );
 }
 
-export function debounce(callback: CallableFunction, delay: number=2000) {
-  
-  let timeoutId: number
-  
-  return (...args: any[]) => {
-    if (isDeleteHappening.yes) return
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => {
-      callback(...args)}, delay)
-    };
-};
+export function debounce<T extends (...args: any[]) => void>(
+  callback: T,
+  delay = 1000
+): (...args: Parameters<T>) => void {
+  let timeoutId: number;
 
-export function debounceDelete(callback: (ids: string[], table: string) => void, table: string, delay: number =1000) {
+  return (...args: Parameters<T>) => {
+    if (isDeleteHappening.yes) return;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
+
+export function debounceDelete(callback: (ids: string[], table: string) => void, table: string, delay: number=500) {
   let timeoutId: number;
   let deleteQueue: string[] = [];
   

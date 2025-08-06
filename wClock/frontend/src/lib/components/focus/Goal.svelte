@@ -1,8 +1,6 @@
 <script lang="ts">
   import { writable } from "svelte/store";
   
-  import type { dialTime } from "$lib/types/StoreComponentsTypes";
-
   import CircleProgress from "../timer/CircleProgress.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
@@ -13,7 +11,7 @@
 
   let isNotValidSettings: boolean = $state(false)
 
-  const progress = $derived(appSettings.Focus.goal.completed/(appSettings.Focus.goal.dailyGoal*60));
+  const progress = $derived(appSettings.Focus.goal.completed/(Math.floor(appSettings.Focus.goal.dailyGoal)*60));
 
   function saveValidateyGoalState() {
     isNotValidSettings = validateSettings(true)
@@ -41,7 +39,7 @@
           <div class="unit">hour</div>
         </div>
         <div class="circle-wrapper">
-          <CircleProgress progress={writable(progress)} goal={appSettings.Focus.goal.dailyGoal} focus={true} />
+          <CircleProgress progress={writable(progress)} goal={Math.floor(appSettings.Focus.goal.dailyGoal)} focus={true} />
         </div>
         <div class="side-column" style:margin-right=16px>
           <div class="label">Streak</div>
@@ -58,7 +56,7 @@
         <label class="field">
           <span class="title">Daily goal</span>
           <div class="wrapper-daily">
-            <input class="daily-hours" type="text" bind:value={appSettings.Focus.goal.dailyGoal} placeholder="0"/>
+            <input class="daily-hours" type="number" bind:value={appSettings.Focus.goal.dailyGoal} placeholder="0"/>
             <span>Hours</span>
           </div>
         </label>
@@ -66,8 +64,8 @@
         <label class="field">
           <span style:color=inherit>Clear daily progress and completed tasks</span>
           <div class="time-select">
-            <input type="text" bind:value={appSettings.Focus.goal.clearHours} placeholder="  0"/> <span>hours</span>
-            <input type="text" bind:value={appSettings.Focus.goal.clearMinutes} placeholder="  0"/> <span>minutes</span>
+            <input type="number" bind:value={appSettings.Focus.goal.clearHours} placeholder="  0"/> <span>hours</span>
+            <input type="number" bind:value={appSettings.Focus.goal.clearMinutes} placeholder="  0"/> <span>minutes</span>
           </div>
         </label>
 
@@ -186,10 +184,22 @@
 
 .side-column {
   display: flex;
+  width: 60%;
   position: relative;
   flex-direction: column;
   align-items: center;
-  color: white;
+  color: rgba(255, 255, 255, 0.833);
+  padding: 5px;
+  border-radius: 15px;
+  box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.6),
+              inset -2px -2px 3px rgba(255, 255, 255, 0.1);
+  background-color: rgba(91, 91, 91, 0.601);
+}
+
+.goal-comp.light .side-column {
+  box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.3),
+              inset -2px -2px 3px rgba(255, 255, 255, 0.08);
+  background-color: #d9c1a051;
 }
 
 .label {
@@ -375,6 +385,19 @@
   font-size: inherit;
   box-sizing: border-box;
   cursor: pointer;
+}
+
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 .checkbox {

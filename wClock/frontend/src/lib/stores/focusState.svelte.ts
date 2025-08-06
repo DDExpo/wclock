@@ -44,7 +44,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
 
   let breaks: number = Math.floor(initailTime / breaksAtMinutes)
   let curTime: number = initailTime * 60 * 1000
-  let timeLeft: number = 0
+  let timeLeft: number = curTime
   let curTask: TaskType | null
   let timeTask: number
   let startTime: number = 0
@@ -75,10 +75,11 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
         if (!curTask.completed){
           const elapsedTask = (Date.now() - startTaskTime)
           curTask.tweenTime.target += (10001/timeTask) * 100
-          curTask.timeToSpend = curTask.timeToSpend - Math.floor(elapsedTask/60000)
+          curTask.timeToSpend = curTask.timeInitToSpend - Math.floor(elapsedTask/60000)
           if (elapsedTask >= timeTask) {
             curTask.completed = true;
             curTask.cuurentTaskSession = false
+            notify("/sounds/done-tasks.mp3", "Task", curTask.text);
             curTask = getCurTask();
           }
         }
@@ -87,14 +88,16 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
       if (skipBreaks && breaks > 0 && (totalMinutes % breaksAtMinutes) === 0) {
         curTime = timeLeft;
         clearInterval(idInterval);
-        notify("/sounds/timer.mp3");
+        const breaks = Math.floor(appSettings.Focus.focus.minutes / (appSettings.Focus.focus.breaksAtEvery*60))+1
+        const curBreaks = Math.floor(appSettings.Focus.focus.curMinutes / (appSettings.Focus.focus.breaksAtEvery*60))+1
+        notify("/sounds/timer.mp3", "Focus", `Your ${curBreaks}/${breaks} session`);
         focusCardState.sessionIsOnBreak = true;
         startBreak();
       };
 
       if (timeLeft <= 0) {
         clearInterval(idInterval);
-        notify("/sounds/luna.mp3");
+        notify("/sounds/luna.mp3", "Your focus session", "");
       };
 
   }, 10000);};
@@ -108,7 +111,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
 
     if (breakElapsed >= breaksTime) {
       clearInterval(breakIdInterval);
-      notify("/sounds/timer.mp3")
+      notify("/sounds/timer.mp3", "Break", "Your break session");
       breaks -= 1
       startTime += breakElapsed
       focusCardState.sessionIsOnBreak = false
@@ -148,16 +151,15 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   };
   
   function stop() {
-    curTime = timeLeft
+    if (curTask !== null) {curTask.cuurentTaskSession = false}
     clearInterval(idInterval)
   };
   function stopBreak() {
-    curTime = timeLeft
     clearInterval(breakIdInterval)
   };
 
-  function notify(sound: string) {
-    TimerFinished("Focus Session", "Your session ")
+  function notify(sound: string, name: string, description: string) {
+    TimerFinished(name, description)
     const audio = new Audio(sound);
     audio.play().catch((e) => console.error("Audio playback failed:", e));
   }
@@ -183,7 +185,8 @@ export function deleteTask(id: string) {
   tasks.update(t => {return t.filter(task => task.id!== id);});
 
   isDeleteHappening.yes=false
-  setTimeout(() => {}, 250)
+  setTimeout(() => {}, 150)
+  tasks.update(t => t)
 }
 
 export const focusWatch = createFocusWatch(0, 0, 0, false)

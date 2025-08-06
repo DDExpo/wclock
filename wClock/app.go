@@ -111,6 +111,16 @@ func (a *App) DBSave(table string, items gofunc.ItemsDB) {
 		err = db.SaveTasks(DB, items.Tasks)
 	case "alarms":
 		err = db.SaveAlarms(DB, items.Alarms)
+	case "items":
+		err = db.SaveCards(DB, items.Cards)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = db.SaveTasks(DB, items.Tasks)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = db.SaveAlarms(DB, items.Alarms)
 	}
 
 	if err != nil {
@@ -217,8 +227,8 @@ func (a *App) CheckWindowSize() bool {
 	return width > 681
 }
 
-func (a *App) TimerFinished(typeNotify string, name string) {
-	err := gofunc.Notify(typeNotify+":"+name, "Finished!")
+func (a *App) TimerFinished(typeNotify string, description string) {
+	err := gofunc.Notify(typeNotify+":"+description, "has ended!")
 	if err != nil {
 		fmt.Println("Notification failed:", err)
 	}

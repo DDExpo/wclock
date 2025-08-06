@@ -15,7 +15,6 @@
       t.timeToSpend = 15
       isNotValid = true
       t.checked = false
-      tasksState.countChecked -= 1
       return false
     };
     t.timeInitToSpend = num
@@ -84,8 +83,8 @@
           {/if}
         </div>
         {#if !t.checked}
-          <div class="delete"><TopRightButton onClick={ () => { deleteTaskById(t.id, ind) }} icon="icons/buttons/trash.svg" alt="delete" --end=17px /></div>
-          <div class="restart"><TopRightButton onClick={ () => { restartProgress(t) }} icon="icons/buttons/rotate-right.svg" alt="restart" --end=17px /></div>
+          <div class="right-button"><TopRightButton onClick={ () => { deleteTaskById(t.id, ind) }} icon="icons/buttons/trash.svg" alt="delete" --end=17px /></div>
+          <div class="right-button"><TopRightButton onClick={ () => { restartProgress(t) }} icon="icons/buttons/rotate-right.svg" alt="restart" --end=17px /></div>
         {/if}
       </div>
     {/each}
@@ -188,9 +187,10 @@
     linear-gradient(145deg, #BEB3E8, rgb(251, 69, 188)) padding-box;
   border-radius: 6px;
 }
-.delete {
-  width: 26px;
+.right-button {
+  width: 12px;
   display: flex;
+  margin-left: 8px;
   justify-content: end;
 }
 

@@ -4,7 +4,7 @@
   import Session from "./Session.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
-  import { tasksState, focusCardState, focusWatch } from "$lib/stores/focusState.svelte";
+  import { focusCardState, focusWatch } from "$lib/stores/focusState.svelte";
   import { appSettings, validateSettings } from "$lib/stores/utils.svelte";
 
   import { GiveNewSettings } from '$lib/wailsjs/go/main/App';
@@ -55,7 +55,7 @@
               Achieve your goals and get more done with focus sessions.
             </div>
             <div class={["focus-timer", { valid: isNotValidTime }]}>
-              <input type="text" bind:value={appSettings.Focus.focus.minutes} class="focus-input"  placeholder="0"/>
+              <input type="number" bind:value={appSettings.Focus.focus.minutes} class="focus-input"  placeholder="0"/>
               <div class="mins" style:margin-top=-10px>mins</div>
             </div>
             <div class="focus-options">
@@ -73,7 +73,7 @@
                   <div class="input-group">
                     <label>
                       <span>Breaks at every</span>
-                      <input class="daily-hours" type="text" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
+                      <input class="daily-hours" type="number" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
                       <span class="bottom-span">hour</span>
                     </label>
                   </div>
@@ -81,7 +81,7 @@
                   <div class="input-group">
                     <label>
                       <span>Breaks Time</span>
-                      <input class="daily-hours"type="text" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
+                      <input class="daily-hours"type="number" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
                     </label>
                   </div>
                 </div>
@@ -300,6 +300,19 @@
   border-radius: 3px;
   box-shadow: 0px 3px 0px rgb(255, 255, 255);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 .focus-options input:checked {

@@ -28,8 +28,8 @@ type Task struct {
 	ID              string
 	Text            string
 	Checked         bool
-	TimeInitToSpend int
 	TimeToSpend     int
+	TimeInitToSpend int
 	Order           int
 	Completed       bool
 }
