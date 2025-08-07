@@ -68,11 +68,10 @@
   function onMouseUp() {
     isResizing = false;
     drag = false
+    setTimeout(() => {document.exitPointerLock(), 300})
     appSettings.Focus.gridSeize.left = newLeft < 230 ? 230: newLeft
     appSettings.Focus.gridSeize.bottom = newBottom < 330 ? 330: newBottom
-    console.log(appSettings.Focus.gridSeize.left, appSettings.Focus.gridSeize.bottom)
     GiveNewSettings({"Grid": appSettings.Focus.gridSeize})
-    setTimeout(() => {document.exitPointerLock(), 500})
   }
 
   onMount(() => {

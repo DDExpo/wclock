@@ -121,7 +121,7 @@ export function getTasks(): gofunc.Task[] {
       Text: t.text,
       Order: t.order,
       Checked: t.checked,
-      TimeToSpend: Math.floor(t.timeToSpend),
+      TimeToSpend: t.timeToSpend,
       TimeInitToSpend: Number(t.timeInitToSpend),
       Completed: t.completed,
     })

@@ -1,28 +1,27 @@
 <script lang="ts">
   import { appSettings } from '$lib/stores/utils.svelte';
-  import { focusCardState, focusWatch } from '$lib/stores/focusState.svelte';
-  
-  let minutes = $derived(appSettings.Focus.focus.minutes % 60)
-  let hours = $derived(Math.floor(appSettings.Focus.focus.minutes / 60))
+  import { elapsedAnim, focusCardState, focusWatch } from '$lib/stores/focusState.svelte';
+
   let breaks = $derived(Math.floor(appSettings.Focus.focus.minutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
   let curBreaks = $derived(Math.floor(appSettings.Focus.focus.curMinutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
+  let secondsAnim = $derived(elapsedAnim.elapsed / 1000)
+  let minutesAnim = $derived((appSettings.Focus.focus.minutes - (secondsAnim / 60)))
+  let hoursAnim = $derived(minutesAnim / 60)
 
   function stopWatch() {
+    focusWatch.stop();
     focusCardState.sessionWatchStoped = true
-    if (focusCardState.sessionIsOnBreak) {focusWatch.stopBreak()}
-    else {focusWatch.stop()};
   }
 
   function startWatch() {
-    focusCardState.sessionWatchStoped = false
     if (focusCardState.sessionIsOnBreak) {focusWatch.startBreak()}
     else {focusWatch.startSession()};
+    focusCardState.sessionWatchStoped = false
   }
 
   function fullStopWatch() {
-    appSettings.Focus.focus.curMinutes = 0;
+    focusWatch.fullStop();
     focusCardState.sessionStarted = false;
-    stopWatch();
   };
 
 </script>
@@ -38,7 +37,7 @@
   </div>
   
   <div class="time-row minute-row">
-    <div class="track minute-track" style:animation-iteration-count={minutes}, style:--offset={-minutes*100}px>
+    <div class="track minute-track" style:--offset={((60 - (minutesAnim%60))*100)}px>
       {#each Array.from({length: 180}, (_, i) => i % 60) as minute}
         <span>{minute}</span>
       {/each}
@@ -49,8 +48,8 @@
   </div>
   
   <div class="time-row hour-row">
-    <div class="track hour-track" style:animation-iteration-count={hours}, style:--offset={-hours*120}px>
-      {#each Array.from({length: 72}, (h, i) => i % 24) as hour}
+    <div class="track hour-track" style:--offset={((hoursAnim*110)+2750)}px>
+      {#each Array.from({length: 72}, (_, i) => i % 24) as hour}
         <span>{hour}</span>
       {/each}
     </div>
@@ -60,7 +59,7 @@
   </div>
   
   <div class="time-row second-row">
-    <div class="track second-track" style:animation-iteration-count={appSettings.Focus.focus.minutes}>
+    <div class="track second-track" style:--offset={((secondsAnim%60)*90)}px>
       {#each Array.from({length: 180}, (_, i) => i % 60) as second}
         <span>{second}</span>
       {/each}
@@ -129,7 +128,8 @@
   overflow: hidden;
   position: relative;
   box-shadow: 0 0px 5px 3px rgba(0, 0, 0, 0.4);
-  transition: transform 1s cubic-bezier(1, 0, 0.95, 0);
+  transform: translateX(var(--offset));
+  transition: transform 0.3s ease; 
   border-radius: 4px;
 }
 
@@ -175,7 +175,6 @@
   inset 0 1px 0 rgba(255,255,255,.05),
   inset 0 -1px 0 rgba(0,0,0,.4);
   right: 18%;
-  animation: scroll-hours 86400s linear;
 }
 
 .minute-track {
@@ -187,7 +186,6 @@
   inset 0 1px 0 rgba(255,255,255,.05),
   inset 0 -1px 0 rgba(0,0,0,.35);
   right: 18%;
-  animation: scroll-minutes 3600s linear;
 }
 
 .second-track {
@@ -199,22 +197,6 @@
     inset 0 1px 0 rgba(255,255,255,.05),
     inset 0 -1px 0 rgba(0,0,0,.3);
   right: 18%;
-  animation: scroll-seconds 60s linear;
-}
-  
-@keyframes scroll-seconds {
-  from { transform: translateX(0); }
-  to   { transform: translateX(5400px); }
-}
-
-@keyframes scroll-minutes {
-  from { transform: translateX(var(--offset)); }
-  to   { transform: translateX(var(--offset)+6000px); }
-}
-
-@keyframes scroll-hours {
-  from { transform: translateX(var(--offset)); }
-  to   { transform: translateX(var(--offset)+6600px); }
 }
 
 span {
@@ -224,6 +206,10 @@ span {
   font-weight: bold;
   align-items: center;
   justify-content: center;
+}
+
+.hour-track {
+  flex-direction: row-reverse;
 }
 
 .hour-track span   { width: 110px; font-size: 44px; }

@@ -262,7 +262,7 @@ func RunFirstTimeShemas(db *sqlx.DB) error {
 		id TEXT PRIMARY KEY,
 		text TEXT,
 		checked BOOLEAN,
-		time_to_spend SMALLINT,
+		time_to_spend REAL,
 		time_init_to_spend SMALLINT,
 		queue_order SMALLINT,
 		completed BOOLEAN

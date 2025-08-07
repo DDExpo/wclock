@@ -4,7 +4,7 @@
   import type { TaskType } from "$lib/types/StoreComponentsTypes";
   
   import { appSettings } from "$lib/stores/utils.svelte";
-  import { createTask, tasksState, deleteTask, tasks, focusCardState} from "$lib/stores/focusState.svelte";
+  import { createTask, tasksState, deleteTask, tasks, focusCardState } from "$lib/stores/focusState.svelte";
   
   let isNotValid: boolean = $state(false)
 
@@ -19,7 +19,7 @@
     };
     t.timeInitToSpend = num
     if (t.tweenTime.current > 0){
-      t.timeToSpend = Math.floor((num / 100) * t.tweenTime.current)
+      t.timeToSpend = t.timeInitToSpend - ((num / 100) * t.tweenTime.current)
     } else {t.timeToSpend = num}
     isNotValid = false
     return true
@@ -49,7 +49,9 @@
   function restartProgress(t: TaskType) {
     t.timeToSpend = t.timeInitToSpend
     t.completed = false
+    let tweeProgress = t.tweenTime.current 
     t.tweenTime.set(0)
+    if (tweeProgress > 0) {tasks.update(t => t)}
   }
 
 </script>
@@ -72,12 +74,12 @@
         {#if t.checked}
           <span>{t.order}</span>
         {/if}
-        <input type="checkbox" disabled={t.cuurentTaskSession} class={["round-checkbox", {checked: t.checked}]} onchange={() => toggleChecked(t, ind)}/>
+        <input type="checkbox" disabled={t.completed} class={["round-checkbox", {checked: t.checked}]} onchange={() => toggleChecked(t, ind)}/>
         <input type="text" bind:value={t.text} class="task-text" readonly={t.checked}>
         <div class={["input-with-progress", {valid: isNotValid}]}>
           <progress max=100 value={t.tweenTime.current}></progress>
           {#if focusCardState.sessionStarted && t.checked}
-            <input type="text" readonly value='{Math.floor(t.timeToSpend/60)}:{(t.timeToSpend % 60).toString().padStart(2, '0')}'>
+            <input type="text" readonly value='{Math.floor(t.timeToSpend/60)}:{(Math.floor(t.timeToSpend % 60)).toString().padStart(2, '0')}'>
           {:else}
             <input type="number" min=0 max=1440 readonly={t.checked} bind:value={t.timeInitToSpend} placeholder="minutes">
           {/if}
@@ -174,8 +176,8 @@
 }
 .row.completed {
   background: 
-    linear-gradient(145deg, #c4d073, #a9a01c) border-box,
-    linear-gradient(145deg, #c4d073, #d0c633b7) padding-box;
+    linear-gradient(145deg, #c4d073, #888013) border-box,
+    linear-gradient(145deg, #c4d073, #888013) padding-box;
   border-top: 3px solid transparent;
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
@@ -228,7 +230,7 @@
   all: unset;
   color: #eee;
   width: 100%;
-  height: 100%;
+  height: 102%;
   cursor: auto;
   z-index: 2;
   position: relative;
@@ -265,8 +267,12 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .input-with-progress progress {
   width: 100%;
-  height: 98%;
+  height: 100%;
+  padding-left: 1px;
+  padding-top: 1.5px;
   z-index: 1;
+  overflow: hidden;
+  align-self: center;
   position: absolute;
   appearance: none;
   pointer-events: none;

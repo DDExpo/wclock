@@ -1,6 +1,4 @@
-<script lang="ts">
-  import { fade } from 'svelte/transition';
-  
+<script lang="ts">  
   import Session from "./Session.svelte";
   import TopRightButton from "../TopRightButton.svelte";
 
@@ -20,7 +18,7 @@
     isNotValidTime = validateSettings(false, true)
     if (!isNotValidTime) {
       focusWatch.updateFocusWatch(appSettings.Focus.focus.minutes, appSettings.Focus.focus.breaksTime,
-                                  Math.floor(appSettings.Focus.focus.breaksAtEvery*60), appSettings.Focus.focus.skipBreaks)
+                                  appSettings.Focus.focus.breaksAtEvery, appSettings.Focus.focus.skipBreaks)
       
       focusWatch.startSession()
       focusCardState.sessionStarted = true
@@ -32,14 +30,10 @@
 <div class={["focus-comp", {light: appSettings.Theme, settings: focusCardState.isSettingsSide}]}>
   
   {#if focusCardState.sessionStarted}
-    <div transition:fade>
-
       <div class="session-body">
         <Session /> 
       </div>
-    </div>
   {:else}
-    <div transition:fade>
       
         <div class="header">
           <div class="name">Focus</div>
@@ -69,21 +63,16 @@
             <div class="focus-settings">
               <div class="title">Settings</div>
               <div class="wrapper-input">
-                <div class="rows">
-                  <div class="input-group">
-                    <label>
-                      <span>Breaks at every</span>
-                      <input class="daily-hours" type="number" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
-                      <span class="bottom-span">hour</span>
-                    </label>
-                  </div>
-
-                  <div class="input-group">
-                    <label>
-                      <span>Breaks Time</span>
-                      <input class="daily-hours"type="number" bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
-                    </label>
-                  </div>
+                <div class="input-group">
+                  <label>
+                    <span>Breaks at every</span>
+                    <input class="daily-hours" type="number" min="1" max="12" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
+                    <span class="bottom-span">hour</span>
+                  </label>
+                  <label>
+                    <span>Breaks Time</span>
+                    <input class="daily-hours"type="number" min="1" max="720"  bind:value={appSettings.Focus.focus.breaksTime} placeholder="0" />
+                  </label>
                 </div>
               </div>
 
@@ -98,8 +87,6 @@
               </div>
             </div>
           </div>
-        </div>
-
     </div>
   {/if}
 </div>
@@ -460,6 +447,14 @@ input[type="number"]::-webkit-outer-spin-button {
   margin-right: 5px;
 }
 
+.input-group {
+  flex-direction: row;
+  display: flex;
+  padding: 1cqw;
+  justify-content: center;
+  gap: 3cqw;
+}
+
 .input-group input {
   display: flex;
   align-self: center;
@@ -472,11 +467,6 @@ input[type="number"]::-webkit-outer-spin-button {
   align-items: center;
   gap: 0.2em;
   position: relative;
-}
-
-.rows {
-  display: flex;
-  flex-direction: row;
 }
 
 .daily-hours {

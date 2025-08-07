@@ -10,8 +10,6 @@ export class Task {
   tweenTime: Tween<number> 
   timeToSpend = $state(0);
   timeInitToSpend = $state(0);
-  cuurentTaskSession = $state(false);
-
 
   constructor(id: string, text: string, checked: boolean, timeToSpend: number, timeInitToSpend:  number, order: number, completed: boolean) {
     this.id = id

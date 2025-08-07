@@ -85,7 +85,6 @@ export type TaskType = {
   tweenTime: Tween<number>
   timeToSpend: number;
   timeInitToSpend: number;
-  cuurentTaskSession: boolean;
 };
 
 export type AlarmType = {

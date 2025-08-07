@@ -56,7 +56,7 @@
         <label class="field">
           <span class="title">Daily goal</span>
           <div class="wrapper-daily">
-            <input class="daily-hours" type="number" bind:value={appSettings.Focus.goal.dailyGoal} placeholder="0"/>
+            <input class="daily-hours" min="0" max="24" type="number" bind:value={appSettings.Focus.goal.dailyGoal} placeholder="0"/>
             <span>Hours</span>
           </div>
         </label>
@@ -64,8 +64,8 @@
         <label class="field">
           <span style:color=inherit>Clear daily progress and completed tasks</span>
           <div class="time-select">
-            <input type="number" bind:value={appSettings.Focus.goal.clearHours} placeholder="  0"/> <span>hours</span>
-            <input type="number" bind:value={appSettings.Focus.goal.clearMinutes} placeholder="  0"/> <span>minutes</span>
+            <input type="number" min="0" max="23" bind:value={appSettings.Focus.goal.clearHours} placeholder="  0"/> <span>hours</span>
+            <input type="number" min="0" max="59" bind:value={appSettings.Focus.goal.clearMinutes} placeholder="  0"/> <span>minutes</span>
           </div>
         </label>
 
@@ -197,7 +197,7 @@
 }
 
 .goal-comp.light .side-column {
-  box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.3),
+  box-shadow: inset 4px 4px 4px rgba(0, 0, 0, 0.2),
               inset -2px -2px 3px rgba(255, 255, 255, 0.08);
   background-color: #d9c1a051;
 }
@@ -342,6 +342,19 @@
   color: white;
 }
 
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
 .wrapper-daily {
   display: flex;
   align-items: center;
@@ -351,7 +364,7 @@
   border: 0.7cqw solid rgba(164, 237, 238);
   border-bottom: 2cqw solid rgb(164, 237, 238);
   border-radius: clamp(0.5rem, 5cqw, 3rem);
-  width: 50%;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -368,6 +381,7 @@
 .time-select {
   display: flex;
   gap: 1em;
+  width: 100%;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -379,25 +393,12 @@
   border-radius: 0.3em;
   border-bottom: 0.7cqw solid rgba(164, 237, 238, 1);
   text-align: center;
-  width: 10%;
+  width: 20%;
   padding: 0.2em 0.4em;
   color: inherit;
   font-size: inherit;
   box-sizing: border-box;
   cursor: pointer;
-}
-
-input[type="number"] {
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;
 }
 
 .checkbox {

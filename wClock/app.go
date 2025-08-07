@@ -228,7 +228,7 @@ func (a *App) CheckWindowSize() bool {
 }
 
 func (a *App) TimerFinished(typeNotify string, description string) {
-	err := gofunc.Notify(typeNotify+":"+description, "has ended!")
+	err := gofunc.Notify(typeNotify+": "+description, "has ended!")
 	if err != nil {
 		fmt.Println("Notification failed:", err)
 	}

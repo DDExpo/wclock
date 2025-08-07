@@ -45,7 +45,7 @@
     const tasksGo = (await DBGet("tasks")).Tasks;
     tasks.set(tasksGo.map((taskData, ind) => {
       const task = new Task(taskData.ID, taskData.Text, taskData.Checked, taskData.TimeToSpend, taskData.TimeInitToSpend, taskData.Order, taskData.Completed);
-      if (task.timeToSpend !== task.timeInitToSpend) {task.tweenTime.set((task.timeToSpend/task.timeInitToSpend)*100)}
+      if (task.timeToSpend < task.timeInitToSpend) {task.tweenTime.set(((task.timeInitToSpend-task.timeToSpend)/task.timeInitToSpend)*100)}
       if (isPastClearDate) { task.checked=false, task.timeToSpend=task.timeInitToSpend, task.order=0, task.completed=false, task.tweenTime.set(0)};
       if (task.checked) {tasksState.countChecked += 1, tasksState.checkedIndex.add(ind)};
       if (task.completed) {task.tweenTime.set(100);};
