@@ -47,11 +47,11 @@ type Goal struct {
 }
 
 type FocusCard struct {
-	Minutes       int  `json:"minutes"`
-	CurMinutes    int  `json:"curMinutes"`
-	BreaksAtEvery int  `json:"breaksAtEvery"`
-	BreaksTime    int  `json:"breaksTime"`
-	SkipBreaks    bool `json:"skipBreaks"`
+	Minutes       int     `json:"minutes"`
+	CurMinutes    int     `json:"curMinutes"`
+	BreaksAtEvery float64 `json:"breaksAtEvery"`
+	BreaksTime    int     `json:"breaksTime"`
+	SkipBreaks    bool    `json:"skipBreaks"`
 }
 
 type GridSeize struct {

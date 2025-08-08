@@ -66,7 +66,7 @@
                 <div class="input-group">
                   <label>
                     <span>Breaks at every</span>
-                    <input class="daily-hours" type="number" min="1" max="12" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
+                    <input class="daily-hours" type="text" style:margin-right=2cqw bind:value={appSettings.Focus.focus.breaksAtEvery} placeholder="0" />
                     <span class="bottom-span">hour</span>
                   </label>
                   <label>
@@ -439,6 +439,11 @@ input[type="number"]::-webkit-outer-spin-button {
   font-size: clamp(10px, 5cqw, 40px);
   background: rgba(255, 255, 255, 0.02);
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.wrapper-input span {
+  width: 14ch;
+  text-align: center;
 }
 
 .bottom-span {

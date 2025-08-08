@@ -10,6 +10,8 @@ import { Task } from "./class/ClassTask.svelte";
 import { DbDelete, TimerFinished } from "$lib/wailsjs/go/main/App";
 import { appSettings, debounceDelete, isDeleteHappening } from "./utils.svelte";
 
+const tenSecondsAsMinutes: number = 0.1667  // 10 seconds and 2 ms
+
 export const elapsedAnim = $state({elapsed: 1})
 
 export const focusComponents = writable(
@@ -51,7 +53,6 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   let idInterval: number;
   let curTaskInd: number = -1;
   let timeStampStop: number | null = null;
-  let startTaskTime: number = 0;
   let breakIdInterval: number;
   let idAnimationInterval: number;
   let lastRecordedMinutes: number = 0;
@@ -59,7 +60,6 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   function startSession() {
 
     if (startTime === null) {startTime = Date.now()};
-    if (startTaskTime === -1 && curTask !== null) {startTaskTime = Date.now()}
     
     idAnimationInterval = setInterval(() => {elapsedAnim.elapsed = Date.now() - startTime!;}, 100);
     if ( timeStampStop !== null) {startTime += Date.now() - timeStampStop}
@@ -67,7 +67,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
     idInterval = setInterval(() => {
 
      if (tasksState.checkedIndex.size > 0 && (curTask === null || !tasksState.checkedIndex.has(curTaskInd) || curTask.order > 1)) { getCurTask(); }
-     if (tasksState.checkedIndex.size === 0) {curTask = null}
+     if (tasksState.checkedIndex.size === 0) {curTask = null;}
 
       const elapsed = Date.now() - startTime!;
       const timeLeft = curTime - elapsed;
@@ -80,24 +80,23 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
         appSettings.Focus.goal.yesterday[1] += Math.floor(deltaMinutes / 60);
         lastRecordedMinutes = totalMinutes;
       };
+
       if (curTask !== null) {
-        if (!curTask.completed){
-          const elapsedTask = (Date.now() - startTaskTime)
-          curTask.tweenTime.target += (10001/timeTask) * 100
-          curTask.timeToSpend = Math.max(0, curTask.timeToSpend - (elapsedTask / 60000));
-          if (curTask.timeToSpend <= 0) {
-            curTask.completed = true;
-            curTask.checked = false
-            tasksState.countChecked -= 1
-            
-            tasksState.checkedIndex.delete(curTaskInd) 
-            
-            const curTasks = get(tasks)
-            for (const ind of tasksState.checkedIndex) { curTasks[ind].order -= 1}
-            
-            notify("/sounds/done-tasks.mp3", "Task", curTask.text);
-            getCurTask();
-          }
+        curTask.tweenTime.target += (10001/timeTask) * 100
+        curTask.timeToSpend = curTask.timeToSpend - tenSecondsAsMinutes;
+      
+        if (curTask.timeToSpend <= 0) {
+          curTask.completed = true;
+          curTask.checked = false
+          tasksState.countChecked -= 1
+          
+          tasksState.checkedIndex.delete(curTaskInd) 
+          
+          const curTasks = get(tasks)
+          for (const ind of tasksState.checkedIndex) { curTasks[ind].order -= 1}
+          
+          notify("/sounds/done-tasks.mp3", "Task", curTask.text);
+          getCurTask();
         }
       };
   
@@ -120,13 +119,17 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
 
   function startBreak() {
     
-  const breakStart = Date.now();
+  let breakStart = Date.now();
+
+  
+  if ( timeStampStop !== null) {breakStart += Date.now() - timeStampStop}
+  idAnimationInterval = setInterval(() => {elapsedAnim.elapsed = Date.now() - breakStart!;}, 100);
 
   breakIdInterval = setInterval(() => {
     const breakElapsed = Date.now() - breakStart;
 
     if (breakElapsed >= breaksTime) {
-      clearInterval(breakIdInterval);
+      stop()
       notify("/sounds/timer.mp3", "Break", "Your break session");
       breaks -= 1
       startTime! += breakElapsed
@@ -139,17 +142,15 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
   function updateFocusWatch(initailTime: number, breaksTime: number, breaksAtMinutes: number, skipBreaks: boolean) {
     initailTime = initailTime
     breaksTime = breaksTime * 60 * 1000
-    breaksAtMinutes = breaksAtMinutes * 60
+    breaksAtMinutes = Math.floor(breaksAtMinutes * 60)
     skipBreaks = skipBreaks
     curTime = initailTime * 60 * 1000
     breaks = Math.floor(initailTime / breaksAtMinutes)
   }
   
   function getCurTask() {
-    console.log("mda")
     const curTasks = get(tasks)
     let curMin: number = Infinity
-    startTaskTime = -1
     curTaskInd = -1
     tasksState.checkedIndex.forEach(ind => {
       const task = curTasks[ind];
@@ -165,12 +166,10 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
     }
     curTask = curTasks[curTaskInd]
     timeTask = curTask.timeToSpend * 60 * 1000
-    startTaskTime = Date.now()
   };
   
   function stop() {
     timeStampStop = Date.now()
-    startTaskTime = -1
     clearInterval(idInterval)
     clearInterval(breakIdInterval)
     clearInterval(idAnimationInterval);
@@ -181,6 +180,7 @@ export const createFocusWatch = (initailTime: number, breaksTime: number, breaks
     curTask = null
     startTime = null
     timeStampStop = null
+    elapsedAnim.elapsed = 1
     appSettings.Focus.focus.curMinutes = 0 
   }
 

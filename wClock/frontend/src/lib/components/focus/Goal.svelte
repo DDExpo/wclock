@@ -15,7 +15,6 @@
 
   function saveValidateyGoalState() {
     isNotValidSettings = validateSettings(true)
-    console.log(appSettings.Focus.goal.dailyGoal)
     if (!isNotValidSettings) {
       GiveNewSettings({ goal: appSettings.Focus.goal })
     };

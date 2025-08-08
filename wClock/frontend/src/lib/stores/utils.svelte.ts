@@ -49,12 +49,13 @@ export function validateSettings(goalCardValidation = false, focusCardValidation
   let isNotValid = false;
 
   const clamp = (val: any, max: number, fallback: number): number => {
-    const num = Math.floor(Number(val));
+    const num = Number(val);
     if (isNaN(num) || num <= 0 || num > max) {
       isNotValid = true;
       return fallback;
     }
-    return num;
+    if (fallback === 1) { return num};
+    return Math.floor(num);
   };
 
   if (goalCardValidation) {

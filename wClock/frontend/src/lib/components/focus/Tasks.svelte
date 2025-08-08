@@ -17,10 +17,10 @@
       t.checked = false
       return false
     };
-    t.timeInitToSpend = num
-    if (t.tweenTime.current > 0){
+    if (t.tweenTime.current > 0 && t.timeInitToSpend !== num){
       t.timeToSpend = t.timeInitToSpend - ((num / 100) * t.tweenTime.current)
     } else {t.timeToSpend = num}
+    t.timeInitToSpend = num
     isNotValid = false
     return true
   }

@@ -26,7 +26,7 @@
 
 </script>
 
-<div class={["clock-container", {light: appSettings.Theme}]}>
+<div class={["clock-container", {light: appSettings.Theme, break: focusCardState.sessionIsOnBreak}]}>
 
   <div class="header">
     {#if appSettings.Focus.focus.skipBreaks}
@@ -72,7 +72,7 @@
   {#if !appSettings.Focus.focus.skipBreaks && breaks !== curBreaks}
     {#if focusCardState.sessionIsOnBreak}
       <div class="next">
-          Up next: {appSettings.Focus.focus.breaksAtEvery} minutes session
+          Up next: {appSettings.Focus.focus.breaksAtEvery} hour session
       </div>
     {:else}
       <div class="next">
@@ -103,6 +103,18 @@
   align-items: center;
   flex-direction: column;
 }
+
+.clock-container.break {
+  transform: rotate(90deg);
+  justify-content: center;
+  transform-origin: center; 
+}
+
+.clock-container.break .header {
+  justify-content: center;
+}
+
+
 .header {
   display: flex;
   position: relative;
@@ -208,6 +220,10 @@ span {
   justify-content: center;
 }
 
+.clock-container.break span{
+  transform: rotate(-90deg);
+}
+
 .hour-track {
   flex-direction: row-reverse;
 }
@@ -244,10 +260,10 @@ span {
 .frame-text {
   left: 50%;
   color: #f7ebbc;
-  bottom: -19px;
+  bottom: -20px;
   padding: 2px 12px;
   position: absolute;
-  font-size: 12px;
+  font-size: 14px;
   transform: translateX(-50%);
   background: #786744;
   font-weight: bold;
@@ -255,7 +271,7 @@ span {
 }
 
 .clock-container.light .frame-text {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .minute-frame .frame-text {
