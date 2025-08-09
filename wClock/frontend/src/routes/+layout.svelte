@@ -123,14 +123,14 @@
   height: 100%;
   width: 100%;
   z-index: -1;
-  background-image: url('images/backgroundImg/background.svg');
+  background-image: url('/images/backgroundImg/background.svg');
   background-size: cover;
   opacity: 0.99;
   background-position: center;
 }
 
 .background-img.light {
-  background-image: url('images/backgroundImg/background-light.svg');
+  background-image: url('/images/backgroundImg/background-light.svg');
   opacity: 0.8;
 }
 

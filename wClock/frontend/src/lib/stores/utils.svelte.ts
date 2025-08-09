@@ -21,8 +21,8 @@ export const appSettings: AppSettings = $state({
   Theme: false,
   Focus: {
     gridSeize: {
-      left: 230,
-      bottom: 330
+      left: 250,
+      bottom: 340
     },
     goal: {
       dailyProgress: [0, 0],

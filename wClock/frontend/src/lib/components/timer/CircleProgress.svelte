@@ -10,7 +10,7 @@
   const stroke = 12;
   const circumference = 2 * Math.PI * radius;
 
-  let offset = $derived(circumference * (1 - ($progress!)));
+  let offset = $derived(Math.max(0, circumference * (1 - ($progress!))));
 
 </script>
 

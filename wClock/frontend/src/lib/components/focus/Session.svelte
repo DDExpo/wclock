@@ -3,9 +3,12 @@
   import { elapsedAnim, focusCardState, focusWatch } from '$lib/stores/focusState.svelte';
 
   let breaks = $derived(Math.floor(appSettings.Focus.focus.minutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
-  let curBreaks = $derived(Math.floor(appSettings.Focus.focus.curMinutes / (appSettings.Focus.focus.breaksAtEvery*60))+1)
   let secondsAnim = $derived(elapsedAnim.elapsed / 1000)
-  let minutesAnim = $derived((appSettings.Focus.focus.minutes - (secondsAnim / 60)))
+  let minutesAnim = $derived(
+  focusCardState.sessionIsOnBreak
+    ? (appSettings.Focus.focus.breaksTime - (secondsAnim / 60))
+    : (appSettings.Focus.focus.minutes - (secondsAnim / 60))
+  );
   let hoursAnim = $derived(minutesAnim / 60)
 
   function stopWatch() {
@@ -32,7 +35,7 @@
     {#if appSettings.Focus.focus.skipBreaks}
       <div >Focus period: 1 of 1</div>
     {:else}
-      <div >Focus period: {curBreaks} of {breaks}</div>
+      <div >Focus period: {focusCardState.breaksCount} of {breaks}</div>
     {/if}
   </div>
   
@@ -69,7 +72,7 @@
     </div>
   </div>
 
-  {#if !appSettings.Focus.focus.skipBreaks && breaks !== curBreaks}
+  {#if !appSettings.Focus.focus.skipBreaks && breaks !== focusCardState.breaksCount}
     {#if focusCardState.sessionIsOnBreak}
       <div class="next">
           Up next: {appSettings.Focus.focus.breaksAtEvery} hour session
