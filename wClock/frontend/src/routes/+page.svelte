@@ -3,7 +3,6 @@
 
   import { appSettings } from '$lib/stores/utils.svelte';
 
-  
   let posX = $state(Math.round(window.innerWidth / 2));
   let posY = $state(Math.round(window.innerHeight / 2));
   let velY = $state(-180);
@@ -124,13 +123,12 @@
   .button-card.light {
     background: rgba(0, 0, 0, 0.255);
   }
-  .button-card:hover {
-    transform: translateY(-10px);
-  }
+  .button-card:hover,
   .button-card.light:hover {
     transform: translateY(-10px);
   }
-  .button-card:active {
+  .button-card:active,
+  .button-card.light:active {
     transform: scale(0.97);
   }
 

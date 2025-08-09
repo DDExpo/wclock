@@ -62,7 +62,7 @@ Steps:
    ```bash
    wails dev
    ```
-
+6. Icons can download from release page
 ---
 
 ## Reporting Issues
