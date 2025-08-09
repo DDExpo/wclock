@@ -53,6 +53,7 @@ export const createFocusWatch = () => {
   let idInterval: number;
   let curTaskInd: number = -1;
   let skipBreaks: boolean
+  let breakStart: number | null = null
   let breaksTime: number
   let timeStampStop: number | null = null;
   let lastBreakMinute = -1;
@@ -65,8 +66,8 @@ export const createFocusWatch = () => {
 
     if (startTime === null) {startTime = Date.now()};
     
-    idAnimationInterval = setInterval(() => {elapsedAnim.elapsed = Date.now() - startTime!;}, 100);
     if ( timeStampStop !== null) {startTime += Date.now() - timeStampStop; timeStampStop = null}
+    idAnimationInterval = setInterval(() => {elapsedAnim.elapsed = Date.now() - startTime!;}, 100);
     idInterval = setInterval(() => {
 
      if (tasksState.checkedIndex.size > 0 && (curTask === null || !tasksState.checkedIndex.has(curTaskInd) || curTask.order > 1)) { getCurTask(); }
@@ -103,10 +104,6 @@ export const createFocusWatch = () => {
         }
       };
 
-      console.log("breask",breaks)
-      console.log("totalMinutes", totalMinutes)
-      console.log("breaksAtMinutes", breaksAtMinutes)
-
       if (!skipBreaks && breaks > 0 && totalMinutes !== 0 && totalMinutes % breaksAtMinutes === 0 && totalMinutes !== lastBreakMinute) {
         stop()
         focusCardState.breaksCount += 1
@@ -126,23 +123,20 @@ export const createFocusWatch = () => {
 
   function startBreak() {
     
-  let breakStart = Date.now();
-  
+  if (breakStart === null) { breakStart = Date.now() };
+
   if ( timeStampStop !== null) {breakStart += Date.now() - timeStampStop; timeStampStop = null}
   idAnimationInterval = setInterval(() => {elapsedAnim.elapsed = Date.now() - breakStart!;}, 100);
 
   breakIdInterval = setInterval(() => {
-    const breakElapsed = Date.now() - breakStart;
+    const breakElapsed = Date.now() - breakStart!;
     
-    if (breakElapsed >= breaksTime) {
+    if (breakElapsed >= breaksTime!) {
       stop()
       notify("/sounds/timer.mp3", "Break", "Your break session");
       breaks -= 1
       startTime! += breakElapsed
       focusCardState.sessionIsOnBreak = false
-      console.log("breaks in break", breaks)
-      console.log("breakElapsed", breakElapsed)
-      console.log("StartTime After Break", startTime)
       startSession();
     }
   }, 1000);
@@ -188,6 +182,7 @@ export const createFocusWatch = () => {
     stop()
     curTask = null
     startTime = null
+    breakStart = null
     timeStampStop = null
     lastBreakMinute = -1
     elapsedAnim.elapsed = 1

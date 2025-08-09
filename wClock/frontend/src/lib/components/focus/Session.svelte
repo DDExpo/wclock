@@ -102,7 +102,7 @@
   height: 100%;
   display: flex;
   gap: 25px;
-  margin-top: 20px;
+  margin-top: 130px;
   align-items: center;
   flex-direction: column;
 }
@@ -115,17 +115,18 @@
 
 .clock-container.break .header {
   justify-content: center;
+  margin-top: -25px;
 }
 
 
 .header {
   display: flex;
-  position: relative;
+  top: 0;
+  position: absolute;
   z-index: 1;
   width: 100%;
   margin-left: 2rem;
-  margin-top: 0.7rem;
-  margin-bottom: -10px;
+  margin-top: 2.1rem;
   align-items: center;
   justify-content: start;
 }
