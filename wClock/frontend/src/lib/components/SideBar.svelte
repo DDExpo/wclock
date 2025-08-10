@@ -1,7 +1,7 @@
 <script lang="ts">
   import { appSettings } from '$lib/stores/utils.svelte';
   import { isAlwaysOnTop, appTheme } from '$lib/stores/sideBarAndTheme.svelte'
-  import { CheckWindowSize, SetWindowAlwaysOnTop, GiveNewSettings } from '$lib/wailsjs/go/main/App';
+  import { SetWindowAlwaysOnTop, GiveNewSettings } from '$lib/wailsjs/go/main/App';
 
   let isSidebarOpen: boolean = $state(false);
   let appWindowSizeEnough: boolean = $state(false)
@@ -18,8 +18,7 @@
 
   async function checkWindowSizeEnough() {
     isSidebarOpen = true
-    const size = await CheckWindowSize()
-    if (size) {appWindowSizeEnough = true} else {appWindowSizeEnough = false}
+    if (window.innerWidth > 681) {appWindowSizeEnough = true} else {appWindowSizeEnough = false}
   }
 
   function setAlwaysOnTop() {

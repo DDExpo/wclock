@@ -3,8 +3,6 @@
 import {gofunc} from '../models';
 import {context} from '../models';
 
-export function CheckWindowSize():Promise<boolean>;
-
 export function CloseWindow():Promise<void>;
 
 export function DBGet(arg1:string):Promise<gofunc.ItemsDB>;
@@ -18,6 +16,8 @@ export function GetSettings():Promise<gofunc.AppSettings>;
 export function GetWindowsPcColors():Promise<string>;
 
 export function GiveNewSettings(arg1:Record<string, any>):Promise<void>;
+
+export function LogBackend(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function MakeMiniWindowSize(arg1:number,arg2:number,arg3:boolean):Promise<void>;
 

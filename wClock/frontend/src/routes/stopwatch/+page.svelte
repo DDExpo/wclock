@@ -38,7 +38,6 @@
       stopWatch.reset();
     };
   }
-
 </script>
 
 <div class="stopwatch-page">

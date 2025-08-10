@@ -7,7 +7,7 @@
   import TopBar from "$lib/components/TopBar.svelte";
   import SideBar from "$lib/components/SideBar.svelte";
 
-  import { GetWindowsPcColors, GetSettings, DBSave } from "$lib/wailsjs/go/main/App";
+  import { GetWindowsPcColors, GetSettings, DBSave, LogBackend } from "$lib/wailsjs/go/main/App";
   import { gofunc } from '$lib/wailsjs/go/models';
   import { alarms } from "$lib/stores/alarms.svelte";
   import { cards } from "$lib/stores/timerWatch.svelte";
@@ -16,9 +16,12 @@
   import { appTheme } from "$lib/stores/sideBarAndTheme.svelte";
   import { appSettings, debounce, getAlarms, getCards, getTasks, watchState } from "$lib/stores/utils.svelte";
 
+  window.onerror = (_msg, _src, _line, _col, error) => {
+      LogBackend("error", error instanceof Error ? error.stack || String(error) : String(_msg), "frontend");
+  };
+
 	let { children } = $props();
   let ready = $state(false)
-
 
   onMount(async() => {
 
@@ -51,6 +54,7 @@
     alarms.subscribe(() => debounceAlarms());
     setInterval(debounceCards, 60000)
 
+    
     requestAnimationFrame(() => {
       loadStartupData(isPastClearDate);
     });
