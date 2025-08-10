@@ -3,8 +3,7 @@ A cross-platform offline desktop application inspired by the Windows Clock app, 
 
 ## Tested Platforms
 - **Windows 10** (x64)
-- **Ubuntu Linux** (24.04)
-
+- Ubuntu probobly working, as i can run it in dev, but i cant in build as WSl doesnt support Guis
 ---
 
 ## Features
@@ -24,10 +23,10 @@ Download the latest version of **WClock** from the [Releases](https://github.com
 
 ### Linux
 1. Navigate to the [latest release](https://github.com/DDExpo/wclock/releases/latest).
-2. Download the Linux archive (`WClock-vX.Y.Z-linux-amd64.tar.gz`).
+2. Download the Linux archive (`Ubuntu-V1.0.1.tar.gz`).
 3. Extract the archive:
    ```bash
-   tar -xvzf WClock-vX.Y.Z-linux-amd64.tar.gz
+   tar -xvzf Ubuntu-V1.0.1.tar.gz
    ```
 4. Run the binary:
    ```bash
@@ -57,7 +56,7 @@ Steps:
    ```bash
    wails dev
    ```
-6. Icons can download from release page
+6. Icons can be downloaded from release page
 ---
 
 ## Reporting Issues
