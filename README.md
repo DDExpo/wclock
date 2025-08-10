@@ -27,7 +27,7 @@ WClock offers a suite of intuitive and practical tools for time management and p
 ## Installation
 
 ### Windows
-Download the latest version of **WClock** from the [Releases](https://github.com/DDExpo/wclock/releases) page and follow the installer instructions.
+Download the latest version of **WClock** from the [Releases](https://github.com/DDExpo/wclock/releases) page.
 
 ### Linux
 1. Navigate to the [latest release](https://github.com/DDExpo/wclock/releases/latest).
