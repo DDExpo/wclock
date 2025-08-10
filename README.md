@@ -8,13 +8,6 @@ A cross-platform offline desktop application inspired by the Windows Clock app, 
 ---
 
 ## Features
-WClock offers a suite of intuitive and practical tools for time management and productivity:
-
-- **Focus Mode**: Stay concentrated with customizable focus timers.
-- **Stopwatch**: Track elapsed time with precision.
-- **Task View**: Organize and manage your tasks efficiently.
-- **Break Timer**: Schedule breaks to maintain productivity and well-being.
-
 <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
   <img src="images/2025-08-06_20-27-46.png" alt="Focus Mode" width="300" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   <img src="images/2025-08-06_20-29-19.png" alt="Stopwatch" width="300" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
