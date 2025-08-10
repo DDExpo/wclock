@@ -8,13 +8,6 @@ A cross-platform offline desktop application inspired by the Windows Clock app, 
 ---
 
 ## Features
-WClock offers a suite of intuitive and practical tools for time management and productivity:
-
-- **Focus Mode**: Stay concentrated with customizable focus timers.
-- **Stopwatch**: Track elapsed time with precision.
-- **Task View**: Organize and manage your tasks efficiently.
-- **Break Timer**: Schedule breaks to maintain productivity and well-being.
-
 <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
   <img src="images/2025-08-06_20-27-46.png" alt="Focus Mode" width="300" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   <img src="images/2025-08-06_20-29-19.png" alt="Stopwatch" width="300" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
@@ -27,7 +20,7 @@ WClock offers a suite of intuitive and practical tools for time management and p
 ## Installation
 
 ### Windows
-Download the latest version of **WClock** from the [Releases](https://github.com/DDExpo/wclock/releases) page and follow the installer instructions.
+Download the latest version of **WClock** from the [Releases](https://github.com/DDExpo/wclock/releases) page.
 
 ### Linux
 1. Navigate to the [latest release](https://github.com/DDExpo/wclock/releases/latest).
@@ -53,7 +46,9 @@ Steps:
    git clone https://github.com/DDExpo/wclock.git
    ```
 2. Install [Go](https://go.dev/) and [Wails](https://wails.io/), then follow the [Wails Svelte guide](https://wails.io/docs/guides/sveltekit/).
-3. ```npm install svelte-dnd-action```
+3. ```bash
+   npm install svelte-dnd-action
+   ```
 4. Navigate to the project directory:
    ```bash
    cd ./WClock/wclock
