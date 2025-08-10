@@ -46,7 +46,9 @@ Steps:
    git clone https://github.com/DDExpo/wclock.git
    ```
 2. Install [Go](https://go.dev/) and [Wails](https://wails.io/), then follow the [Wails Svelte guide](https://wails.io/docs/guides/sveltekit/).
-3. ```npm install svelte-dnd-action```
+3. ```bash
+   npm install svelte-dnd-action
+   ```
 4. Navigate to the project directory:
    ```bash
    cd ./WClock/wclock
