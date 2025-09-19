@@ -3,7 +3,7 @@ A cross-platform offline desktop application inspired by the Windows Clock app, 
 
 ## Tested Platforms
 - **Windows 10** (x64)
-- Ubuntu probobly working, as i can run it in dev, but i cant in build as WSl doesnt support Guis
+- Ubuntu probably works, since I can run it in development, but I can’t in the build environment because WSL doesn’t support GUIs.
 ---
 
 ## Features
